@@ -12,12 +12,12 @@ for i = 1:nsd
         temp2 = temp2 + B(i,j)^2;
     end
 end
-% 2d strain, assume the third direction is undeformable
+% 2d strain, assuming the third direction is undeformable
 if ned==2
     temp1 = temp1 + 1; 
-    temp2=temp2+1;
+    temp2 = temp2 + 1;
 end
-for i=1:nsd
+for i=1:ned
     for j=1:nsd
         stress(i,j) = mu1*(B(i,j) - temp1*dl(i,j)/3.)/J^(2./3.) ...
             + K1*J*(J-1)*dl(i,j);

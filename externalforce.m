@@ -8,17 +8,11 @@ for n = 1:nh
     % extract the coords and traction of that face
     ele = hnodes(1,n);
     face = hnodes(2,n);
-    nfacenodes = 2; % should be improved in the future
-    if face ~= 4
-        nodelist = [face,face+1];
-    else
-        nodelist = [4,1];
-    end
+    nfacenodes=no_facenodes(nsd,nen);
+    nodelist = facenodes(nsd,nen,face); 
     coord = zeros(nsd,nfacenodes);
     for a = 1:nfacenodes
-        for i = 1:nsd
-            coord(i,a) = coords(i,connect(nodelist(a),ele));
-        end
+        coord(:,a) = coords(:,connect(nodelist(a),ele));
     end
     traction = zeros(ned,1);
     for i = 1:nsd
@@ -38,15 +32,13 @@ for n = 1:nh
         N = sf(nfacenodes,nsd-1,xi);
         % set up the jacobian matrix
         dxdxi = zeros(nsd,nsd-1);
-        for i = 1:nsd
-            for j = 1:nsd-1
-                for a = 1:nfacenodes
-                    dxdxi(i,j) = dxdxi(i,j) + coord(i,a)*dNdxi(a,j);
-                end
-            end
-        end
+        dxdxi = coord*dNdxi;
         if nsd == 2
             dt = sqrt( (dxdxi(1,1))^2 + (dxdxi(2,1)^2) );
+        elseif nsd == 3
+            dt = sqrt( ((dxdxi(2,1)*dxdxi(3,2))-(dxdxi(2,2)*dxdxi(3,1)))^2 ...
+                + ((dxdxi(1,1)*dxdxi(3,2))-(dxdxi(1,2)*dxdxi(3,1)))^2 ...
+                + ((dxdxi(1,1)*dxdxi(2,2))-(dxdxi(1,2)*dxdxi(2,1)))^2 );
         end
         % compute the force
         for a = 1:nfacenodes
@@ -72,9 +64,7 @@ elecoord = zeros(nsd,nen);
 for ele = 1:nel
     % Extract coords of nodes, and dof for the element
     for a = 1:nen
-        for i = 1:nsd
-            elecoord(i,a) = coords(i,connect(a,ele));
-        end
+        elecoord(:,a) = coords(:,connect(a,ele));
     end
     %% compute the force on this element
     %
@@ -91,13 +81,7 @@ for ele = 1:nel
         N = sf(nen,nsd,xi);
         % set up the jacobian matrix
         dxdxi = zeros(nsd,nsd);
-        for i = 1:nsd
-            for j = 1:nsd
-                for a = 1:nen
-                    dxdxi(i,j) = dxdxi(i,j) + dNdxi(a,j)*elecoord(i,a);
-                end
-            end
-        end
+        dxdxi = elecoord*dNdxi;
         dt = det(dxdxi);
         % compute the force
         for a = 1:nen

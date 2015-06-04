@@ -7,9 +7,7 @@ elecoord = zeros(nsd,nen);
 for ele = 1:nel
     % Extract coords of nodes, DOF for the current element
     for a = 1:nen
-        for i = 1:nsd
-          elecoord(i,a) = coords(i,connect(a,ele));
-        end
+        elecoord(:,a) = coords(:,connect(a,ele));
     end
     %% compute the element mass matrix
     %
@@ -27,15 +25,9 @@ for ele = 1:nel
         N = sf(nen,nsd,xi);
         % set up the jacobian matrix
         dxdxi = zeros(nsd,nsd);
-        for i = 1:nsd
-            for j = 1:nsd
-                for a = 1:nen
-                    dxdxi(i,j) = dxdxi(i,j) + elecoord(i,a)*dNdxi(a,j);
-                end
-            end
-        end
+        dxdxi = elecoord*dNdxi;
         dt = det(dxdxi);
-        % Compute the element mass, noting M = delta_ij*M^~       
+        % Compute the element mass, no loop of j because M = delta_ij*M^~       
         for a = 1:nen
             for b = 1:nen
                 for i = 1:ned

@@ -16,10 +16,10 @@ if nsd==2
     temp1 = temp1+1;
     temp2 = temp2+1;
 end
-for i = 1:2
-    for j = 1:2
-        for k = 1:2
-            for l = 1:2
+for i = 1:ned
+    for j = 1:nsd
+        for k = 1:ned
+            for l = 1:nsd
                 if materialprops(1)==2
                     C(i,j,k,l) = mu1*( dl(i,k)*B(j,l)+B(i,l)*dl(j,k)...
                         - (2/3)*(B(i,j)*dl(k,l)+dl(i,j)*B(k,l))...
@@ -33,7 +33,7 @@ for i = 1:2
                         + mu2/J^(4/3.)*(2*B(i,j)*B(k,l)...
                         + temp1*(B(l,j)*dl(i,k)+B(l,i)*dl(j,k)-4/3.*(B(i,j)*dl(l,k)+B(l,k)*dl(i,j)))...
                         - B(k,j)*B(l,i)-B(k,i)*B(l,j)+4/9.*(temp1^2-temp2)*dl(i,j)*dl(l,k));
-                    for p = 1:2
+                    for p = 1:nsd
                         C(i,j,k,l) = C(i,j,k,l)+mu2/J^(4/3.)*(-B(l,p)*(B(p,j)*dl(i,k)+B(p,i)*dl(j,k))...
                             +4/3.*(B(l,p)*B(k,p)*dl(i,j)+B(i,p)*B(j,p)*dl(l,k)));
                     end

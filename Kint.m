@@ -9,9 +9,7 @@ eledof = zeros(ned,nen);
 for ele = 1:nel
     % Extract coords of nodes, and dof for the element
     for a = 1:nen
-        for i = 1:nsd
-            elecoord(i,a) = coords(i,connect(a,ele));
-        end
+        elecoord(:,a) = coords(:,connect(a,ele));
         for i = 1:ned
             eledof(i,a) = dofs(ned*(connect(a,ele)-1)+i);
         end
@@ -30,49 +28,22 @@ for ele = 1:nel
         dNdxi = sfder(nen,nsd,xi);
         % set up the jacobian matrix
         dxdxi = zeros(nsd,nsd);
-        for i = 1:nsd
-            for j = 1:nsd
-                for a = 1:nen
-                    dxdxi(i,j) = dxdxi(i,j) + dNdxi(a,j)*elecoord(i,a);
-                end
-            end
-        end
+        dxdxi = elecoord*dNdxi;
         dxidx = inv(dxdxi);
         dt = det(dxdxi);
         % computing dNdx
         dNdx = zeros(nen,nsd);
-        for a = 1:nen
-            for i = 1:nsd
-                for j = 1:nsd
-                    dNdx(a,i) = dNdx(a,i) + dNdxi(a,j)*dxidx(j,i);
-                end
-            end
-        end
+        dNdx = dNdxi*dxidx;
         % computing deformation gradient, F_ij = delta_ij + du_i/dx_j
         F = zeros(nsd,nsd);
-        for i = 1:nsd
-            for j = 1:nsd
-                if i == j
-                    F(i,j) = 1.;
-                end
-                for a = 1:nen
-                    F(i,j) = F(i,j) + dNdx(a,j)*eledof(i,a);
-                end
-            end
-        end
+        F = eye(nsd) + eledof*dNdx;
         % compute left Cauchy-Green tensor, B = FF^T and J = det(F)
         B = F*transpose(F);
         J = det(F);
         % compute dNdy, in which y is the coord. after deformation
         dNdy = zeros(nen,nsd);
         Finv = inv(F);
-        for a = 1:nen
-            for i = 1:nsd
-                for j = 1:nsd
-                    dNdy(a,i) = dNdy(a,i) + dNdx(a,j)*Finv(j,i);
-                end
-            end
-        end
+        dNdy = dNdx*Finv;
         % compute the stress, Kirchhoffstress is used
         stress = Kirchhoffstress(ned,nsd,B,J,materialprops);
         % compute the tensor C_ijkl
@@ -110,49 +81,22 @@ for ele = 1:nel
         dNdxi = sfder(nen,nsd,xi);
         % set up the jacobian matrix
         dxdxi = zeros(nsd,nsd);
-        for i = 1:nsd
-            for j = 1:nsd
-                for a = 1:nen
-                    dxdxi(i,j) = dxdxi(i,j) + dNdxi(a,j)*elecoord(i,a);
-                end
-            end
-        end
+        dxdxi = elecoord*dNdxi;
         dxidx = inv(dxdxi);
         dt = det(dxdxi);
         % computing dNdx
         dNdx = zeros(nen,nsd);
-        for a = 1:nen
-            for i = 1:nsd
-                for j = 1:nsd
-                    dNdx(a,i) = dNdx(a,i) + dNdxi(a,j)*dxidx(j,i);
-                end
-            end
-        end
+        dNdx = dNdxi*dxidx;
         % computing deformation gradient, F_ij = delta_ij + du_i/dx_j
         F = zeros(nsd,nsd);
-        for i = 1:nsd
-            for j = 1:nsd
-                if i == j
-                    F(i,j) = 1.;
-                end
-                for a = 1:nen
-                    F(i,j) = F(i,j) + dNdx(a,j)*eledof(i,a);
-                end
-            end
-        end
+        F = eye(nsd) + eledof*dNdx;
         % compute left Cauchy-Green tensor, B = FF^T and J = det(F)
         B = F*transpose(F);
         J = det(F);
         % compute dNdy, in which y is the coord. after deformation
         dNdy = zeros(nen,nsd);
         Finv = inv(F);
-        for a = 1:nen
-            for i = 1:nsd
-                for j = 1:nsd
-                    dNdy(a,i) = dNdy(a,i) + dNdx(a,j)*Finv(j,i);
-                end
-            end
-        end
+        dNdy = dNdx*Finv;
         % compute the stress, Kirchhoffstress is used
         stress = Kirchhoffstress(ned,nsd,B,J,materialprops);
         % compute the tensor C_ijkl

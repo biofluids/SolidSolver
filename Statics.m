@@ -5,11 +5,23 @@ clear
 clc
 close all
 %% read input file
-infile = fopen('statics.txt','r');
-outfile=fopen('output.txt','w');
-[materialprops,nsd,gravity,ned,nn,coords,nel,nen,connect,ng,gnodes,nh,hnodes]...
-    = read_input(infile);
-fclose(infile);
+outfile=fopen('output2.txt','w');
+nsd=2;
+ned=2;
+nen=3;
+a=3;
+b=1;
+h=0.1;
+[nn,nel,connect,coords]=meshgenerate(nsd,nen,a,b,h);
+%plotmesh(coords,nsd,nn,connect,nel,nen,'g');
+gnodes = [31*(0:b/h)+1,31*(0:b/h)+1;ones(1,b/h+1),2*ones(1,b/h+1);zeros(1,2*(b/h+1))];
+ng=size(gnodes,2);
+hnodes = [2*(a/h)*(1:(b/h))-1;2*ones(1,b/h);zeros(1,b/h);0.005*ones(1,b/h);];
+%hnodes = [(a/h)*(1:b/h);2*ones(1,b/h);zeros(1,b/h);0.005*ones(1,b/h)];
+nh=size(hnodes,2);
+gravity=[0;0];
+materialprops=[2;1;15000;10;1];
+
 %% MAIN FEM ANALYSIS PROCEDURE 
 % the load is applied step by step
 % Augmented Lagrangian Method is NOT used in this code

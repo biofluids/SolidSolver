@@ -1,10 +1,16 @@
 function write_output(outfile,nsd,ned,nn,coords,nel,nen,connect,materialprops,dofs)
 fprintf(outfile,' Nodal Displacements: \n');
-if nsd == 2
+if ned == 2
     fprintf(outfile,' Node      Coords         u1       u2 \n');
     for i = 1:nn
         fprintf(outfile,'%3d %8.4f %8.4f %8.4f %8.4f\n',...
                 i,coords(1,i),coords(2,i),dofs(2*i-1),dofs(2*i));
+    end
+elseif ned == 3
+    fprintf(outfile,' Node            Coords            u1       u2       u3 \n');
+    for i = 1:nnode
+    fprintf(outfile,'%3d %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f \n', ...
+        i,coords(1,i),coords(2,i),coords(3,i),dofs(3*i-2),dofs(3*i-1),dofs(3*i));
     end
 end
 % print strain and stress at the quadrature points
@@ -15,13 +21,13 @@ eledof = zeros(ned,nen);
 for ele = 1:nel
     fprintf(outfile,' \n Element; %d ',ele);
     if nsd == 2
-        fprintf(outfile,'  \n B_11    B_22    B_12     s_11         s_22      s_12 \n');
+        fprintf(outfile,'  \n int pt    Coords          B_11      B_22     B_12      s_11       s_22      s_12 \n');
+    elseif nsd == 3
+        fprintf(outfile,'\n int pt         Coords            B_11      B_22     B_33      B_12       B_13      B_23      s_11      s_22      s_33      s_12      s_13      s_23 \n');
     end
     % Extract coords of nodes, and dof for the element
     for a = 1:nen
-        for i = 1:nsd
-            elecoord(i,a) = coords(i,connect(a,ele));
-        end
+        elecoord(:,a) = coords(:,connect(a,ele));
         for i = 1:ned
             eledof(i,a) = dofs(ned*(connect(a,ele)-1)+i);
         end
@@ -37,43 +43,15 @@ for ele = 1:nel
         dNdxi = sfder(nen,nsd,xi);
         N = sf(nen,nsd,xi);
         % compute the coords of the quadrature points
-        for i = 1:nsd
-            x(i) = 0.;
-            for a = 1:nen
-                x(i) = x(i) + elecoord(i,a)*N(a);
-            end
-        end
+        x = elecoord*N;
         % set up the jacobian matrix
-        for i = 1:nsd
-            for j = 1:nsd
-                dxdxi(i,j) = 0;
-                for a = 1:nen
-                    dxdxi(i,j) = dxdxi(i,j) + dNdxi(a,j)*elecoord(i,a);
-                end
-            end
-        end
+        dxdxi = elecoord*dNdxi;
         dxidx = inv(dxdxi);
         % computing dNdx
-        for a = 1:nen
-            for i = 1:nsd
-                dNdx(a,i) = 0;
-                for j = 1:nsd
-                    dNdx(a,i) = dNdx(a,i) + dNdxi(a,j)*dxidx(j,i);
-                end
-            end
-        end
+        dNdx = dNdxi*dxidx;
         % computing deformation gradient, F_ij = delta_ij + du_i/dx_j
         F = zeros(nsd,nsd);
-        for i = 1:nsd
-            for j = 1:nsd
-                if i == j
-                    F(i,j) = 1.;
-                end
-                for a = 1:nen
-                    F(i,j) = F(i,j) + dNdx(a,j)*eledof(i,a);
-                end
-            end
-        end
+        F = eye(nsd) + eledof*dNdx;
         % computing B = FF^T and J = det(F)
         B = F*transpose(F);
         J = det(F); 
@@ -81,9 +59,14 @@ for ele = 1:nel
         stress = Kirchhoffstress(ned,nsd,B,J,materialprops);
         % computing Cauchy stress
         stress = stress/J;
-        if (nsd == 2) 
-            fprintf(outfile,'%7.4f %7.4f %7.4f %9.4f %9.4f %9.4f\n', ...
-            B(1,1),B(2,2),B(1,2),stress(1,1),stress(2,2),stress(1,2));
+        if nsd == 2
+            fprintf(outfile,'%5d %7.4f %7.4f %9.4f %9.4f %9.4f %9.4f %9.4f %9.4f \n', ...
+                intpt,x(1),x(2),B(1,1),B(2,2),B(1,2),stress(1,1),stress(2,2),stress(1,2));
+        elseif nsd == 3
+            fprintf(outfile,'%5d %7.4f %7.4f %7.4f %9.4f %9.4f %9.4f %9.4f %9.4f %9.4f %9.4f %9.4f %9.4f %9.4f %9.4f %9.4f \n',...
+                intpt,x(1),x(2),x(3), ...
+                B(1,1),B(2,2),B(3,3),B(1,2),B(1,3),B(2,3), ...
+                stress(1,1),stress(2,2),stress(3,3),stress(1,2),stress(1,3),stress(2,3));
         end
     end
 end
