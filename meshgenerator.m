@@ -1,4 +1,4 @@
-function [nn,nel,connect,coords]=meshgenerate(nsd,nen,a,b,h)
+function [nn,nel,connect,coords]=meshgenerator(nsd,nen,a,b,c,h)
 % a=length of the beam, b=thickness, h=meshsize
 count = 0;
 connect = zeros(nen,1);
@@ -44,6 +44,12 @@ if nsd == 2
         end
         connect = connect(:,2:end);
         nel = 2*nel;                
+    end
+elseif nsd==3
+    if nen==8
+        nelx=a/h;
+        nely=b/h;
+        nelz=c/h
     end
 end
 end

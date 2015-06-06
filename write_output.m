@@ -8,7 +8,7 @@ if ned == 2
     end
 elseif ned == 3
     fprintf(outfile,' Node            Coords            u1       u2       u3 \n');
-    for i = 1:nnode
+    for i = 1:nn
     fprintf(outfile,'%3d %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f \n', ...
         i,coords(1,i),coords(2,i),coords(3,i),dofs(3*i-2),dofs(3*i-1),dofs(3*i));
     end

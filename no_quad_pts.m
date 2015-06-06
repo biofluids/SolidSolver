@@ -10,6 +10,12 @@ if reduced
         elseif nen == 4
             npt = 1;
         end
+    elseif nsd == 3
+        if nen==4
+            npt=1;
+        elseif nen==8
+            npt=1;
+        end
     end
 else
     if nsd == 1
@@ -21,6 +27,12 @@ else
             npt = 1;
         elseif nen == 4
             npt = 4;
+        end
+    elseif nsd==3
+        if nen==4
+            npt=1;
+        elseif nen==8
+            npt=8;
         end
     end
 end

@@ -18,5 +18,17 @@ elseif nsd == 2 % 2D
             weights = [1.,1.,1.,1.];
         end
     end
+elseif nsd == 3
+    if nen==4
+        if npt==1
+            weights=1/6.;
+        end
+    elseif nen==8
+        if npt==1
+            weights=8;
+        elseif npt==8
+            weights=ones(1,8);
+        end
+    end
 end
 end 
