@@ -1,13 +1,13 @@
-function Fext = externalforce(nsd,ned,nn,nel,nen,nh,materialprops,gravity,coords,connect,hnodes)
+function Fext = externalforce(nsd,ned,nn,nel,nen,no_bc2,materialprops,gravity,coords,connect,bc2)
 % returns the external force
 Fext = zeros(ned*nn,1);
 %% force due to traction
 %%
 % loop over the faces with prescribed traction
-for n = 1:nh
+for n = 1:no_bc2
     % extract the coords and traction of that face
-    ele = hnodes(1,n);
-    face = hnodes(2,n);
+    ele = bc2(1,n);
+    face = bc2(2,n);
     nfacenodes=no_facenodes(nsd,nen);
     nodelist = facenodes(nsd,nen,face); 
     coord = zeros(nsd,nfacenodes);
@@ -16,7 +16,7 @@ for n = 1:nh
     end
     traction = zeros(ned,1);
     for i = 1:nsd
-        traction(i) = hnodes(i+2,n);
+        traction(i) = bc2(i+2,n);
     end
     %% compute the force on the face
     %

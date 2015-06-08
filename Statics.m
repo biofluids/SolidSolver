@@ -1,16 +1,7 @@
-function Statics
+function Statics(nsd,ned,nen,nn,coords,nel,connect,no_bc1,bc1,no_bc2,bc2,outfile)
 % main function for static analysis
 % reduced integration used in Fint and Kint
-clear
-clc
-close all
 %% read input file
-infile=fopen('hexa.inp','r');
-outfile=fopen('output2d4.txt','w');
-nsd=3;
-ned=3;
-nen=8;
-[nn,coords,nel,connect,ng,gnodes,nh,hnodes]=read_input(nsd,nen,infile);
 gravity=[0;0;0];
 materialprops=[2;1;0;10;1];
 %
@@ -30,21 +21,21 @@ for step = 1:nsteps
     err2 = 1.;
     nit = 0;
     fprintf('\n Step %f Load %f\n', step, loadfactor);
-    Fext = loadfactor*externalforce(nsd,ned,nn,nel,nen,nh,materialprops,gravity,coords,connect,hnodes);
+    Fext = loadfactor*externalforce(nsd,ned,nn,nel,nen,no_bc2,materialprops,gravity,coords,connect,bc2);
     while (((err1>tol)||(err2>tol)) && (nit<maxit))
         nit = nit + 1;
         Fint = internalforce(nsd,ned,nn,coords,nel,nen,connect,materialprops,w);
         A = Kint(nsd,ned,nn,coords,nel,nen,connect,materialprops,w);
         R = Fint - Fext;
         % fix the prescribed displacements
-        for n = 1:ng
-            row = ned*(gnodes(1,n)-1) + gnodes(2,n);
+        for n = 1:no_bc1
+            row = ned*(bc1(1,n)-1) + bc1(2,n);
             for col = 1:ned*nn
                 A(row,col) = 0;
                 A(col,row) = 0;
             end
             A(row,row) = 1.;
-            R(row) = -gnodes(3,n) + w(row); 
+            R(row) = -bc1(3,n) + w(row); 
         end
         % solve for the correction
         dw = A\(-R);
