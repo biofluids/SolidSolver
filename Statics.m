@@ -5,59 +5,12 @@ clear
 clc
 close all
 %% read input file
+infile=fopen('hexa.inp','r');
 outfile=fopen('output2d4.txt','w');
-%{
-nsd=2;
-ned=2;
-nen=4;
-a=6;
-b=1;
-h=0.2;
-[nn,nel,connect,coords]=meshgenerator(nsd,nen,a,b,0,h);
-%plotmesh(coords,nsd,connect,nel,nen,'g');
-gnodes = [31*(0:b/h)+1,31*(0:b/h)+1;ones(1,b/h+1),2*ones(1,b/h+1);zeros(1,2*(b/h+1))];
-ng=size(gnodes,2);
-%hnodes = [2*(a/h)*(1:(b/h))-1;2*ones(1,b/h);zeros(1,b/h);0.005*ones(1,b/h);];
-hnodes = [(a/h)*(1:b/h);2*ones(1,b/h);zeros(1,b/h);0.005*ones(1,b/h)];
-nh=size(hnodes,2);
-gravity=[0.;0.];
-materialprops=[2;1;15000;1000;1];
-%}
-%3d hexatedral
-%{
-x=[0:3,0:3,0:3,0:3,0:3,0:3];
-y=[-1*ones(1,4),zeros(1,4),ones(1,4),-1*ones(1,4),zeros(1,4),ones(1,4)];
-z=[zeros(1,12),ones(1,12)];
-coords=[transpose(x),transpose(y),transpose(z)];
-coords=transpose(coords);
-connect=[1,2,3,5,6,7;2,3,4,6,7,8;6,7,8,10,11,12;...
-    5,6,7,9,10,11;13,14,15,17,18,19;14,15,16,18,19,20;...
-    18,19,20,22,23,24;17,18,19,21,22,23];
 nsd=3;
 ned=3;
 nen=8;
-nn=24;
-nel=6;
-ng=9;
-gnodes=[1,1,1,13,13,5,17,21,9;1,2,3,1,2,1,1,1,1;zeros(1,9)];
-nh=2;
-hnodes=[3,6;4,4;3.,3.;0.,0.;0.,0.];
-gravity=[0;0;0];
-materialprops=[2;1;0;10;1];
-%}
-% 3d tetradetral
-%
-coords=[0,1,1,0,0,1,1,0;0,0,1,1,0,0,1,1;0,0,0,0,1,1,1,1];
-connect=[5,5,1,4,8,8;4,8,4,3,7,7;1,4,2,2,4,3;6,6,6,6,6,6];
-nsd=3;
-ned=3;
-nen=4;
-nel=6;
-nn=8;
-ng=7;
-nh=2;
-gnodes=[1,1,1,5,5,8,4;1,2,3,1,2,1,1;zeros(1,7)];
-hnodes=[4,6;3,3;3,3;0,0;0,0];
+[nn,coords,nel,connect,ng,gnodes,nh,hnodes]=read_input(nsd,nen,infile);
 gravity=[0;0;0];
 materialprops=[2;1;0;10;1];
 %
