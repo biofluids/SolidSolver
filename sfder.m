@@ -20,8 +20,8 @@ elseif nsd == 2
 elseif nsd==3
     if nen==4
         dNdxi(1,1) = 1.;
-        dNdxi(2,2) = 1.;
-        dNdxi(3,3) = 1.;
+        dNdxi(2,3) = 1.;
+        dNdxi(3,2) = 1.;
         dNdxi(4,1) = -1.;
         dNdxi(4,2) = -1.;
         dNdxi(4,3) = -1.;

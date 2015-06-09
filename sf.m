@@ -19,8 +19,8 @@ elseif nsd == 2
 elseif nsd==3
     if nen==4
         N(1) = xi(1);
-        N(2) = xi(2);
-        N(3) = xi(3);
+        N(2) = xi(3);
+        N(3) = xi(2);
         N(4) = 1.-xi(1)-xi(2)-xi(3);
     elseif nen==8
         N(1) = (1.-xi(1))*(1.-xi(2))*(1.-xi(3))/8.;
