@@ -1,16 +1,16 @@
 function write_output(outfile,nsd,ned,nn,coords,nel,nen,connect,materialprops,dofs)
-fprintf(outfile,' Nodal Displacements: \n');
+fprintf(outfile,' Node coordinates: \n');
 if ned == 2
-    fprintf(outfile,' Node      Coords         u1       u2 \n');
+    fprintf(outfile,' Node      Coords \n');
     for i = 1:nn
-        fprintf(outfile,'%3d %8.4f %8.4f %8.4f %8.4f\n',...
-                i,coords(1,i),coords(2,i),dofs(2*i-1),dofs(2*i));
+        fprintf(outfile,'%3d %8.4f %8.4f\n',...
+                i,coords(1,i)+dofs(nsd*(i-1)+1),coords(2,i)+dofs(nsd*(i-1)+2));
     end
 elseif ned == 3
-    fprintf(outfile,' Node            Coords            u1       u2       u3 \n');
+    fprintf(outfile,' Node            Coords \n');
     for i = 1:nn
-    fprintf(outfile,'%3d %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f \n', ...
-        i,coords(1,i),coords(2,i),coords(3,i),dofs(3*i-2),dofs(3*i-1),dofs(3*i));
+    fprintf(outfile,'%3d %8.4f %8.4f %8.4f \n', ...
+        i,coords(1,i)+dofs(nsd*(i-1)+1),coords(2,i)+dofs(nsd*(i-1)+2),coords(3,i)+dofs(nsd*(i-1)+3));
     end
 end
 % print strain and stress at the quadrature points

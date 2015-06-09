@@ -2,8 +2,8 @@ clear
 clc
 close all
 infile1=fopen('input.txt','r');
-infile2=fopen('tetra_test.inp','r');
-outfile=fopen('output_tetra.txt','w');
+infile2=fopen('hexa_test.inp','r');
+outfile=fopen('output_hexa.txt','w');
 [nsd,ned,nen,materialprops,gravity,nn,coords,nel,connect,boundary]=read_input(infile1,infile2);
 %plotmesh(coords,nsd,connect,nel,nen,'r')
 %% Boundary Conditions

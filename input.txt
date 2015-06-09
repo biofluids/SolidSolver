@@ -1,6 +1,6 @@
 **Mesh
 Number of dimensions nsd:	3
-Number of nodes on each element:	4
+Number of nodes on each element:	8
 
 **Material
 Material type(2: neo-Hookean/3: Mooney-Rivlin):	2

@@ -8,6 +8,7 @@ maxit = 30;
 relax = 1.;
 nsteps = 10;
 w = zeros(ned*nn,1);
+write_output(outfile,nsd,ned,nn,coords,nel,nen,connect,materialprops,w);
 for step = 1:nsteps
     loadfactor = step/nsteps;
     err1 = 1.;
@@ -41,11 +42,11 @@ for step = 1:nsteps
         err2 = sqrt(err2)/(ned*nn);
         fprintf('\n Iteration number %d Correction %8.3e Residual %8.3e tolerance %8.3e\n',nit,err1,err2,tol);
     end
-    % writing the output file
-    fprintf(outfile,'==================================================\n');
-    fprintf(outfile,'Step %f Load %f\n',step,loadfactor);
-    write_output(outfile,nsd,ned,nn,coords,nel,nen,connect,materialprops,w);
 end
+% writing the output file
+fprintf(outfile,'==================================================\n');
+fprintf(outfile,'Step %f Load %f\n',step,loadfactor);
+write_output(outfile,nsd,ned,nn,coords,nel,nen,connect,materialprops,w);
 %% plot the original and deformed mesh
 coords1 = zeros(ned,nn);
 for i = 1:nn
