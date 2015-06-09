@@ -1,19 +1,12 @@
-function Statics(nsd,ned,nen,nn,coords,nel,connect,no_bc1,bc1,no_bc2,bc2,outfile)
-% main function for static analysis
-% reduced integration used in Fint and Kint
-%% read input file
-gravity=[0;0;0];
-materialprops=[2;1;0;10;1];
-%
+function Statics(nsd,ned,nen,materialprops,gravity,nn,coords,nel,connect,no_bc1,bc1,no_bc2,bc2,outfile)
 %% MAIN FEM ANALYSIS PROCEDURE 
 % the load is applied step by step
 % Augmented Lagrangian Method is NOT used in this code
-
+% reduced integration used in Fint and Kint
 tol = 0.0001;
 maxit = 30;
 relax = 1.;
 nsteps = 10;
-
 w = zeros(ned*nn,1);
 for step = 1:nsteps
     loadfactor = step/nsteps;

@@ -1,0 +1,14 @@
+**Mesh
+Number of dimensions nsd:	3
+Number of nodes on each element:	4
+
+**Material
+Material type(2: neo-Hookean/3: Mooney-Rivlin):	2
+Material coefficients
+mu1:	1
+mu2:	0
+K1 :	10
+rho:	1
+
+**Gravity:
+0.	0.	0.
