@@ -40,6 +40,7 @@ for ele = 1:nel
     % extropolate the stress and strain
     transfer=ones(npt,npt);
     if (nsd==3)&&(nen==8)
+ 
         xilist=3*xilist;
         for i=1:8
             for j=1:8

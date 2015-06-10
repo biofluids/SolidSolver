@@ -29,17 +29,9 @@ elseif nsd==3 % 3D
         if npt==1
             xi=[0;0;0];
         elseif npt==8
-            temp = [-0.5773502692,0.5773502692];
-            for k = 1:2
-                for j = 1:2 
-                    for i = 1:2
-                        n = 4*(k-1) + 2*(j-1) + i;
-                        xi(1,n) = temp(i);
-                        xi(2,n) = temp(j);
-                        xi(3,n) = temp(k);
-                     end
-                end
-            end
+            temp=0.5773502692;
+            xi=[-1,1,1,-1,-1,1,1,-1;-1,-1,1,1,-1,-1,1,1;-1,-1,-1,-1,1,1,1,1];
+            xi=temp*xi;
         end
     end
 end
