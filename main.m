@@ -3,7 +3,9 @@ clc
 close all
 infile1=fopen('input.txt','r');
 infile2=fopen('hexa_test.inp','r');
-outfile=fopen('output_hexa.txt','w');
+outfile1=fopen('solid.case','w');
+outfile2=fopen('solid.geo','w');
+outfile3=fopen('solid.sig','w');
 [nsd,ned,nen,materialprops,gravity,nn,coords,nel,connect,boundary]=read_input(infile1,infile2);
 %plotmesh(coords,nsd,connect,nel,nen,'r')
 %% Boundary Conditions
@@ -58,7 +60,10 @@ bc2=bc2(:,2:end);
 no_bc1=size(bc1,2);
 no_bc2=size(bc2,2);
 %% Call the solver
-Statics(nsd,ned,nen,materialprops,gravity,nn,coords,nel,connect,no_bc1,bc1,no_bc2,bc2,outfile)
+Statics(nsd,ned,nen,materialprops,gravity,nn,coords,nel,connect,no_bc1,bc1,no_bc2,bc2,outfile1,outfile2,outfile3)
+fclose(outfile1);
+fclose(outfile2);
+fclose(outfile3);
     
     
     

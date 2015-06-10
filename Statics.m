@@ -1,4 +1,4 @@
-function Statics(nsd,ned,nen,materialprops,gravity,nn,coords,nel,connect,no_bc1,bc1,no_bc2,bc2,outfile)
+function Statics(nsd,ned,nen,materialprops,gravity,nn,coords,nel,connect,no_bc1,bc1,no_bc2,bc2,outfile1,outfile2,outfile3)
 %% MAIN FEM ANALYSIS PROCEDURE 
 % the load is applied step by step
 % Augmented Lagrangian Method is NOT used in this code
@@ -8,7 +8,7 @@ maxit = 30;
 relax = 1.;
 nsteps = 10;
 w = zeros(ned*nn,1);
-write_output(outfile,nsd,ned,nn,coords,nel,nen,connect,materialprops,w);
+write_case(outfile1);
 for step = 1:nsteps
     loadfactor = step/nsteps;
     err1 = 1.;
@@ -44,9 +44,8 @@ for step = 1:nsteps
     end
 end
 % writing the output file
-fprintf(outfile,'==================================================\n');
-fprintf(outfile,'Step %f Load %f\n',step,loadfactor);
-write_output(outfile,nsd,ned,nn,coords,nel,nen,connect,materialprops,w);
+write_geo(outfile2,nsd,ned,nn,coords,nel,nen,connect,materialprops,w);
+write_variables(outfile3,nsd,ned,nn,coords,nel,nen,connect,materialprops,w)
 %% plot the original and deformed mesh
 coords1 = zeros(ned,nn);
 for i = 1:nn
@@ -59,5 +58,4 @@ figure
 plotmesh(coords,nsd,connect,nel,nen,'g');
 hold on
 plotmesh(coords1,nsd,connect,nel,nen,'r');
-fclose(outfile);
 end
