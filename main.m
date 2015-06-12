@@ -1,13 +1,11 @@
 clear
 clc
 close all
+%% read input files
 infile1=fopen('input.txt','r');
 infile2=fopen('hexa_test.inp','r');
-outfile1=fopen('solid.case','w');
-outfile2=fopen('solid.geo','w');
-outfile3=fopen('solid.sig','w');
-[nsd,ned,nen,materialprops,gravity,nn,coords,nel,connect,boundary]=read_input(infile1,infile2);
-%plotmesh(coords,nsd,connect,nel,nen,'r')
+[simu_type,tol,maxit,relax,nsteps,dt,nprint,damp,nsd,ned,nen,materialprops,gravity...
+    ,nn,coords,nel,connect,boundary]=read_input(infile1,infile2);
 %% Boundary Conditions
 bc1=zeros(3,1);
 bc2=zeros(2+nsd,1);
@@ -59,11 +57,21 @@ end
 bc2=bc2(:,2:end);
 no_bc1=size(bc1,2);
 no_bc2=size(bc2,2);
+
+
+%
+% in this analysis, I want to scale the beam, give a traction of 9000Pa
+coords=coords/8;
+%
+
+
 %% Call the solver
-Statics(nsd,ned,nen,materialprops,gravity,nn,coords,nel,connect,no_bc1,bc1,no_bc2,bc2,outfile1,outfile2,outfile3)
-fclose(outfile1);
-fclose(outfile2);
-fclose(outfile3);
+if simu_type==0
+    Statics(nsteps,dt,nprint,maxit,tol,relax,damp,nsd,ned,nen,materialprops,gravity,nn,coords,nel,connect,no_bc1,bc1,no_bc2,bc2);
+else
+    Dynamics(nsteps,dt,nprint,maxit,tol,relax,damp,nsd,ned,nen,materialprops,gravity,nn,coords,nel,connect,no_bc1,bc1,no_bc2,bc2);
+end
+    
     
     
     

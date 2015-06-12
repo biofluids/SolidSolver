@@ -1,14 +1,27 @@
-**Mesh
-Number of dimensions nsd:	3
+====================Simulation====================
+Dynamic analysis or not:	0
+tolerance:	0.0001
+maximum number of newton iteration:	30
+relaxation:	1
+
+Dynamic parameters
+number of simulation steps:	1000
+time step:	0.1
+print interval:	20
+damping:	0.0
+
+=======================Mesh=======================
+Number of dimensions:	3
 Number of nodes on each element:	8
 
-**Material
+=====================Material=====================
 Material type(2: neo-Hookean/3: Mooney-Rivlin):	2
-Material coefficients
-mu1:	1
-mu2:	0
-K1 :	10
-rho:	1
 
-**Gravity:
+Material coefficients
+mu1:	0.4e6
+mu2:	0
+K1:	1e11
+rho:	1.52
+
+Gravity:
 0.	0.	0.

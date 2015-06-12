@@ -1,16 +1,16 @@
-function Statics(nsd,ned,nen,materialprops,gravity,nn,coords,nel,connect,no_bc1,bc1,no_bc2,bc2,outfile1,outfile2,outfile3)
+function Statics(nsteps,dt,nprint,maxit,tol,relax,damp,nsd,ned,nen,materialprops,gravity,nn,coords,nel,connect,no_bc1,bc1,no_bc2,bc2)
 %% MAIN FEM ANALYSIS PROCEDURE 
 % the load is applied step by step
 % Augmented Lagrangian Method is NOT used in this code
 % reduced integration used in Fint and Kint
-tol = 0.0001;
-maxit = 30;
-relax = 1.;
-nsteps = 10;
+
+intervals = 20;
 w = zeros(ned*nn,1);
-write_case(outfile1);
-for step = 1:nsteps
-    loadfactor = step/nsteps;
+%write_case(nsteps,nprint,dt);
+% original values
+write_results(nsteps,nprint,dt,nsd,ned,nn,coords,nel,nen,connect,materialprops,w,0);
+for step = 1:intervals
+    loadfactor = step/intervals;
     err1 = 1.;
     err2 = 1.;
     nit = 0;
@@ -44,8 +44,7 @@ for step = 1:nsteps
     end
 end
 % writing the output file
-write_geo(outfile2,nsd,ned,nn,coords,nel,nen,connect,materialprops,w);
-write_variables(outfile3,nsd,ned,nn,coords,nel,nen,connect,materialprops,w)
+write_results(nsteps,nprint,dt,nsd,ned,nn,coords,nel,nen,connect,materialprops,w,1);
 %% plot the original and deformed mesh
 coords1 = zeros(ned,nn);
 for i = 1:nn
