@@ -151,8 +151,6 @@ end
 bc2=bc2(:,2:end);
 no_bc1=size(bc1,2);
 no_bc2=size(bc2,2);
-bc1
-bc2
 %%
 % coords
 outfile1=fopen('coords.txt','w');
