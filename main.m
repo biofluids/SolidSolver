@@ -67,7 +67,7 @@ coords=coords/8;
 
 %% Call the solver
 if simu_type==0
-    Statics(nsteps,dt,nprint,maxit,tol,relax,damp,nsd,ned,nen,materialprops,gravity,nn,coords,nel,connect,no_bc1,bc1,no_bc2,bc2);
+    Statics2(nsteps,dt,nprint,maxit,tol,relax,damp,nsd,ned,nen,materialprops,gravity,nn,coords,nel,connect,no_bc1,bc1,no_bc2,bc2);
 else
     Dynamics(nsteps,dt,nprint,maxit,tol,relax,damp,nsd,ned,nen,materialprops,gravity,nn,coords,nel,connect,no_bc1,bc1,no_bc2,bc2);
 end
