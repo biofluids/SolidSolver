@@ -154,7 +154,7 @@ no_bc2=size(bc2,2);
 %%
 % coords
 outfile1=fopen('coords.txt','w');
-fprintf(outfile1,'%10d\n',nn);
+fprintf(outfile1,'%10d\t%10d\n',nsd,nn);
 for i=1:nn
     fprintf(outfile1,'%12.8f\t%12.8f\t%12.8f\n',coords(:,i));
 end
