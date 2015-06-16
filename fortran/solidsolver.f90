@@ -1,8 +1,12 @@
 program solidsolver
 	
 	use read_file
+	use integration
+
 	
 	implicit none
+	
+	integer :: reduced = 0, npt
 	
 	call read_input(10,'input.txt',simu_type, maxit, nsteps, nprint, tol, dt, damp, materialprops, gravity)
 	call read_mesh(nsd,nn,nel,nen,coords,connect,bc1,bc2)
@@ -15,6 +19,14 @@ program solidsolver
 	write(*,'(f6.2)') gravity(:)
 	
 	write(*,*) nsd, nn, nel, nen, shape(bc1), shape(bc2)
+	
+	npt = int_number(nsd,nen,reduced)
+	
+	write(*,*) 'number of integration points', npt
+	write(*,*) 'weights of integration', int_weights(nsd, nen, npt)
+	write(*,*) 'integration points are: ', int_points(nsd, nen, npt)
+	
+	
 	
 	
 	

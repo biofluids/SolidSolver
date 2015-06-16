@@ -1,0 +1,10 @@
+LIBS = /usr/local/lib/lapack.a \
+       /usr/local/lib/libblas.a
+test.exe: test.o
+	gfortran -o test test.o $(LIBS)
+	
+test.o: test.f90
+	gfortran -c test.f90
+
+clean:
+	rm test.o test
