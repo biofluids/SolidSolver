@@ -5,7 +5,7 @@ module read_file
 	integer simu_type, maxit, nsteps, nprint
 	real(8) :: tol, dt, damp
 	real(8) :: materialprops(5), gravity(3)
-	integer :: nsd, nen, nn, nel, no_bc1, no_bc2
+	integer :: nsd, nen, nn, nel, no_bc1, no_bc2, ned
 	integer, allocatable :: connect(:,:)
 	real(8), allocatable :: coords(:,:), bc1(:,:), bc2(:,:)
 	
@@ -56,10 +56,10 @@ contains
 		close(10)
 	end subroutine read_input
 	
-	subroutine read_mesh(nsd,nn,nel,nen,coords,connect,bc1,bc2)
+	subroutine read_mesh(nsd,ned,nn,nel,nen,coords,connect,bc1,bc2)
 		implicit none
 		
-		integer, intent(out) :: nsd, nen, nn, nel
+		integer, intent(out) :: nsd, ned, nen, nn, nel
 		integer, allocatable, intent(out) :: connect(:,:)
 		real(8), allocatable, intent(out) :: coords(:,:), bc1(:,:), bc2(:,:)
 	
@@ -95,6 +95,8 @@ contains
 		do i=1,no_bc2
 			read(10,*) bc2(:,i)
 		end do
+		
+		ned = nsd
 	    close(10)
 	
 	end subroutine read_mesh
