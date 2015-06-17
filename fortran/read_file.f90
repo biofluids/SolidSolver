@@ -20,7 +20,7 @@ contains
 	
 		character(100) :: text
 		character(1) :: flag=':'
-		integer :: i, j, k, l, ios=0
+		integer :: i, j, k, l, ios
 		real(8) :: temp(15)
 	
 		integer, intent(out) :: simu_type, maxit, nsteps, nprint
@@ -28,6 +28,7 @@ contains
 	
 		open(unit=unitnum,file=filename)
 		i=0
+		ios=0
 		do while(ios==0)
 			read(10,'(a)',IOSTAT=ios) text
 			j=index(text,flag)

@@ -1,5 +1,5 @@
-OBJECTS = read_file.o integration.o face.o shapefunction.o material.o external.o solidsolver.o
-MODULES = read_file.mod integration.mod face.mod shapefunction.mod material.mod external.mod
+OBJECTS = read_file.o integration.o face.o shapefunction.o material.o externalforce.o solidsolver.o
+MODULES = read_file.mod integration.mod face.mod shapefunction.mod material.mod externalforce.mod
 FC = gfortran
 
 main.exe: $(OBJECTS)

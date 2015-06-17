@@ -61,7 +61,7 @@ no_bc2=size(bc2,2);
 
 %
 % in this analysis, I want to scale the beam, give a traction of 9000Pa
-coords=coords/8;
+% coords=coords/8;
 %
 
 

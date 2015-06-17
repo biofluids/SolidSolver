@@ -41,7 +41,7 @@ contains
 					int_number = 4
 				end if
 			else if (nsd == 3) then
-				if (nen == 3) then
+				if (nen == 4) then
 					int_number = 1
 				else if (nen == 8) then
 					int_number = 8

@@ -1,9 +1,9 @@
-module external
+module externalforce
 	implicit none
 	
 contains
-	subroutine externalforce(Fext)
-		! returns the external force
+	subroutine force_traction(Fext)
+		! returns the external force due to traction
 		use read_file, only: nsd,ned,nn,nel,nen,coords,connect,bc1,bc2, gravity, materialprops
 		use face
 		use shapefunction
@@ -11,43 +11,43 @@ contains
 		
 		implicit none
 		
-		real(8), dimension(nn*ned), intent(out) :: Fext
+		real(8), dimension(nn*ned), intent(inout) :: Fext
 		
 		integer :: j,i, no_bc2, ele, faceid, nfacenodes, a, npt, intpt, row
-		integer, allocatable, dimension(:) :: nodelist,nodelist1
-		real(8), allocatable, dimension(:,:) :: coord, xilist, dNdxi, xilist1
-		real(8), allocatable, dimension(:) :: f, weights, N, weights1
+		integer, allocatable, dimension(:) :: nodelist
+		real(8), allocatable, dimension(:,:) :: coord, xilist, dNdxi
+		real(8), allocatable, dimension(:) :: f, weights, N
 		real(8), dimension(nsd) :: traction, xi
-		real(8), dimension(ned*nen) :: fb
-		real(8), dimension(nen) :: N1
-		real(8), dimension(nsd,nsd) :: dxdxi
-		real(8), dimension(nsd,nen) :: elecoord
-		real(8), dimension(nen,nsd) :: dNdxi1
+		real(8), dimension(nsd,nsd-1) :: dxdxi
 		real(8) :: det, rho
 		
 		no_bc2 = size(bc2,2)
+		nfacenodes = face_nodes_no(nsd,nen)
+		npt = int_number(nsd-1, nfacenodes, 0)
+		
 		! allocate
-		if (.NOT. allocated(nodelist)) then
-			nfacenodes = face_nodes_no(nsd,nen)
+		if (.NOT. allocated(nodelist)) then	
 			allocate(nodelist(nfacenodes))
 			allocate(coord(nsd,nfacenodes))
 			allocate(f(ned*nfacenodes))
-			npt = int_number(nsd-1, nfacenodes, 0)
 			allocate(xilist(nsd,npt))
 			allocate(weights(npt))
 			allocate(dNdxi(nfacenodes,nsd-1))
 			allocate(N(nfacenodes))
 		end if
 		
-		!
-		! force due to traction
+		! initialize Fext
+		do i=1,nn*ned
+			Fext(i) = 0.
+		end do
+		
 		! loop over faces with prescribed traction
 		do j=1,no_bc2
 			! extract the coords and traction of that face
 			ele = int(bc2(1,j))
 			faceid = int(bc2(2,j))
 			nfacenodes = face_nodes_no(nsd,nen)
-			nodelist = face_nodes(nsd,nen,nfacenodes,faceid)
+			nodelist(:) = face_nodes(nsd,nen,nfacenodes,faceid)
 			do a=1,nfacenodes
 				coord(:,a) = coords(:,connect(nodelist(a),ele))
 			end do
@@ -93,57 +93,90 @@ contains
 				end do
 			end do
 		end do
+			
+	end subroutine force_traction
+	
+	
+	subroutine force_body(Fext)
+		! returns external force due to gravity
+		use read_file, only: nsd,ned,nn,nel,nen,coords,connect,bc1,bc2, gravity, materialprops
+		use face
+		use shapefunction
+		use integration
 		
+		implicit none
 		
-		if (.NOT. allocated(xilist1)) then
-			npt = int_number(nsd, nen, 0)
-			allocate(xilist1(nsd,npt))
-			allocate(weights1(npt))
+		real(8), dimension(nn*ned), intent(inout) :: Fext
+		integer :: ele, a, npt, i, intpt, row
+		real(8), dimension(nsd,nen) :: elecoord
+		real(8), dimension(ned*nen) :: f
+		real(8), dimension(nsd) :: xi
+		real(8), dimension(nen,nsd) :: dNdxi
+		real(8), dimension(nen) :: N
+		real(8), dimension(nsd,nsd) :: dxdxi
+		real(8) :: det, rho
+		real(8), allocatable, dimension(:,:) :: xilist
+		real(8), allocatable, dimension(:) :: weights
+		
+		rho = materialprops(5)
+		npt = int_number(nsd, nen, 0)
+		if (.NOT. allocated(xilist)) then
+			allocate(xilist(nsd,npt))
+			allocate(weights(npt))
 		end if
-		!
-		! force due to gravity
+		
+		! initialize Fext
+		do i=1,nn*ned
+			Fext(i) = 0.
+		end do
+		
 		! loop over elements
 		do ele=1,nel
-			! extract coords of the nodes, and dof for the element
+			! extract coords of nodes
 			do a=1,nen
 				elecoord(:,a) = coords(:,connect(a,ele))
 			end do
 			! compute the force on this element
 			do i=1,ned*nen
-				fb(i) = 0.
+				f(i) = 0.
 			end do
-			rho = materialprops(5)
 			! set up integration points and weights
 			npt = int_number(nsd, nen, 0)
-			xilist1 = int_points(nsd,nen,npt)
-			weights1 = int_weights(nsd,nen,npt)
+			xilist = int_points(nsd ,nen,npt)
+			weights = int_weights(nsd,nen,npt)
 			! loop over integration points
 			do intpt=1,npt
-				xi(:) = xilist1(:,intpt)
-				dNdxi1 = sfder(nen,nsd,xi)
-				N1 = sf(nen,nsd,xi)
+				xi = xilist(:,intpt)
+				dNdxi = sfder(nen,nsd,xi)
+				N = sf(nen,nsd,xi)
 				! set up the jacobian matrix
 				dxdxi(:,:) = matmul(elecoord,dNdxi)
-				det = dxdxi(1,1)*dxdxi(2,2) - dxdxi(1,2)*dxdxi(2,1)
+				if (nsd == 2) then
+					det = dxdxi(1,1)*dxdxi(2,2) - dxdxi(1,2)*dxdxi(2,1)
+				else if (nsd == 3) then
+					det = dxdxi(1,1)*dxdxi(2,2)*dxdxi(3,3) - dxdxi(1,1)*dxdxi(3,2)*dxdxi(2,3) &
+						  - dxdxi(1,2)*dxdxi(2,1)*dxdxi(3,3) + dxdxi(1,2)*dxdxi(2,3)*dxdxi(3,1) &
+						  + dxdxi(1,3)*dxdxi(2,1)*dxdxi(3,2) - dxdxi(1,3)*dxdxi(2,2)*dxdxi(3,1)
+				end if
 				! compute the force
 				do a=1,nen
 					do i=1,ned
 						row=ned*(a-1) + i
-						fb(row) = fb(row) + gravity(i)*rho*N1(a)*weights1(intpt)*det
-					end do
-				end do
-				! scatter
-				do a=1,nen
-					do i=1,ned
-						row = ned*(connect(a,ele)-1)+i;
-						Fext(row) = Fext(row) + fb(ned*(a-1)+i);
+						f(row) = f(row) + gravity(i)*N(a)*weights(intpt)*rho*det
 					end do
 				end do
 			end do
+			! scatter
+			do a=1,nen
+				do i=1,ned
+					row = ned*(connect(a,ele)-1)+i;
+					Fext(row) = Fext(row) + f(ned*(a-1)+i);
+				end do
+			end do
 		end do
+	end subroutine force_body
 			
-	end subroutine externalforce
-end module external
+end module externalforce
 					  
 				
 			
