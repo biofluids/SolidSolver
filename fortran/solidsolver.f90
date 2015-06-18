@@ -6,12 +6,13 @@ program solidsolver
 	use shapefunction
 	use material
 	use externalforce
+	use internalforce
 
 	
 	implicit none
 	
 	integer :: reduced = 0, npt,i
-	real(8), allocatable, dimension(:) :: Fext, F1, F2
+	real(8), allocatable, dimension(:) :: Fext, F1, F2, Fint, dofs
 	
 	call read_input(10,'input.txt',simu_type, maxit, nsteps, nprint, tol, dt, damp, materialprops, gravity)
 	call read_mesh(nsd,ned,nn,nel,nen,coords,connect,bc1,bc2)
@@ -27,6 +28,8 @@ program solidsolver
 	allocate(Fext(nn*ned))
 	allocate(F1(nn*ned))
 	allocate(F2(nn*ned))
+	allocate(Fint(nn*ned))
+	allocate(dofs(nn*ned))
 	
 	call force_traction(F1)
 	call force_body(F2)
@@ -34,6 +37,17 @@ program solidsolver
 	open(20,file='externalforce.txt')
 	do i=1,nn*ned
 		write(20,*) Fext(i)
+	end do
+	
+	
+	do i=1,nn*ned
+		dofs(i) = 1d-5*(nn*ned-i+1)
+	end do
+	
+	Fint = force_internal(dofs)
+	open(30,file='internalforce.txt')
+	do i=1,nn*ned
+		write(30,*) Fint(i)
 	end do
 	
 	
