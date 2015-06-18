@@ -1,9 +1,15 @@
-LIBS = /usr/local/lib/lapack.a \
-       /usr/local/lib/libblas.a
+#LIBS = /usr/local/lib/lapack.a \
+#       /usr/local/lib/libblas.a
 test.exe: test.o
-	gfortran -o test test.o $(LIBS)
+	gfortran -o test material.o test.o
 	
-test.o: test.f90
+material.o: material.f90
+	gfortran -c material.f90
+	
+material.mod: material.f90
+	gfortran -c material.f90
+	
+test.o: material.mod test.f90
 	gfortran -c test.f90
 
 clean:

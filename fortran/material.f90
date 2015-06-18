@@ -15,7 +15,7 @@ contains
 		real(8), dimension(ned,nsd,ned,nsd):: materialstiffness
 		
 		integer :: i, j, k, l, p
-		real(8) :: mu1, mu2, K1, temp1=0., temp2=0.
+		real(8) :: mu1, mu2, K1, temp1, temp2
 		real(8), dimension(3,3) :: dl
 		
 		! initialize 
@@ -29,6 +29,11 @@ contains
 				end do
 			end do
 		end do
+		mu1 = materialprops(2)
+		mu2 = materialprops(3)
+		K1 = materialprops(4)
+		temp1 = 0.
+		temp2 = 0.
 		
 		do i=1,nsd
 			temp1 = temp1 + B(i,i)
@@ -83,22 +88,24 @@ contains
 		real(8), dimension(ned,nsd) :: Kirchhoffstress
 		
 		integer :: i, j, k
-		real(8) :: mu1, mu2, K1, temp1=0., temp2=0.
+		real(8) :: mu1, mu2, K1, temp1, temp2
 		real(8), dimension(3,3) :: dl
 		
 		! initialize 
 		dl = reshape([1.,0.,0.,0.,1.,0.,0.,0.,1.],shape(dl))
-		
+		mu1 = materialprops(2)
+		mu2 = materialprops(3)
+		K1 = materialprops(4)
+		temp1 = 0.
+		temp2 = 0.	
 		do i=1,nsd
 			temp1 = temp1 + B(i,i)
 		end do
-		
 		do i=1,ned
 			do j=1,nsd
 				Kirchhoffstress(i,j) = 0.
 			end do
 		end do
-		
 		do i=1,nsd
 			do j=1,nsd
 				temp2 = temp2 + B(i,j)**2
@@ -112,9 +119,12 @@ contains
 		
 		do i=1,ned
 			do j=1,nsd
-				Kirchhoffstress(i,j) = mu1*(B(i,j) - temp1*dl(i,j)/3.)/J**(2./3.) + K1*Ja*(Ja-1)*dl(i,j);
+				Kirchhoffstress(i,j) = mu1*(B(i,j) - temp1*dl(i,j)/3.)/Ja**(2./3.) + K1*Ja*(Ja-1)*dl(i,j);
 				if ( materialprops(1) == 3.) then
-					Kirchhoffstress(i,j) = Kirchhoffstress(i,j)+mu2*(temp1*B(i,j)-temp1**2*dl(i,j)/3.+temp2*dl(i,j)/3.)/Ja**(5/3.);
+					Kirchhoffstress(i,j) = Kirchhoffstress(i,j)+mu2*(temp1*B(i,j)-temp1**2.*dl(i,j)/3.+temp2*dl(i,j)/3.)/Ja**(5/3.);
+					do k=1,nsd
+						Kirchhoffstress(i,j)=Kirchhoffstress(i,j) - mu2*B(i,k)*B(k,j)/Ja**(5./3.);
+					end do
 				end if
 			end do
 		end do
