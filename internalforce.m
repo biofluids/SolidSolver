@@ -81,7 +81,7 @@ for ele = 1:nel
         % compute dNdy, in which y is the coord. after deformation
         dNdy = zeros(nen,nsd);
         Finv = inv(F);
-        dNdy = dNdx*Finv;   
+        dNdy = dNdx*Finv;
         % compute the stress, Kirchhoffstress is used
         stress = Kirchhoffstress(ned,nsd,B,J,materialprops);
         % compute the element internal force

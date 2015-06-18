@@ -19,7 +19,8 @@ program test
 	
 	c = matmul(a,transpose(a))
 	
-	write(*,*) c
+	write(*,*) 'transposed: ', transpose(a)
+	write(*,*) 'original: ', a
 	
 
 end program

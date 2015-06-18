@@ -22,9 +22,15 @@ contains
 		real(8), dimension(nsd,nsd) :: dxdxi, dxidx, F, Finv, B, eye
 		real(8), allocatable, dimension(:,:) :: xilist, xilist1
 		real(8), allocatable, dimension(:) :: weights, weights1
-		integer :: ele,a,i,npt,j,row,intpt
+		integer :: ele,a,i,npt,j,row,intpt,npt1
 		real(8) :: det, Ja
+		real(8), dimension(nsd) :: work ! for lapack inverse
+		integer, dimension(nsd) :: ipiv ! for lapack inverse
+		integer :: info, n1 ! for lapack inverse
 		
+		external DGETRF
+		external DGETRI
+		n1 = nsd
 		! square matrix
 		do i=1,nsd
 			do j=1,nsd
@@ -75,11 +81,16 @@ contains
 				! set up the jacobian matrix
 				dxdxi = matmul(elecoord,dNdxi)
 				! inverse matrix and determinant
-				do i=1,nsd
-					do j=1,nsd
-						dxidx(i,j) = dxdxi(j,i)
-					end do 
-				end do
+				dxidx = dxdxi
+				call DGETRF(n1,n1,dxidx,n1,ipiv,info)
+				if (info /= 0) then
+					stop 'Matrix is numerically singular!'
+				end if
+				call DGETRI(n1,dxidx,n1,ipiv,work,n1,info)
+				if (info /= 0) then
+					stop 'Matrix inversion failed!'
+				end if	
+				!
 				if (nsd == 2) then
 					det = dxdxi(1,1)*dxdxi(2,2) - dxdxi(1,2)*dxdxi(2,1)
 				else if (nsd == 3) then
@@ -102,11 +113,16 @@ contains
 				end if
 				! compute dNdy, in which y is the coord. after deformation
 				! inverse of F
-				do i=1,nsd
-					do j=1,nsd
-						Finv(i,j) = F(j,i)
-					end do
-				end do
+				Finv = F
+				call DGETRF(n1,n1,Finv,n1,ipiv,info)
+				if (info /= 0) then
+					stop 'Matrix is numerically singular!'
+				end if
+				call DGETRI(n1,Finv,n1,ipiv,work,n1,info)
+				if (info /= 0) then
+					stop 'Matrix inversion failed!'
+				end if	
+				!
 				dNdy = matmul(dNdx,Finv)
 				! compute the Kirchhoff stress
 				stress = Kirchhoffstress(ned,nsd,B,Ja,materialprops)
@@ -125,23 +141,28 @@ contains
 			! set up the integration points and weights
 			! allocate
 			if (.NOT. allocated(xilist1)) then
-				npt = int_number(nsd,nen,1)
-				allocate(xilist1(nsd,npt))
-				allocate(weights1(npt))
+				npt1 = int_number(nsd,nen,1)
+				allocate(xilist1(nsd,npt1))
+				allocate(weights1(npt1))
 			end if
-			xilist1 = int_points(nsd,nen,npt)
-			weights1 = int_weights(nsd,nen,npt)
-			do intpt=1,npt
+			xilist1 = int_points(nsd,nen,npt1)
+			weights1 = int_weights(nsd,nen,npt1)
+			do intpt=1,npt1
 				xi = xilist1(:,intpt)
 				dNdxi = sfder(nen,nsd,xi)
 				! jacobian
 				dxdxi = matmul(elecoord,dNdxi)
 				! inverse matrix and determinant
-				do i=1,nsd
-					do j=1,nsd
-						dxidx(i,j) = dxdxi(j,i)
-					end do 
-				end do
+				dxidx = dxdxi
+				call DGETRF(n1,n1,dxidx,n1,ipiv,info)
+				if (info /= 0) then
+					stop 'Matrix is numerically singular!'
+				end if
+				call DGETRI(n1,dxidx,n1,ipiv,work,n1,info)
+				if (info /= 0) then
+					stop 'Matrix inversion failed!'
+				end if	
+				!
 				if (nsd == 2) then
 					det = dxdxi(1,1)*dxdxi(2,2) - dxdxi(1,2)*dxdxi(2,1)
 				else if (nsd == 3) then
@@ -164,11 +185,15 @@ contains
 				end if
 				! compute dNdy, in which y is the coord. after deformation
 				! inverse of F
-				do i=1,nsd
-					do j=1,nsd
-						Finv(i,j) = F(j,i)
-					end do
-				end do
+				Finv = F
+				call DGETRF(n1,n1,Finv,n1,ipiv,info)
+				if (info /= 0) then
+					stop 'Matrix is numerically singular!'
+				end if
+				call dgetri(n1,Finv,n1,ipiv,work,n1,info)
+				if (info /= 0) then
+					stop 'Matrix inversion failed!'
+				end if			
 				dNdy = matmul(dNdx,Finv)
 				! compute the Kirchhoff stress
 				stress = Kirchhoffstress(ned,nsd,B,Ja,materialprops)
@@ -177,11 +202,11 @@ contains
 					do i=1,nsd
 						row=(a-1)*ned+i
 						do j=1,nsd
-							fele(row) = fele(row) + stress(j,j)/nsd*dNdy(a,j)*weights1(intpt)*det
+							fele(row) = fele(row) + stress(j,j)/nsd*dNdy(a,i)*weights1(intpt)*det
 						end do
 					end do
 				end do
-			end do	
+			end do
 			! scatter the element internal force into the global internal force
 			!
 			do a=1,nen

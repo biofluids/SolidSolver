@@ -71,6 +71,7 @@ if simu_type==0
 else
     Dynamics(nsteps,dt,nprint,maxit,tol,relax,damp,nsd,ned,nen,materialprops,gravity,nn,coords,nel,connect,no_bc1,bc1,no_bc2,bc2);
 end
+
     
     
     
