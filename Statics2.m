@@ -54,9 +54,9 @@ while (loadfactor < 1)
         w = w1;
         loadfactor = loadfactor - increment;
         increment=increment/2;
-    elseif nit>8
+    elseif nit>6
         increment=increment*(1-0.1);
-    elseif nit<8
+    elseif nit<6
         increment=increment*(1+0.1);
     end
 end

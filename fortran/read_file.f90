@@ -3,7 +3,7 @@ module read_file
 	implicit none
 	
 	integer simu_type, maxit, nsteps, nprint
-	real(8) :: tol, dt, damp
+	real(8) :: firststep, adjust, tol, dt, damp
 	real(8) :: materialprops(5), gravity(3)
 	integer :: nsd, nen, nn, nel, no_bc1, no_bc2, ned
 	integer, allocatable :: connect(:,:)
@@ -12,7 +12,7 @@ module read_file
 	save
 	
 contains
-	subroutine read_input(unitnum,filename,simu_type, maxit, nsteps, nprint, tol, dt, damp, materialprops, gravity)
+	subroutine read_input(unitnum,filename,simu_type, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, materialprops, gravity)
 		implicit none
 		
 		integer, intent(in) :: unitnum
@@ -21,10 +21,10 @@ contains
 		character(100) :: text
 		character(1) :: flag=':'
 		integer :: i, j, k, l, ios
-		real(8) :: temp(15)
+		real(8) :: temp(17)
 	
 		integer, intent(out) :: simu_type, maxit, nsteps, nprint
-		real(8), intent(out) :: tol, dt, damp, materialprops(5), gravity(3)
+		real(8), intent(out) :: firststep, adjust, tol, dt, damp, materialprops(5), gravity(3)
 	
 		open(unit=unitnum,file=filename)
 		i=0
@@ -47,12 +47,14 @@ contains
 		simu_type=int(temp(1))
 		tol=temp(2)
 		maxit=int(temp(3))
-		nsteps=int(temp(4))
-		dt=temp(5)
-		nprint=int(temp(6))
-		damp=temp(7)
-		materialprops(:)=temp(8:12)
-		gravity(:)=temp(13:15)
+		firststep=temp(4)
+		adjust=temp(5)
+		nsteps=int(temp(6))
+		dt=temp(7)
+		nprint=int(temp(8))
+		damp=temp(9)
+		materialprops(:)=temp(10:14)
+		gravity(:)=temp(15:17)
 	
 		close(10)
 	end subroutine read_input

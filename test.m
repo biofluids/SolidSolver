@@ -18,5 +18,6 @@ for i=1:nn
     end
 end
 dofs = transpose(dofs);
-%Fint = internalforce(nsd,ned,nn,coords,nel,nen,connect,materialprops,dofs);
+Fint = internalforce(nsd,ned,nn,coords,nel,nen,connect,materialprops,dofs);
 K = Kint(nsd,ned,nn,coords,nel,nen,connect,materialprops,dofs);
+Fext = externalforce(nsd,ned,nn,nel,nen,no_bc2,materialprops,gravity,coords,connect,bc2);
