@@ -1,28 +1,29 @@
-module internalforce
+module tangentstiffness
 	
 	
 	implicit none
 	
 contains
-	function force_internal(dofs)
+	function tangent_internal(dofs)
 		use read_file, only: nsd, ned, nn, coords, nel, nen, connect, materialprops
 		use shapefunction
 		use integration
 		use material
 		implicit none
 		real(8), dimension(nn*ned), intent(in) :: dofs
-		real(8), dimension(nn*ned) :: force_internal
+		real(8), dimension(nn*ned,nn*ned) :: tangent_internal
+		real(8), dimension(ned,nsd,ned,nsd) :: C
 		real(8), dimension(nsd,nen) :: elecoord
 		real(8), dimension(ned,nen) :: eledof
 		real(8), dimension(nen,nsd) :: dNdx, dNdy
 		real(8), dimension(ned,nsd) :: stress
-		real(8), dimension(nen*ned) :: fele
+		real(8), dimension(nen*ned,nen*ned) :: kint
 		real(8), dimension(nsd) :: xi
 		real(8), dimension(nen,nsd) :: dNdxi 
 		real(8), dimension(nsd,nsd) :: dxdxi, dxidx, F, Finv, B, eye
 		real(8), allocatable, dimension(:,:) :: xilist, xilist1
 		real(8), allocatable, dimension(:) :: weights, weights1
-		integer :: ele,a,i,npt,j,row,intpt,npt1
+		integer :: ele,a,i,npt,j,row,intpt,npt1,l,d,k,col
 		real(8) :: det, Ja
 		real(8), dimension(nsd) :: work ! for lapack inverse
 		integer, dimension(nsd) :: ipiv ! for lapack inverse
@@ -41,20 +42,18 @@ contains
 				end if
 			end do
 		end do
-		
-		! initialize force_internal
-		do i=1,nn*ned
-			force_internal(i) = 0.
+		! initialize 
+		do i=1,ned*nn
+			do j=1,ned*nn
+				tangent_internal(i,j) = 0.
+			end do
 		end do
-		
 		! allocate
 		if (.NOT. allocated(xilist)) then
 			npt = int_number(nsd,nen,0)
 			allocate(xilist(nsd,npt))
 			allocate(weights(npt))
-		end if
-		
-		
+		end if	
 		! loop over elements
 		do ele=1,nel
 			! extract coords of nodes, and dofs for the element
@@ -64,10 +63,11 @@ contains
 					eledof(i,a) = dofs(ned*(connect(a,ele)-1)+i)
 				end do
 			end do
-			! compute the internal force
 			! initialize
-			do i=1,ned*nen
-				fele(i) = 0.
+			do i=1,nen*ned
+				do j=1,nen*ned
+					kint(i,j) = 0.
+				end do
 			end do
 			! fully integration
 			! set up integration points and weights
@@ -126,13 +126,28 @@ contains
 				dNdy = matmul(dNdx,Finv)
 				! compute the Kirchhoff stress
 				stress = Kirchhoffstress(nsd,ned,B,Ja,materialprops)
+				! compute the material stiffness C_ijkl
+				C = materialstiffness(nsd,ned,B,Ja,materialprops)
 				! compute the element internal force
 				do a=1,nen
-					do i=1,nsd
-						row=(a-1)*ned+i
-						do j=1,nsd
-							fele(row) = fele(row) + stress(i,j)*dNdy(a,j)*weights(intpt)*det
-							fele(row) = fele(row) - stress(j,j)/nsd*dNdy(a,i)*weights(intpt)*det;
+					do i=1,ned
+						do d=1,nen
+							do k=1,ned
+								row = (a-1)*ned + i
+								col = (d-1)*ned + k
+								do j=1,nsd
+									do l=1,nsd
+										kint(row,col) = kint(row,col) + &
+											            C(i,j,k,l)*dNdy(a,j)*dNdy(d,l)*weights(intpt)*det;
+										kint(row,col) = kint(row,col) - &
+										                C(j,j,k,l)/nsd*dNdy(a,i)*dNdy(d,l)*weights(intpt)*det;				
+									end do
+									kint(row,col) = kint(row,col) - &
+									                stress(i,j)*dNdy(a,k)*dNdy(d,j)*det*weights(intpt);
+									kint(row,col) = kint(row,col) + &
+									                stress(j,j)/nsd*dNdy(a,k)*dNdy(d,i)*det*weights(intpt);
+								end do
+							end do
 						end do
 					end do
 				end do
@@ -197,38 +212,42 @@ contains
 				dNdy = matmul(dNdx,Finv)
 				! compute the Kirchhoff stress
 				stress = Kirchhoffstress(nsd,ned,B,Ja,materialprops)
+				! compute the material stiffness C_ijkl
+				C = materialstiffness(nsd,ned,B,Ja,materialprops)
 				! compute the element internal force
 				do a=1,nen
-					do i=1,nsd
-						row=(a-1)*ned+i
-						do j=1,nsd
-							fele(row) = fele(row) + stress(j,j)/nsd*dNdy(a,i)*weights1(intpt)*det
+					do i=1,ned
+						do d=1,nen
+							do k=1,ned
+								row = (a-1)*ned + i
+								col = (d-1)*ned + k
+								do j=1,nsd
+									do l=1,nsd
+										kint(row,col) = kint(row,col) + &
+										                C(j,j,k,l)/nsd*dNdy(a,i)*dNdy(d,l)*weights1(intpt)*det;				
+									end do
+									kint(row,col) = kint(row,col) - &
+									                stress(j,j)/nsd*dNdy(a,k)*dNdy(d,i)*det*weights1(intpt);
+								end do
+							end do
 						end do
 					end do
 				end do
 			end do
-			! scatter the element internal force into the global internal force
+			! scatter the element kint into the global Kint
 			!
 			do a=1,nen
 				do i=1,ned
-					row = ned*(connect(a,ele)-1) + i;
-					force_internal(row) = force_internal(row) + fele(ned*(a-1)+i);
+					do d=1,nen
+						do k=1,ned
+							row = ned*(connect(a,ele)-1) + i;
+							col = ned*(connect(d,ele)-1) + k;
+		                    tangent_internal(row,col) = tangent_internal(row,col) + kint(ned*(a-1)+i,ned*(d-1)+k);
+						end do
+					end do
 				end do
 			end do
 		end do
-	end function force_internal
-end module internalforce
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-	
+	end function tangent_internal
+end module tangentstiffness
+		

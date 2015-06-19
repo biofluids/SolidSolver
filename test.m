@@ -1,3 +1,4 @@
+% this is used to validate Fortran code
 infile = fopen('displacement.txt','r')
 cellarray=textscan(infile,'%s');
 cellno=1;
@@ -17,4 +18,5 @@ for i=1:nn
     end
 end
 dofs = transpose(dofs);
-Fint = internalforce(nsd,ned,nn,coords,nel,nen,connect,materialprops,dofs);
+%Fint = internalforce(nsd,ned,nn,coords,nel,nen,connect,materialprops,dofs);
+K = Kint(nsd,ned,nn,coords,nel,nen,connect,materialprops,dofs);
