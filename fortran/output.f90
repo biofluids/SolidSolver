@@ -2,26 +2,27 @@ module output
 	implicit none
 	
 contains
-	subroutine write_results(dofs)
+	subroutine write_results(filepath,dofs)
 		use read_file, only: simu_type, step, nn, ned
 		implicit none
+		character(50) :: filepath
 		real(8), dimension(nn*ned), intent(in) :: dofs
 		if (step == 0) then
-			call write_case()
+			call write_case(filepath)
 		end if
-		call write_geometry(dofs)
+		call write_geometry(filepath,dofs)
 		
 	end subroutine write_results
-	subroutine write_case()
+	subroutine write_case(filepath)
 		use read_file, only: nsteps, nprint, dt, ned, nn
 		implicit none
 		
-		
+		character(50) :: filepath, filename
 		real(8), dimension(nsteps/nprint+1) :: time
 		integer :: i
 		
-		
-		open(10,file='/Users/jiecheng/Documents/SolidResults/solid.case')
+		filename=trim(filepath)//'solid.case'
+		open(10,file=trim(filename))
 		write(10,'("FORMAT",/)') 
 		write(10,'("type:",12x,"ensight gold",/)') 
 		write(10,'("GEOMETRY",/)')
@@ -42,21 +43,22 @@ contains
 		close(10)
 	end subroutine write_case
 	
-	subroutine write_geometry(dofs)
+	subroutine write_geometry(filepath,dofs)
 		use read_file, only: step, nn, nsd,ned, nen, nel, connect, coords
 		implicit none
 		
 		real(8), dimension(nn*ned), intent(in) :: dofs
+		character(50) :: filepath, filename
 		integer :: i,j
 		real(8), dimension(3,nn) :: coords1
 		character, dimension(80) :: buffer
 		integer, dimension(nn) :: node_id
 		integer, dimension(nel) :: element_id
 		
-		character(54) :: filename, temp
+		character(6) :: temp
 		
 		write(temp,'(i6.6)') step
-		filename = '/Users/jiecheng/Documents/SolidResults/solid.geo'//trim(temp)
+		filename = trim(filepath)//'solid.geo'//trim(temp)
 		
 		
 		do i=1,nn
@@ -89,15 +91,15 @@ contains
 		write(10) buffer
 		buffer = 'part'
 		write(10) buffer
-		write(10,'(i10)') i
+		write(10) i
 		buffer = 'solid'
 		write(10) buffer
 		buffer = 'coordinates'
 		write(10) buffer
-		write(10,'(i10)') nn
-		write(10,'(i10)') node_id
+		write(10) nn
+		write(10) node_id
 		do i=1,3
-			write(10,'(E12.5)') sngl(coords1(i,:))
+			write(10) sngl(coords1(i,:))
 		end do
 		if (nsd==2) then
 		    if (nen==3) then
@@ -113,10 +115,10 @@ contains
 		    end if
 		end if
 		write(10) buffer
-		write(10,'(i10)') nel
-		write(10,'(i10)') element_id
+		write(10) nel
+		write(10) element_id
 		do i=1,nel
-			write(10,'(i10)') connect(:,i)
+			write(10) connect(:,i)
 		end do
 	end subroutine write_geometry
 	

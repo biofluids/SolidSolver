@@ -17,9 +17,10 @@ program solidsolver
 	real(8), allocatable, dimension(:) :: Fext, F1, F2, Fint, R, w, w1, dw
 	real(8), allocatable, dimension(:,:) ::  A
 	real(8) :: loadfactor, increment, err1, err2
-	integer :: ct, ct_rate, ct_max, ct1  
+	integer :: ct, ct_rate, ct_max, ct1
+	character(50) :: filepath  
 	
-	
+	filepath = '/Users/Jie/Documents/SolidResults/'
 	call system_clock(ct,ct_rate,ct_max)
 	
 	call read_input(10,'input.txt',simu_type, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, materialprops, gravity)
@@ -48,7 +49,7 @@ program solidsolver
 		loadfactor = 0.
 		increment = firststep
 		step = 0
-		call write_results(w)
+		call write_results(filepath,w)
 		call force_traction(F1)
 		call force_body(F2)
 		Fext = F1 + F2
@@ -98,7 +99,7 @@ program solidsolver
 			end if
 		end do
 		step = 1
-		call write_results(w)
+		call write_results(filepath,w)
 		
 	end if	
     
