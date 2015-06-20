@@ -16,7 +16,7 @@ contains
 		real(8) :: tol_abs, tol_rel
 		nz_num = 0
 		k = 0
-		itr_max = 100
+		itr_max = 20
 		mr = 50
 		tol_abs = 1d-6
 		tol_rel = 1d-6

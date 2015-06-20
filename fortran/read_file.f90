@@ -2,7 +2,7 @@ module read_file
 	
 	implicit none
 	
-	integer simu_type, maxit, nsteps, nprint
+	integer simu_type, maxit, nsteps, nprint, step
 	real(8) :: firststep, adjust, tol, dt, damp
 	real(8) :: materialprops(5), gravity(3)
 	integer :: nsd, nen, nn, nel, no_bc1, no_bc2, ned
