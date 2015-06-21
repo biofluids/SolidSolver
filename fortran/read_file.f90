@@ -8,6 +8,7 @@ module read_file
 	integer :: nsd, nen, nn, nel, no_bc1, no_bc2, ned
 	integer, allocatable :: connect(:,:)
 	real(8), allocatable :: coords(:,:), bc1(:,:), bc2(:,:)
+	integer, allocatable :: share(:)
 	
 	save
 	
@@ -59,14 +60,14 @@ contains
 		close(10)
 	end subroutine read_input
 	
-	subroutine read_mesh(nsd,ned,nn,nel,nen,coords,connect,bc1,bc2)
+	subroutine read_mesh(nsd,ned,nn,nel,nen,coords,connect,bc1,bc2,share)
 		implicit none
 		
 		integer, intent(out) :: nsd, ned, nen, nn, nel
 		integer, allocatable, intent(out) :: connect(:,:)
 		real(8), allocatable, intent(out) :: coords(:,:), bc1(:,:), bc2(:,:)
-	
-		integer :: no_bc1, no_bc2, i
+		integer, allocatable :: share(:)
+		integer :: no_bc1, no_bc2, i,j
 	
 		open(10,file='coords.txt')
 		read(10,*) nsd, nn
@@ -100,6 +101,17 @@ contains
 		end do
 		
 		ned = nsd
+		
+		allocate(share(nn))
+		do i=1,nn
+			share(i) = 0
+		end do
+		do i=1,nel
+			do j=1,nen
+				share(connect(j,i)) = share(connect(j,i)) + 1
+			end do
+		end do
+		
 	    close(10)
 	
 	end subroutine read_mesh

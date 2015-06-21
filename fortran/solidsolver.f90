@@ -24,7 +24,7 @@ program solidsolver
 	call system_clock(ct,ct_rate,ct_max)
 	
 	call read_input(10,'input.txt',simu_type, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, materialprops, gravity)
-	call read_mesh(nsd,ned,nn,nel,nen,coords,connect,bc1,bc2)
+	call read_mesh(nsd,ned,nn,nel,nen,coords,connect,bc1,bc2,share)
 	
 	allocate(Fext(nn*ned))
 	allocate(F1(nn*ned))
