@@ -5,7 +5,7 @@ contains
 	subroutine write_results(filepath,dofs)
 		use read_file, only: simu_type, step, nn, ned
 		implicit none
-		character(50) :: filepath
+		character(80) :: filepath
 		real(8), dimension(nn*ned), intent(in) :: dofs
 		if (step == 0) then
 			call write_case(filepath)
@@ -19,7 +19,7 @@ contains
 		use read_file, only: nsteps, nprint, dt, ned, nn
 		implicit none
 		
-		character(50) :: filepath, filename
+		character(80) :: filepath, filename
 		real(8), dimension(nsteps/nprint+1) :: time
 		integer :: i
 		
@@ -50,25 +50,15 @@ contains
 		implicit none
 		
 		real(8), dimension(nn*ned), intent(in) :: dofs
-		character(50) :: filepath, filename
+		character(80) :: filepath, filename
 		integer :: i,j
 		real(8), dimension(3,nn) :: coords1
-		character, dimension(80) :: buffer
-		integer, dimension(nn) :: node_id
-		integer, dimension(nel) :: element_id
-		
 		character(6) :: temp
 		
 		write(temp,'(i6.6)') step
 		filename = trim(filepath)//'solid.geo'//trim(temp)
 		
 		
-		do i=1,nn
-			node_id(i) = i
-		end do
-		do i=1,nel
-			element_id = i
-		end do
 		do i=1,nsd
 			do j=1,nn
 				coords1(i,j) = coords(i,j) + dofs((j-1)*ned+i)
@@ -79,47 +69,43 @@ contains
 				coords1(3,i) = 0.
 			end do
 		end if
-		open(10,file=trim(filename),form='UNFORMATTED')
-		buffer = 'Fortran Binary'
-		write(10) buffer
-		buffer = 'Ensight Model Geometry File'
-		write(10) buffer
-		buffer = 'Ensight Model Geometry File'
-		write(10) buffer
-		buffer = 'node id given'
-		write(10) buffer
-		buffer = 'element id given'
-		write(10) buffer
-		buffer = 'part'
-		write(10) buffer
-		write(10) 1
-		buffer = 'solid'
-		write(10) buffer
-		buffer = 'coordinates'
-		write(10) buffer
-		write(10) nn
-		write(10) node_id
+		open(10,file=trim(filename),form='FORMATTED')
+		write(10,'(A)') 'Ensight Model Geometry File'
+		write(10,'(A)') 'Ensight Model Geometry File'
+		write(10,'(A)') 'node id given'
+		write(10,'(A)') 'element id given'
+		write(10,'(A)') 'part'
+		write(10,'(i10)') 1
+		write(10,'(A)') 'solid'
+		write(10,'(A)') 'coordinates'
+		write(10,'(i10)') nn
+		do i=1,nn
+			write(10,'(i10)') i
+		end do
 		do i=1,3
-			write(10) sngl(coords1(i,:))
+			do j=1,nn
+				write(10,'(e12.5)') coords1(i,j)
+			end do
 		end do
 		if (nsd==2) then
 		    if (nen==3) then
-				buffer = 'tria3'
+				write(10,'(A)') 'tria3'
 		    elseif (nen==4) then
-				buffer = 'quad4'
+				write(10,'(A)') 'quad4'
 		    end if
 		elseif (nsd==3) then
 		    if (nen==4) then
-				buffer = 'tetra4'
+				write(10,'(A)') 'tetra4'
 		    elseif (nen==8) then
-				buffer = 'hexa8'
+				write(10,'(A)') 'hexa8'
 		    end if
 		end if
-		write(10) buffer
-		write(10) nel
-		write(10) element_id
+		write(10,'(i10)') nel
 		do i=1,nel
-			write(10) connect(:,i)
+			write(10,'(i10)') i
+		end do
+		do i=1,nel
+			write(10,'(*(i10))') connect(:,i)
 		end do
 		close(10)
 	end subroutine write_geometry
@@ -130,7 +116,7 @@ contains
 		implicit none
 		
 		real(8), dimension(nn*ned), intent(in) :: dofs
-		character(50) :: filepath, filename
+		character(80) :: filepath, filename
 		integer :: i,j,row
 		character, dimension(80) :: buffer
 		character(6) :: temp
@@ -151,17 +137,16 @@ contains
 		
 		write(temp,'(i6.6)') step
 		filename = trim(filepath)//'solid.dis'//trim(temp)
-		open(10,file=trim(filename),form='UNFORMATTED')
+		open(10,file=trim(filename),form='FORMATTED')
 		
-		buffer = 'This is a vector per node file for displacement'
-		write(10) buffer
-		buffer = 'part'
-		write(10) buffer
-		write(10) 1
-		buffer = 'coordinates'
-		write(10) buffer
+		write(10,'(A)') 'This is a vector per node file for displacement'
+		write(10,'(A)') 'part'
+		write(10,'(i10)') 1
+		write(10,'(A)') 'coordinates'
 		do i=1,3
-			write(10) displacement(i,:)
+			do j=1,nn
+				write(10,'(e12.5)') displacement(i,j)
+			end do
 		end do
 		
 		close(10)
@@ -178,7 +163,7 @@ contains
 		implicit none
 		
 		real(8), dimension(nn*ned), intent(in) :: dofs
-		character(50) :: filepath, filename
+		character(80) :: filepath, filename
 		character(6) :: temp
 		character(80) :: buffer
 		
@@ -306,16 +291,15 @@ contains
 			sum_sigma(:,i) = sum_sigma(:,i)/dble(share(i))
 		end do
 		! write to file
-		open(10,file=trim(filename),form='UNFORMATTED')
-		buffer = 'This is a symm tensor per node file for stress'
-		write(10) buffer
-		buffer = 'part'
-		write(10) buffer
-		write(10) 1
-		buffer = 'coordinates'
-		write(10) buffer
+		open(10,file=trim(filename),form='FORMATTED')
+		write(10,'(A)') 'This is a symm tensor per node file for stress'
+		write(10,'(A)') 'part'
+		write(10,'(i10)') 1
+		write(10,'(A)') 'coordinates'
 		do i=1,6
-			write(10) sum_sigma(i,:)
+			do j=1,nn
+				write(10,'(e12.5)') sum_sigma(i,j)
+			end do
 		end do
 		close(10)
 		
