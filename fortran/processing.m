@@ -2,13 +2,13 @@ function processing
 clear
 clc
 close all
-infile=fopen('hexa_test.inp','r');
+infile=fopen('Job-2.inp','r');
 nsd=3;
 nen=8;
 subset1=[1]; % input the id of sets that you want to apply essential bc on
 subset2=[2]; % input the id of sets that you want to apply natural bc on
 essential=111; % 110 represents fixing x and y; in 2d, the unit digit should be 1
-natural=[0,9000,0];
+natural=[0,-4000,0];
 %
 %
 %%

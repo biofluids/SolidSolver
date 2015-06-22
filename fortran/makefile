@@ -6,7 +6,7 @@ MODULES = read_file.mod integration.mod face.mod shapefunction.mod material.mod 
 FC = gfortran
 
 main.exe: $(OBJECTS)
-	$(FC) -o main $(OBJECTS) $(LIBS)
+	$(FC) -fcheck=all -o main $(OBJECTS) $(LIBS)
 		
 #read_file.o: read_file.f90
 #	$(FC) -c $(switch) read_file.f90

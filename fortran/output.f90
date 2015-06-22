@@ -46,7 +46,7 @@ contains
 	end subroutine write_case
 	
 	subroutine write_geometry(filepath,dofs)
-		use read_file, only: step, nn, nsd,ned, nen, nel, connect, coords
+		use read_file, only: step, nn, nsd,ned, nen, nel, connect, coords, nprint
 		implicit none
 		
 		real(8), dimension(nn*ned), intent(in) :: dofs
@@ -55,7 +55,7 @@ contains
 		real(8), dimension(3,nn) :: coords1
 		character(6) :: temp
 		
-		write(temp,'(i6.6)') step
+		write(temp,'(i6.6)') step/nprint
 		filename = trim(filepath)//'solid.geo'//trim(temp)
 		
 		
@@ -112,7 +112,7 @@ contains
 	
 	
 	subroutine write_displacement(filepath,dofs)
-		use read_file, only: step, nsd, ned, nn, coords, nel, nen, connect
+		use read_file, only: step, nsd, ned, nn, coords, nel, nen, connect, nprint
 		implicit none
 		
 		real(8), dimension(nn*ned), intent(in) :: dofs
@@ -135,7 +135,7 @@ contains
 		end if
 		
 		
-		write(temp,'(i6.6)') step
+		write(temp,'(i6.6)') step/nprint
 		filename = trim(filepath)//'solid.dis'//trim(temp)
 		open(10,file=trim(filename),form='FORMATTED')
 		
@@ -155,7 +155,7 @@ contains
 		
 	
 	subroutine write_stress(filepath,dofs)
-		use read_file, only: step, nsd, ned, nn, coords, nel, nen, connect, materialprops, share
+		use read_file, only: step, nsd, ned, nn, coords, nel, nen, connect, materialprops, share, nprint
 		use shapefunction
 		use integration
 		use material
@@ -174,7 +174,6 @@ contains
 		real(8), dimension(nen,nsd) :: dNdxi 
 		real(8), dimension(nsd,nsd) :: dxdxi, dxidx, F, B, eye
 		real(8), allocatable, dimension(:,:) :: xilist
-		real(8), allocatable, dimension(:) :: weights
 		integer :: ele,a,i,npt,j,intpt
 		real(8) :: Ja
 		real(8), dimension(nsd) :: xi
@@ -185,11 +184,8 @@ contains
 		real(8), dimension(6) :: temp_sigma, sigma
 		real(8), dimension(6,nn) :: sum_sigma ! the sigma of a particular node added by elements
 
-		write(temp,'(i6.6)') step
+		write(temp,'(i6.6)') step/nprint
 		filename = trim(filepath)//'solid.sig'//trim(temp)
-		
-		!external DGETRF
-		!external DGETRI
 		
 		n1 = nsd
 		! square matrix
@@ -209,14 +205,10 @@ contains
 			end do
 		end do
 		
-		
-		
-		
 		! allocate
 		if (.NOT. allocated(xilist)) then
 			npt = int_number(nsd,nen,0)
 			allocate(xilist(nsd,npt))
-			allocate(weights(npt))
 		end if
 		
 		
@@ -233,7 +225,6 @@ contains
 			! set up integration points and weights
 			npt = int_number(nsd,nen,0)
 			xilist = int_points(nsd,nen,npt)
-			weights = int_weights(nsd,nen,npt)
 			! initialize
 			do i=1,6
 				temp_sigma(i) = 0.
@@ -254,7 +245,6 @@ contains
 				if (info /= 0) then
 					stop 'Matrix inversion failed!'
 				end if	
-				!
 				! compute dNdx
 				dNdx = matmul(dNdxi,dxidx)
 				! deformation gradient, F_ij = delta_ij + dU_i/dx_j

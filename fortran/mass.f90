@@ -2,7 +2,7 @@ module mass
 	implicit none
 	
 contains
-	subroutine mass_matrix(m)
+	subroutine mass_matrix(M)
 		use read_file, only:  nsd, ned, nn, coords, nel, nen, connect, materialprops
 		use shapefunction
 		use integration
