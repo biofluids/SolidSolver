@@ -10,12 +10,14 @@ program solidsolver
 	use tangentstiffness
     use mgmres
 	use output
+	use mass
 	
 	implicit none
 	
 	integer :: i,nit,row,col,j,k
 	real(8), allocatable, dimension(:) :: Fext, F1, F2, Fint, R, w, w1, dw
 	real(8), allocatable, dimension(:,:) ::  A
+	real(8), allocatable, dimension(:,:) :: M
 	real(8) :: loadfactor, increment, err1, err2
 	integer :: ct, ct_rate, ct_max, ct1
 	character(80) :: filepath  
@@ -35,6 +37,7 @@ program solidsolver
 	allocate(w1(nn*ned))
 	allocate(dw(nn*ned))
 	allocate(A(nn*ned,nn*ned))
+	allocate(M(nn*ned,nn*ned))
 	
 	! initialize w
 	do i=1,nn*ned
