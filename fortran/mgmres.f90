@@ -12,12 +12,14 @@ contains
 		! gmres parameters
 		integer(4) :: nz_num, itr_max, mr, i,j,k
 		real(8), allocatable, dimension(:) :: val
-		integer(4), allocatable, dimension(:) :: ia,ja
+		integer(4), allocatable, dimension(:) :: ja
+		integer(4), dimension(ndofs+1) :: ia
+		integer(4), dimension(ndofs) :: temp
 		real(8) :: tol_abs, tol_rel
 		nz_num = 0
 		k = 0
-		itr_max = 20
-		mr = 50
+		itr_max = 50
+		mr = 20
 		tol_abs = 1d-6
 		tol_rel = 1d-6
 		
@@ -30,27 +32,30 @@ contains
 		end do
 		
 		allocate(val(nz_num))
-		allocate(ia(nz_num))
 		allocate(ja(nz_num))
 
 		do i=1,ndofs
+			temp(i)=0
 			do j=1,ndofs
 				if (A(i,j) /= 0.) then
 					k = k + 1
 					val(k) = A(i,j)
-					ia(k) = i
+					temp(i) = temp(i) + 1
 					ja(k) = j
 				end if
 			end do
 		end do
+		ia(1) = 1
+		do i=1,ndofs
+			ia(i+1) = ia(i)+temp(i)
+		end do
+		
 		do i=1,ndofs
 			dw(i) = 0.
 		end do
-		
-		call mgmres_st(ndofs,nz_num,ia,ja,val,dw,R,itr_max,mr,tol_abs,tol_rel)
+		call pmgmres_ilu_cr(ndofs,nz_num,ia,ja,val,dw,R,itr_max,mr,tol_abs,tol_rel)
 		
 		deallocate(val)
-		deallocate(ia)
 		deallocate(ja)
 		
 		
@@ -1167,11 +1172,11 @@ subroutine pmgmres_ilu_cr ( n, nz_num, ia, ja, a, x, rhs, itr_max, mr, &
 
   call ilu_cr ( n, nz_num, ia, ja, a, ua, l )
 
-  if ( verbose ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'PMGMRES_ILU_CR'
-    write ( *, '(a,i4)' ) '  Number of unknowns = ', n
-  end if
+  !if ( verbose ) then
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'PMGMRES_ILU_CR'
+  !  write ( *, '(a,i4)' ) '  Number of unknowns = ', n
+  !end if
 
   do itr = 1, itr_max
 
@@ -1183,9 +1188,9 @@ subroutine pmgmres_ilu_cr ( n, nz_num, ia, ja, a, x, rhs, itr_max, mr, &
 
     rho = sqrt ( dot_product ( r, r ) )
 
-    if ( verbose ) then
-      write ( *, '(a,i4,a,g14.6)' ) '  ITR = ', itr, '  Residual = ', rho
-    end if
+    !if ( verbose ) then
+    !  write ( *, '(a,i4,a,g14.6)' ) '  ITR = ', itr, '  Residual = ', rho
+    !end if
 
     if ( itr == 1 ) then
       rho_tol = rho * tol_rel
@@ -1248,9 +1253,9 @@ subroutine pmgmres_ilu_cr ( n, nz_num, ia, ja, a, x, rhs, itr_max, mr, &
 
       itr_used = itr_used + 1
 
-      if ( verbose ) then
-        write ( *, '(a,i4,a,g14.6)' ) '  K = ', k, '  Residual = ', rho
-      end if
+      !if ( verbose ) then
+      !  write ( *, '(a,i4,a,g14.6)' ) '  K = ', k, '  Residual = ', rho
+      !end if
 
       if ( rho <= rho_tol .and. rho <= tol_abs ) then
         exit
