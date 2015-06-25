@@ -4,8 +4,9 @@ program test
 	
 	integer :: i
 	i=0
-	do i=1,3
+	do while(i<3)
 		write(*,*) 'hello'
+		i=i+1
 	end do
 	write(*,*) i
 		
