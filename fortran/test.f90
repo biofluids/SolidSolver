@@ -1,14 +1,14 @@
 program test
-
+	use volumecheck
 	implicit none
 	
-	integer :: i
-	i=0
-	do while(i<3)
-		write(*,*) 'hello'
-		i=i+1
-	end do
-	write(*,*) i
+	real(8), dimension(3,8) :: coords
+	real(8) :: f
+	
+	coords=reshape([0.,1.,1.,0.,0.,1.,1.,0.,0.,0.,0.,0.,1.,1.,1.,1.,1.,1.,0.,0.,1.,1.,0.,0.],shape(coords))
+	f = volume_c3d8(coords)
+	write(*,*) f
+	
 		
 		
 	
