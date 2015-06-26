@@ -1,10 +1,10 @@
-function processing
+%function processing
 clear
 clc
 close all
-infile=fopen('Job-1.inp','r');
+infile=fopen('box_tetra.inp','r');
 nsd=3;
-nen=8;
+nen=4;
 subset1=[1]; % input the id of sets that you want to apply essential bc on
 subset2=[2]; % input the id of sets that you want to apply natural bc on
 essential=111; % 110 represents fixing x and y; in 2d, the unit digit should be 1
@@ -35,14 +35,18 @@ while(strncmp('*',content,1)==0)
     connect(:,nel)=transpose(temp(2:(1+nen)));
     content=fgets(infile);
 end
-% number of boundaries
+% number of essential boundary conditions
+% essential bc part is behind instance section
+while(strncmp('*End Instance',content,13)==0)
+    content=fgets(infile);
+end
 nb=0;
 while ~feof(infile)
     if strncmp('*Nset, nset=Set-',content,16)==1 
         % new set detected
         nb=nb+1;
         % name of the new set
-        boundary(nb).name=['Set-' num2str(nb)];
+        set(nb).name=['Set-' num2str(nb)];
         content=strtrim(content); % remove the leading and trailing spaces
         fix=content((length(content)-7):end); % last 8 characters
         % nodes in the new set
@@ -50,16 +54,16 @@ while ~feof(infile)
             content=fgets(infile);
             temp=str2num(content);
             % nodes in the new set
-            boundary(nb).nodes=temp(1):temp(3):temp(2); 
+            set(nb).nodes=temp(1):temp(3):temp(2); 
             content=fgets(infile);
         else % unstructural mesh
             content=fgets(infile);
-            boundary(nb).nodes=0;
+            set(nb).nodes=0;
             while(strncmp('*',content,1)==0)
-                boundary(nb).nodes=[boundary(nb).nodes,str2num(content)];
+                set(nb).nodes=[set(nb).nodes,str2num(content)];
                 content=fgets(infile);
             end
-            boundary(nb).nodes=boundary(nb).nodes(2:end);
+            set(nb).nodes=set(nb).nodes(2:end);
         end
         % elements in the new set
         content=strtrim(content); % remove the leading and trailing spaces
@@ -68,21 +72,67 @@ while ~feof(infile)
             content=fgets(infile);
             temp=str2num(content);
             % nodes in the new set
-            boundary(nb).elements=temp(1):temp(3):temp(2); 
+            set(nb).elements=temp(1):temp(3):temp(2); 
             content=fgets(infile);
         else % unstructural mesh
             content=fgets(infile);
-            boundary(nb).elements=0;
+            set(nb).elements=0;
             while(strncmp('*',content,1)==0)
-                boundary(nb).elements=[boundary(nb).elements,str2num(content)];
+                set(nb).elements=[set(nb).elements,str2num(content)];
                 content=fgets(infile);
             end
-            boundary(nb).elements=boundary(nb).elements(2:end);
+            set(nb).elements=set(nb).elements(2:end);
         end   
+    elseif(strncmp('*Elset, elset=_Surf-',content,20)==1)
+        break
+    else    
+        content=fgets(infile);
+    end
+end
+% natural boundary conditions
+nsf=0;
+while ~feof(infile)
+    if strncmp('*Elset, elset=_Surf-',content,20)
+        % new set detected
+        nsf=nsf+1;
+        % name
+        surface(nsf).name=['Surf-' num2str(nsf)];
+        content=strtrim(content); % remove the leading and trailing spaces
+        fix=content((length(content)-7):end); % last 8 characters
+        % elements in the new set
+        if strncmp('generate',fix,8) % structural mesh
+            content=fgets(infile);
+            temp=str2num(content);
+            % nodes in the new set
+            surface(nsf).elements=temp(1):temp(3):temp(2); 
+            content=fgets(infile);
+        else % unstructural mesh
+            content=fgets(infile);
+            surface(nsf).elements=0;
+            while(strncmp('*',content,1)==0)
+                surface(nsf).elements=[surface(nsf).elements,str2num(content)];
+                content=fgets(infile);
+            end
+            surface(nsf).elements=surface(nsf).elements(2:end);
+        end
+        content=fgets(infile);
+        content=strtrim(content);
+        surface(nsf).faces=str2num(content(end));
+    elseif (strncmp('*End Assembly',content,13)==1)
+        break
     else
         content=fgets(infile);
     end
 end
+        
+
+        
+        
+        
+        
+        
+        
+%{        
 % face2ele
 for n=1:nb
     boundary(n).face2ele=zeros(2,1);
@@ -258,4 +308,4 @@ elseif nsd==3
         n=6;
     end
 end
-end
+%}
