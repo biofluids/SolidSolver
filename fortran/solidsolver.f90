@@ -7,7 +7,7 @@ program solidsolver
 	
 	call timestamp()
 	
-	filepath = '/Users/jiecheng/Documents/SolidResults/'
+	filepath = '/Users/Jie/Documents/SolidResults/'
 	call system_clock(ct,ct_rate,ct_max)
 	
 	call read_input(10,'input.txt',simu_type, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, materialprops, gravity)
@@ -35,6 +35,7 @@ subroutine statics(filepath)
     use mgmres
 	use output
 	use mass
+	use volumecheck
 	
 	implicit none
 	
@@ -42,6 +43,7 @@ subroutine statics(filepath)
 	real(8), allocatable, dimension(:) :: Fext, F1, F2, Fint, R, F, w, w1, dw
 	real(8), allocatable, dimension(:,:) ::  A
 	real(8) :: loadfactor, increment, err1, err2
+	real(8) :: v, v1
 	character(80) :: filepath
 	
 	allocate(Fext(nn*ned))
@@ -56,9 +58,8 @@ subroutine statics(filepath)
 	
 	
 	! initialize w
-	do i=1,nn*ned
-		w(i) = 0.
-	end do
+	w = 0.
+	v = volume(w)
 	
 	nprint=1
 	nsteps=1
@@ -117,7 +118,9 @@ subroutine statics(filepath)
 	end do
 	step = nprint
 	call write_results(filepath,w)
-	
+	v1 = volume(w)
+	write(*,*) '================================================================================================' 
+	write(*,'("Total volume change:",e12.4)') v1/v - 1.
 end subroutine statics
 
 

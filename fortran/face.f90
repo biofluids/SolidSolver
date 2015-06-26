@@ -75,7 +75,7 @@ contains
 				else if (face == 3) then
 					face_nodes = [1,5,6,2]
 				else if (face == 4) then
-					face_nodes = [2,3,7,6]
+					face_nodes = [2,6,7,3]
 				else if (face == 5) then
 					face_nodes = [3,7,8,4]
 				else if (face == 6) then
