@@ -1,7 +1,7 @@
 function processing
 nsd=3;
 nen=8;
-infile=fopen('box_hexa.inp','r');
+infile=fopen('Job-1.inp','r');
 %
 content=fgets(infile);
 %% number of nodes and coords
@@ -106,21 +106,30 @@ while ~feof(infile)
     end
 end
 %% boundary conditions
+for i=1:nset
+    set(i).dof=0;
+end
 while (strncmp('** BOUNDARY CONDITIONS',content,22)==0)
     content=fgets(infile);
 end
 content=fgets(infile);
-while ~feof(infile) 
+while (strncmp('** -',content,4)==0) 
     content=fgets(infile);
     if strncmp('*Boundary',content,9)
-        content=fgets(infile);
-        for i=1:nset
-            if strncmp(set(i).name,content,length(set(i).name))
-                set(i).dof=str2num(content(length(set(i).name)+3));
-            end
+        while (strncmp('**',content,2)==0)
+            content=fgets(infile);
+            for i=1:nset
+                if strncmp(set(i).name,content,length(set(i).name))
+                    if (str2num(content(length(set(i).name)+3)) == 1)
+                        set(i).dof=set(i).dof+100;
+                    elseif (str2num(content(length(set(i).name)+3)) == 2)
+                        set(i).dof=set(i).dof+10;
+                    elseif (str2num(content(length(set(i).name)+3)) == 3)
+                        set(i).dof=set(i).dof+1;
+                    end
+                end
+            end          
         end
-    elseif strncmp('** -',content,4)
-        break
     end
 end
 %% pressure load
@@ -157,7 +166,18 @@ fclose(outfile2);
 %% write file: bc
 bc=[0;0];
 for i=1:nset
-    bc=[bc,[set(i).node;(set(i).dof)*ones(1,length(set(i).node))]];
+    if (set(i).dof>=100) % x is fixed
+        bc=[bc,[set(i).node;ones(1,length(set(i).node))]];
+        set(i).dof=set(i).dof-100;
+    end
+    if (set(i).dof>=10) % y is fixed
+        bc=[bc,[set(i).node;2*ones(1,length(set(i).node))]];
+        set(i).dof=set(i).dof-10;
+    end
+    if (set(i).dof==1) % z is fixed
+        bc=[bc,[set(i).node;3*ones(1,length(set(i).node))]];
+        set(i).dof=set(i).dof-1;
+    end 
 end
 bc=bc(:,2:end);
 outfile3=fopen('bc.txt','w');

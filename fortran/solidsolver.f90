@@ -7,7 +7,7 @@ program solidsolver
 	
 	call timestamp()
 	
-	filepath = '/Users/Jie/Documents/SolidResults/'
+	filepath = '/Users/jiecheng/Documents/SolidResults/'
 	call system_clock(ct,ct_rate,ct_max)
 	
 	call read_input(10,'input.txt',simu_type, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, materialprops, gravity)

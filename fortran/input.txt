@@ -4,8 +4,8 @@ tolerance:	0.0001
 maximum number of newton iteration:	20
 
 Static parameters
-first increment:	1d-9
-adjust factor:	0.3
+first increment:	1d-7
+adjust factor:	0.4
 
 Dynamic parameters
 number of simulation steps:	1000
@@ -17,9 +17,9 @@ damping:	0.0
 Material type(neo-Hookean~2/Mooney-Rivlin~3):	2
 
 Material coefficients
-mu1:	0.4
+mu1:	0.4d6
 mu2:	0
-K1:	1d5
+K1:	1d9
 rho:	1.52
 
 x_gravity:	0.
