@@ -85,15 +85,15 @@ contains
 		end do
 		close(10)
 	
-		open(10,file='bc1.txt')
+		open(10,file='bc.txt')
 		read(10,*) no_bc1
-		allocate(bc1(3,no_bc1))
+		allocate(bc1(2,no_bc1))
 		do i=1,no_bc1
 			read(10,*) bc1(:,i)
 		end do
 		close(10)
 	
-		open(10,file='bc2.txt')
+		open(10,file='load.txt')
 		read(10,*) no_bc2
 		allocate(bc2(5,no_bc2))
 		do i=1,no_bc2

@@ -1,19 +1,10 @@
-%function processing
-clear
-clc
-close all
-infile=fopen('box_tetra.inp','r');
+function processing
 nsd=3;
-nen=4;
-subset1=[1]; % input the id of sets that you want to apply essential bc on
-subset2=[2]; % input the id of sets that you want to apply natural bc on
-essential=111; % 110 represents fixing x and y; in 2d, the unit digit should be 1
-natural=[0,-4000,0];
+nen=8;
+infile=fopen('box_hexa.inp','r');
 %
-%
-%%
 content=fgets(infile);
-% number of nodes and coords
+%% number of nodes and coords
 while(strncmp('*Node',content,5)==0)
     content=fgets(infile);
 end
@@ -24,7 +15,7 @@ while(strncmp('*',content,1)==0)
     coords(:,nn)=transpose(temp(2:(nsd+1)));
     content=fgets(infile);
 end
-% number of elements and connect
+%% number of elements and connect
 while(strncmp('*Element',content,8)==0)
     content=fgets(infile);
 end
@@ -35,53 +26,47 @@ while(strncmp('*',content,1)==0)
     connect(:,nel)=transpose(temp(2:(1+nen)));
     content=fgets(infile);
 end
-% number of essential boundary conditions
-% essential bc part is behind instance section
+%% set: name,node,element,dof
 while(strncmp('*End Instance',content,13)==0)
     content=fgets(infile);
 end
-nb=0;
+% count and read sets
+nset=0;
 while ~feof(infile)
     if strncmp('*Nset, nset=Set-',content,16)==1 
-        % new set detected
-        nb=nb+1;
-        % name of the new set
-        set(nb).name=['Set-' num2str(nb)];
+        nset=nset+1;
+        set(nset).name=['Set-' num2str(nset)];
         content=strtrim(content); % remove the leading and trailing spaces
-        fix=content((length(content)-7):end); % last 8 characters
-        % nodes in the new set
-        if strncmp('generate',fix,8) % structural mesh
+        flag=content((length(content)-7):end);
+        if strncmp('generate',flag,8) % structured mesh
             content=fgets(infile);
             temp=str2num(content);
-            % nodes in the new set
-            set(nb).nodes=temp(1):temp(3):temp(2); 
+            set(nset).node=temp(1):temp(3):temp(2); 
             content=fgets(infile);
-        else % unstructural mesh
+        else % unstructured mesh
             content=fgets(infile);
-            set(nb).nodes=0;
+            set(nset).node=0;
             while(strncmp('*',content,1)==0)
-                set(nb).nodes=[set(nb).nodes,str2num(content)];
+                set(nset).node=[set(nset).node,str2num(content)];
                 content=fgets(infile);
             end
-            set(nb).nodes=set(nb).nodes(2:end);
+            set(nset).node=set(nset).node(2:end);
         end
-        % elements in the new set
         content=strtrim(content); % remove the leading and trailing spaces
-        fix=content((length(content)-7):end); % last 8 characters
-        if strncmp('generate',fix,8) % structural mesh
+        flag=content((length(content)-7):end); 
+        if strncmp('generate',flag,8) % structured mesh
             content=fgets(infile);
             temp=str2num(content);
-            % nodes in the new set
-            set(nb).elements=temp(1):temp(3):temp(2); 
+            set(nset).element=temp(1):temp(3):temp(2); 
             content=fgets(infile);
-        else % unstructural mesh
+        else % unstructured mesh
             content=fgets(infile);
-            set(nb).elements=0;
+            set(nset).element=0;
             while(strncmp('*',content,1)==0)
-                set(nb).elements=[set(nb).elements,str2num(content)];
+                set(nset).element=[set(nset).element,str2num(content)];
                 content=fgets(infile);
             end
-            set(nb).elements=set(nb).elements(2:end);
+            set(nset).element=set(nset).element(2:end);
         end   
     elseif(strncmp('*Elset, elset=_Surf-',content,20)==1)
         break
@@ -89,127 +74,77 @@ while ~feof(infile)
         content=fgets(infile);
     end
 end
-% natural boundary conditions
+%% surface: name, element, face, pressure, traction
 nsf=0;
 while ~feof(infile)
     if strncmp('*Elset, elset=_Surf-',content,20)
-        % new set detected
         nsf=nsf+1;
-        % name
         surface(nsf).name=['Surf-' num2str(nsf)];
         content=strtrim(content); % remove the leading and trailing spaces
-        fix=content((length(content)-7):end); % last 8 characters
-        % elements in the new set
-        if strncmp('generate',fix,8) % structural mesh
+        flag=content((length(content)-7):end);
+        if strncmp('generate',flag,8) % structured mesh
             content=fgets(infile);
             temp=str2num(content);
-            % nodes in the new set
-            surface(nsf).elements=temp(1):temp(3):temp(2); 
+            surface(nsf).element=temp(1):temp(3):temp(2); 
             content=fgets(infile);
-        else % unstructural mesh
+        else % unstructured mesh
             content=fgets(infile);
-            surface(nsf).elements=0;
+            surface(nsf).element=0;
             while(strncmp('*',content,1)==0)
-                surface(nsf).elements=[surface(nsf).elements,str2num(content)];
+                surface(nsf).element=[surface(nsf).element,str2num(content)];
                 content=fgets(infile);
             end
-            surface(nsf).elements=surface(nsf).elements(2:end);
+            surface(nsf).element=surface(nsf).element(2:end);
         end
         content=fgets(infile);
         content=strtrim(content);
-        surface(nsf).faces=str2num(content(end));
+        surface(nsf).face=str2num(content(end));
     elseif (strncmp('*End Assembly',content,13)==1)
         break
     else
         content=fgets(infile);
     end
 end
-        
-
-        
-        
-        
-        
-        
-        
-%{        
-% face2ele
-for n=1:nb
-    boundary(n).face2ele=zeros(2,1);
-    for i=1:length(boundary(n).elements)
-        ele=boundary(n).elements(i);
-        node=connect(:,ele);
-        for face=1:(no_faces(nsd,nen))
-            list=facenodes(nsd,nen,face);
-            temp=transpose(node(list));
-            if isequal(ismember(temp,boundary(n).nodes),ones(1,length(temp)))
-                boundary(n).face2ele=[boundary(n).face2ele,[ele;face]];
+%% boundary conditions
+while (strncmp('** BOUNDARY CONDITIONS',content,22)==0)
+    content=fgets(infile);
+end
+content=fgets(infile);
+while ~feof(infile) 
+    content=fgets(infile);
+    if strncmp('*Boundary',content,9)
+        content=fgets(infile);
+        for i=1:nset
+            if strncmp(set(i).name,content,length(set(i).name))
+                set(i).dof=str2num(content(length(set(i).name)+3));
             end
         end
+    elseif strncmp('** -',content,4)
+        break
     end
-    boundary(n).face2ele=boundary(n).face2ele(:,2:end);
 end
-fclose(infile);
-%
-%
-%%
-bc1=zeros(3,1);
-bc2=zeros(2+nsd,1);
-% essential boundary conditions
-for i=1:length(subset1)
-    k=subset1(i);
-    %fprintf('Input the 3-digit essential boundary conditions for surface %d\n',k);
-    %fprintf('In 3D, 101 means fixing x and z displacements\n')
-    %prompt='In 2D, the unit digit 1 means plain strain\n';
-    %fix=input(prompt);
-    if essential>=100
-        temp=[boundary(k).nodes;ones(1,length(boundary(k).nodes));zeros(1,length(boundary(k).nodes))];
-        bc1=[bc1,temp];
-        essential=essential-100;
-    end
-    if essential>=10
-        temp=[boundary(k).nodes;2*ones(1,length(boundary(k).nodes));zeros(1,length(boundary(k).nodes))];
-        bc1=[bc1,temp];
-        essential=essential-10;
-    end
-    if nsd==3
-        if essential==1
-            temp=[boundary(k).nodes;3*ones(1,length(boundary(k).nodes));zeros(1,length(boundary(k).nodes))];
-            bc1=[bc1,temp];
+%% pressure load
+while ~feof(infile)
+    content=fgets(infile);
+    if strncmp('*Dsload',content,7)
+        content=fgets(infile);
+        for i=1:nsf
+            if strncmp(surface(i).name,content,length(surface(i).name))
+                surface(i).pressure=str2num(content((length(surface(i).name)+6):end));
+            end
         end
-    else
-        planestrain=essential;
+    elseif strncmp('** OUTPUT',content,9)
+        break
     end
 end
-bc1=bc1(:,2:end);
-% natural boundary conditions
-for i=1:length(subset2)
-    k=subset2(i);
-    %fprintf('Input the traction vector for surface %d\n',k);
-    %prompt='For example: [0.5,0,0] or [0.5,0]\n';
-    %traction=input(prompt);
-    if nsd==3
-        temp=[boundary(k).face2ele;natural(1)*ones(1,size(boundary(k).face2ele,2));...
-            natural(2)*ones(1,size(boundary(k).face2ele,2));natural(3)*ones(1,size(boundary(k).face2ele,2))];
-        bc2=[bc2,temp];
-    else
-        temp=[boundary(k).face2ele;natural(1)*ones(1,size(boundary(k).face2ele,2));...
-            natural(2)*ones(1,size(boundary(k).face2ele,2))];
-        bc2=[bc2,temp];
-    end
-end
-bc2=bc2(:,2:end);
-no_bc1=size(bc1,2);
-no_bc2=size(bc2,2);
-%%
-% coords
+%% write file: coords
 outfile1=fopen('coords.txt','w');
 fprintf(outfile1,'%10d\t%10d\n',nsd,nn);
 for i=1:nn
     fprintf(outfile1,'%12.8f\t%12.8f\t%12.8f\n',coords(:,i));
 end
 fclose(outfile1);
-% connect
+%% write file: connect
 outfile2=fopen('connect.txt','w');
 fprintf(outfile2,'%10d\t%10d\n',nel,nen);
 for i=1:nel
@@ -219,30 +154,66 @@ for i=1:nel
     fprintf(outfile2,'\n');
 end
 fclose(outfile2);
-% bc1
-outfile3=fopen('bc1.txt','w');
-fprintf(outfile3,'%10d\n',no_bc1);
-for i=1:no_bc1
-    for j=1:3
-        fprintf(outfile3,'%10d\t',bc1(j,i));
+%% write file: bc
+bc=[0;0];
+for i=1:nset
+    bc=[bc,[set(i).node;(set(i).dof)*ones(1,length(set(i).node))]];
+end
+bc=bc(:,2:end);
+outfile3=fopen('bc.txt','w');
+fprintf(outfile3,'%10d\n',size(bc,2));
+for i=1:size(bc,2)
+    for j=1:2
+        fprintf(outfile3,'%10d\t',bc(j,i));
     end
     fprintf(outfile3,'\n');
 end
 fclose(outfile3);
-% bc2
-outfile4=fopen('bc2.txt','w');
-fprintf(outfile4,'%10d\n',no_bc2);
-for i=1:no_bc2
-    for j=1:5
-        fprintf(outfile4,'%12.8f\t',bc2(j,i));
+%% write file: load
+load=zeros(2+nsd,1);
+no_load=0;
+for i=1:nsf
+    no_load=no_load+length(surface(i).element);
+    surface(i).traction=zeros(nsd,1);
+    face=surface(i).face;
+    temp=facenodes(nsd,nen,face);
+    for j=1:length(surface(i).element)
+        list=connect(temp,surface(i).element(j));
+        elecoord=coords(:,list);
+        if nsd==3
+            norm=cross(elecoord(:,2)-elecoord(:,1),elecoord(:,3)-elecoord(:,2));
+        else
+            a=elecoord(:,2)-elecoord(:,1);
+            norm=[-a(2),a(1)];  
+        end
+        norm=norm/sqrt(dot(norm,norm));
+        surface(i).traction=[surface(i).traction,(surface(i).pressure)*norm];
     end
-    fprintf(outfile4,'\n');
+    surface(i).traction = surface(i).traction(:,2:end);
+end
+outfile4=fopen('load.txt','w');
+fprintf(outfile4,'%10d\n',no_load);
+for i=1:nsf
+    for j=1:length(surface(i).element)
+        fprintf(outfile4,'%12.8f\t',surface(i).element(j),surface(i).face,...
+            surface(i).traction(:,j));
+        fprintf(outfile4,'\n');
+    end
 end
 fclose(outfile4);
-
 end
-%% ========================= functions ====================================
-%
+%% auxilary functions
+function n=no_facenodes(nsd,nen)
+if nsd==2
+    n=2;
+elseif nsd==3
+    if nen==4
+        n=3;
+    elseif nen==8
+        n=4;
+    end
+end
+end
 function list=facenodes(nsd,nen,face)
 list = zeros(no_facenodes(nsd,nen),1);
 i3 = [2,3,1];
@@ -272,7 +243,7 @@ elseif nsd==3
         elseif face==3
             list = [1,5,6,2];
         elseif face==4
-            list = [2,3,7,6];
+            list = [2,6,7,3];
         elseif face==5
             list = [3,7,8,4];
         elseif face==6
@@ -281,31 +252,3 @@ elseif nsd==3
     end
 end
 end
-
-function n=no_facenodes(nsd,nen)
-if nsd==2
-    n=2;
-elseif nsd==3
-    if nen==4
-        n=3;
-    elseif nen==8
-        n=4;
-    end
-end
-end
-
-function n=no_faces(nsd,nen)
-if nsd==2
-    if nen==3
-        n=3;
-    elseif nen==4
-        n=4;
-    end
-elseif nsd==3
-    if nen==4
-        n=4;
-    elseif nen==8
-        n=6;
-    end
-end
-%}

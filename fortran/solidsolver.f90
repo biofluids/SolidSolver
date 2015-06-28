@@ -90,13 +90,13 @@ subroutine statics(filepath)
 			R = Fint - loadfactor*Fext
 			! fix the prescribed displacement
 			do i=1,size(bc1,2)
-				row = ned*int((bc1(1,i)-1.)) + int(bc1(2,i))
+				row = ned*((bc1(1,i)-1.)) + (bc1(2,i))
 				do col=1,ned*nn
 					A(row,col) = 0.
 					A(col,row) = 0.
 				end do
 				A(row,row) = 1.
-				R(row) = -bc1(3,i) + w(row)
+				R(row) = w(row)
 			end do
 			! solve
 			call solve_mgmres(nn*ned,A,-R,dw)
