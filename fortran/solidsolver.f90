@@ -85,8 +85,8 @@ subroutine statics(filepath)
 		write(*,'("==============================Step",i5,5x,"Load",e12.4,"====================================")') step,loadfactor
 		do while (((err1>tol) .OR. (err2>tol)) .and. (nit<maxit))
 			nit = nit + 1
-			Fint = force_internal(w)
-			A = tangent_internal(w)
+			Fint = force_internal_full(w)
+			A = tangent_internal_full(w)
 			R = Fint - loadfactor*Fext
 			! fix the prescribed displacement
 			do i=1,size(bc1,2)

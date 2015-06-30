@@ -19,7 +19,7 @@ contains
 		nz_num = 0
 		k = 0
 		itr_max = 50
-		mr = 20
+		mr = 60
 		tol_abs = 1d-6
 		tol_rel = 1d-6
 		

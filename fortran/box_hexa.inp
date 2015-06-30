@@ -1328,10 +1328,10 @@ Set-3, 3, 3
 ** 
 ** Name: Load-1   Type: Pressure
 *Dsload
-Surf-1, P, 0.5
+Surf-1, P, 0.4
 ** Name: Load-2   Type: Pressure
 *Dsload
-Surf-2, P, 0.5
+Surf-2, P, 0.4
 ** 
 ** OUTPUT REQUESTS
 ** 
