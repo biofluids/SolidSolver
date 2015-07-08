@@ -7,7 +7,7 @@ program solidsolver
 	
 	call timestamp()
 	
-	filepath = '/Users/jiecheng/Documents/SolidResults/'
+	filepath = '/Users/Jie/Documents/SolidResults/'
 	call system_clock(ct,ct_rate,ct_max)
 	
 	call read_input(10,'input.txt',simu_type, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, materialprops, gravity)
@@ -85,8 +85,8 @@ subroutine statics(filepath)
 		write(*,'("==============================Step",i5,5x,"Load",e12.4,"====================================")') step,loadfactor
 		do while (((err1>tol) .OR. (err2>tol)) .and. (nit<maxit))
 			nit = nit + 1
-			Fint = force_internal_full(w)
-			A = tangent_internal_full(w)
+			Fint = force_internal(w)
+			A = tangent_internal(w)
 			R = Fint - loadfactor*Fext
 			! fix the prescribed displacement
 			do i=1,size(bc1,2)
