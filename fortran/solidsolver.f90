@@ -7,7 +7,7 @@ program solidsolver
 	
 	call timestamp()
 	
-	filepath = '/Users/Jie/Documents/SolidResults/'
+	filepath = '/Users/jiecheng/Documents/SolidResults/'
 	call system_clock(ct,ct_rate,ct_max)
 	
 	call read_input(10,'input.txt',simu_type, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, materialprops, gravity)
@@ -15,6 +15,8 @@ program solidsolver
 	
 	if (simu_type == 0) then 
 		call statics(filepath)
+	else if (simu_type == 1) then
+		call dynamics(filepath)
 	end if
 	
 	call system_clock(ct1)
@@ -39,8 +41,8 @@ subroutine statics(filepath)
 	
 	implicit none
 	
-	integer :: i,nit,row,col,j,k, gamma, beta
-	real(8), allocatable, dimension(:) :: Fext, F1, F2, Fint, R, F, w, w1, dw
+	integer :: i,nit,row,col,j,k
+	real(8), allocatable, dimension(:) :: Fext, F1, F2, Fint, R, w, w1, dw
 	real(8), allocatable, dimension(:,:) ::  A
 	real(8) :: loadfactor, increment, err1, err2
 	real(8) :: v, v1
@@ -90,7 +92,7 @@ subroutine statics(filepath)
 			R = Fint - loadfactor*Fext
 			! fix the prescribed displacement
 			do i=1,size(bc1,2)
-				row = ned*((bc1(1,i)-1.)) + (bc1(2,i))
+				row = ned*(bc1(1,i)-1) + bc1(2,i)
 				do col=1,ned*nn
 					A(row,col) = 0.
 					A(col,row) = 0.
@@ -122,6 +124,16 @@ subroutine statics(filepath)
 	v1 = volume(w)
 	write(*,*) '================================================================================================' 
 	write(*,'("Total volume change:",e12.4)') v1/v - 1.
+	
+	deallocate(Fext)
+	deallocate(F1)
+	deallocate(F2)
+	deallocate(Fint)
+	deallocate(R)
+	deallocate(w)
+	deallocate(w1)
+	deallocate(dw)
+	deallocate(A)
 end subroutine statics
 
 subroutine dynamics(filepath)	
@@ -141,11 +153,11 @@ subroutine dynamics(filepath)
 	
 	implicit none
 	
-	integer :: i,nit,row,col,j,k, gamma, beta
-	real(8), allocatable, dimension(:) :: Fext, F1, F2, Fint, R, F, w, w1, dw
-	real(8), allocatable, dimension(:,:) ::  A, m
+	integer :: i,nit,row,col,j,k
+	real(8), allocatable, dimension(:) :: Fext, F1, F2, Fint, R, F, w, w1, dw, un, un1, vn, vn1, an, an1
+	real(8), allocatable, dimension(:,:) ::  A, M, Kint, eye
 	real(8) :: loadfactor, increment, err1, err2
-	real(8) :: v, v1
+	real(8) :: v, v1, gamma, beta
 	character(80) :: filepath
 	
 	allocate(Fext(nn*ned))
@@ -157,75 +169,125 @@ subroutine dynamics(filepath)
 	allocate(w1(nn*ned))
 	allocate(dw(nn*ned))
 	allocate(A(nn*ned,nn*ned))
-	allocate(m(nn*ned,nn*ned))
+	allocate(M(nn*ned,nn*ned))
+	allocate(Kint(nn*ned,nn*ned))
+	allocate(eye(nn*ned,nn*ned))
+	allocate(F(nn*ned))
+	allocate(un(nn*ned))
+	allocate(un1(nn*ned))
+	allocate(vn(nn*ned))
+	allocate(vn1(nn*ned))
+	allocate(an(nn*ned))
+	allocate(an1(nn*ned))
 	
 	call mass_matrix(m)
 	
-	! initialize w
+	! initialize 
 	w = 0.
+	un = 0.
+	un1 = 0.
+	vn = 0.
+	vn1 = 0.
+	an = 0.
+	an1 = 0.
+	gamma = 0.5
+	beta = 0.25
 	v = volume(w)
 	
-	nprint=1
-	nsteps=1
-	dt=1.
-	loadfactor = 0.
-	increment = firststep
-	step = 0
 	call write_results(filepath,w)
+	call mass_matrix(M)
 	call force_traction(F1)
 	call force_body(F2)
 	Fext = F1 + F2
+	Fint = force_internal(w)
+	F = Fext - Fint
 	
-	do while (loadfactor < 1.)
-		step = step + 1
-		if (loadfactor+increment>1.) then
-			increment = 1. - loadfactor
-		end if
-		w1 = w
-		loadfactor  = loadfactor + increment
+	! in order to get an right, modify
+	do i=1,size(bc1,2)
+		row = ned*(bc1(1,i)-1) + bc1(2,i)
+		do col=1,ned*nn
+			M(row,col) = 0.
+			M(col,row) = 0.
+		end do
+		M(row,row) = 1.
+		F(row) = 0.
+	end do
+	
+	! Initial acceleration
+	call ma57ds(nn*ned,M,F,an)
+	
+	do step = 1,nsteps
+		write(*,'("==============================Step",i5,5x,"Time",e12.4,"====================================")') step,step*dt
 		err1 = 1.
 		err2 = 1.
 		nit = 0
-		write(*,'("==============================Step",i5,5x,"Load",e12.4,"====================================")') step,loadfactor
+		w = un
 		do while (((err1>tol) .OR. (err2>tol)) .and. (nit<maxit))
 			nit = nit + 1
+			an1 = (w - (un+dt*vn+0.5*dt**2*(1-2*beta)*an))/(beta*dt**2)
+			vn1 = vn + (1-gamma)*dt*an + gamma*dt*an1
 			Fint = force_internal(w)
-			A = tangent_internal(w)
-			R = Fint - loadfactor*Fext
-			! fix the prescribed displacement
+			Kint = tangent_internal(w)
+			F = Fext - Fint - damp*vn1
+			R = matmul(M,an1) - F
+			! Modify to get A and R right
 			do i=1,size(bc1,2)
-				row = ned*((bc1(1,i)-1.)) + (bc1(2,i))
+				row = ned*(bc1(1,i)-1) + bc1(2,i)
 				do col=1,ned*nn
-					A(row,col) = 0.
-					A(col,row) = 0.
+					Kint(row,col) = 0.
+					Kint(col,row) = 0.
 				end do
-				A(row,row) = 1.
+				Kint(row,row) = 1. - 1./(beta*dt**2)
 				R(row) = w(row)
 			end do
-			! solve
-			!call solve_mgmres(nn*ned,A,-R,dw)
+			! Jacobian
+			do i=1,nn*ned
+				do j=1,nn*ned
+					if (i == j) then
+						eye(i,j)=1.
+					else
+						eye(i,j)=0.
+					end if
+				end do
+			end do
+			A = (M+damp*gamma*dt*eye)/(beta*dt**2) + Kint
 			call ma57ds(nn*ned,A,-R,dw)
-			w = w + dw
 			! check convergence
+			w = w + dw
 			err1 = sqrt(dot_product(dw,dw)/dot_product(w,w))
 			err2 = sqrt(dot_product(R,R))/(ned*nn)
-			write(*,'("Iteration number:",i8,5x,"Err1:",E12.4,5x,"Err2:",E12.4,5x,"Tolerance:",E12.4)') nit,err1,err2,tol
 		end do
-		if (nit == maxit) then
-			w = w1
-			loadfactor = loadfactor - increment
-			increment = increment / 2
-		else if (nit > 6) then
-			increment = increment*(1-adjust)
-		else if (nit < 6) then
-			increment = increment*(1+adjust)
+		write(*,'("Iteration number:",i8,5x,"Err1:",E12.4,5x,"Err2:",E12.4,5x,"Tolerance:",E12.4)') nit,err1,err2,tol
+		vn = vn1
+		un = w
+		an = an1
+		v1 = volume(w)
+		write(*,'("Total volume change:",e12.4)') v1/v - 1.
+		if (MOD(step,nprint)==0) then
+			call write_results(filepath,w)
 		end if
 	end do
-	step = nprint
-	call write_results(filepath,w)
-	v1 = volume(w)
-	write(*,*) '================================================================================================' 
-	write(*,'("Total volume change:",e12.4)') v1/v - 1.
+
+	deallocate(Fext)
+	deallocate(F1)
+	deallocate(F2)
+	deallocate(Fint)
+	deallocate(R)
+	deallocate(w)
+	deallocate(w1)
+	deallocate(dw)
+	deallocate(A)
+	deallocate(M)
+	deallocate(Kint)
+	deallocate(eye)
+	deallocate(F)
+	deallocate(un)
+	deallocate(un1)
+	deallocate(vn)
+	deallocate(vn1)
+	deallocate(an)
+	deallocate(an1)
+	
 end subroutine dynamics
 
 subroutine timestamp ( )

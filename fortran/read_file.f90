@@ -6,8 +6,8 @@ module read_file
 	real(8) :: firststep, adjust, tol, dt, damp
 	real(8) :: materialprops(5), gravity(3)
 	integer :: nsd, nen, nn, nel, no_bc1, no_bc2, ned
-	integer, allocatable :: connect(:,:)
-	real(8), allocatable :: coords(:,:), bc1(:,:), bc2(:,:)
+	integer, allocatable :: connect(:,:), bc1(:,:)
+	real(8), allocatable :: coords(:,:), bc2(:,:)
 	integer, allocatable :: share(:)
 	
 	save
@@ -64,8 +64,8 @@ contains
 		implicit none
 		
 		integer, intent(out) :: nsd, ned, nen, nn, nel
-		integer, allocatable, intent(out) :: connect(:,:)
-		real(8), allocatable, intent(out) :: coords(:,:), bc1(:,:), bc2(:,:)
+		integer, allocatable, intent(out) :: connect(:,:), bc1(:,:)
+		real(8), allocatable, intent(out) :: coords(:,:), bc2(:,:)
 		integer, allocatable :: share(:)
 		integer :: no_bc1, no_bc2, i,j
 	
