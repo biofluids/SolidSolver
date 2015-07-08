@@ -1,7 +1,7 @@
 function processing
 nsd=3;
 nen=8;
-infile=fopen('Job-3.inp','r');
+infile=fopen('Job-1.inp','r');
 %
 content=fgets(infile);
 %% number of nodes and coords

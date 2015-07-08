@@ -19,7 +19,7 @@ Material type(neo-Hookean~2/Mooney-Rivlin~3):	2
 Material coefficients
 mu1:	0.4d6
 mu2:	0
-K1:	1d7
+K1:	1d9
 rho:	1.52
 
 x_gravity:	0.
