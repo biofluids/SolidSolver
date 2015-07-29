@@ -8,7 +8,7 @@ first increment:	1d-3
 adjust factor:	0.4
 
 Dynamic parameters
-number of simulation steps:	1000
+number of simulation steps:	3000
 time step:	0.001
 print interval:	10
 damping:	0.0

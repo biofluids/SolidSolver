@@ -41,7 +41,7 @@ subroutine statics(filepath)
 	
 	implicit none
 	
-	integer :: i,nit,row,col,j,k
+	integer :: i,nit,row,col,j,k,isbinary
 	real(8), allocatable, dimension(:) :: Fext, F1, F2, Fint, R, w, w1, dw
 	real(8), allocatable, dimension(:,:) ::  A
 	real(8) :: loadfactor, increment, err1, err2
@@ -60,6 +60,7 @@ subroutine statics(filepath)
 	
 	
 	! initialize w
+	isbinary = 1
 	w = 0.
 	v = volume(w)
 	
@@ -69,7 +70,7 @@ subroutine statics(filepath)
 	loadfactor = 0.
 	increment = firststep
 	step = 0
-	call write_results(filepath,w)
+	call write_results(filepath,w,isbinary)
 	call force_traction(F1)
 	call force_body(F2)
 	Fext = F1 + F2
@@ -120,7 +121,7 @@ subroutine statics(filepath)
 		end if
 	end do
 	step = nprint
-	call write_results(filepath,w)
+	call write_results(filepath,w,0)
 	v1 = volume(w)
 	write(*,*) '================================================================================================' 
 	write(*,'("Total volume change:",e12.4)') v1/v - 1.
@@ -153,7 +154,7 @@ subroutine dynamics(filepath)
 	
 	implicit none
 	
-	integer :: i,nit,row,col,j,k
+	integer :: i,nit,row,col,j,k,isbinary
 	real(8), allocatable, dimension(:) :: Fext, F1, F2, Fint, R, F, w, w1, dw, un, un1, vn, vn1, an, an1
 	real(8), allocatable, dimension(:,:) ::  A, M, Kint, eye
 	real(8) :: loadfactor, increment, err1, err2
@@ -183,6 +184,7 @@ subroutine dynamics(filepath)
 	call mass_matrix(m)
 	
 	! initialize 
+	isbinary = 1
 	w = 0.
 	un = 0.
 	un1 = 0.
@@ -194,7 +196,7 @@ subroutine dynamics(filepath)
 	beta = 0.25
 	v = volume(w)
 	
-	call write_results(filepath,w)
+	call write_results(filepath,w,isbinary)
 	call mass_matrix(M)
 	call force_traction(F1)
 	call force_body(F2)
@@ -264,7 +266,7 @@ subroutine dynamics(filepath)
 		v1 = volume(w)
 		write(*,'("Total volume change:",e12.4)') v1/v - 1.
 		if (MOD(step,nprint)==0) then
-			call write_results(filepath,w)
+			call write_results(filepath,w,isbinary)
 		end if
 	end do
 
