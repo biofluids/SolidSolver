@@ -10,7 +10,8 @@ program solidsolver
 	filepath = '/Users/jiecheng/Documents/SolidResults/'
 	call system_clock(ct,ct_rate,ct_max)
 	
-	call read_input(10,'input.txt',simu_type, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, materialprops, gravity)
+	call read_input(10,'input.txt',simu_type, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, &
+					materialprops, gravity, isbinary)
 	call read_mesh(nsd,ned,nn,nel,nen,coords,connect,bc1,bc2,share)
 	
 	if (simu_type == 0) then 
@@ -41,7 +42,7 @@ subroutine statics(filepath)
 	
 	implicit none
 	
-	integer :: i,nit,row,col,j,k,isbinary
+	integer :: i,nit,row,col,j,k
 	real(8), allocatable, dimension(:) :: Fext, F1, F2, Fint, R, w, w1, dw
 	real(8), allocatable, dimension(:,:) ::  A
 	real(8) :: loadfactor, increment, err1, err2
@@ -60,7 +61,6 @@ subroutine statics(filepath)
 	
 	
 	! initialize w
-	isbinary = 1
 	w = 0.
 	v = volume(w)
 	
@@ -154,7 +154,7 @@ subroutine dynamics(filepath)
 	
 	implicit none
 	
-	integer :: i,nit,row,col,j,k,isbinary
+	integer :: i,nit,row,col,j,k
 	real(8), allocatable, dimension(:) :: Fext, F1, F2, Fint, R, F, w, w1, dw, un, un1, vn, vn1, an, an1
 	real(8), allocatable, dimension(:,:) ::  A, M, Kint, eye
 	real(8) :: loadfactor, increment, err1, err2
@@ -184,7 +184,6 @@ subroutine dynamics(filepath)
 	call mass_matrix(m)
 	
 	! initialize 
-	isbinary = 1
 	w = 0.
 	un = 0.
 	un1 = 0.

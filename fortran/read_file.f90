@@ -2,7 +2,7 @@ module read_file
 	
 	implicit none
 	
-	integer simu_type, maxit, nsteps, nprint, step
+	integer :: simu_type, maxit, nsteps, nprint, step, isbinary
 	real(8) :: firststep, adjust, tol, dt, damp
 	real(8) :: materialprops(5), gravity(3)
 	integer :: nsd, nen, nn, nel, no_bc1, no_bc2, ned
@@ -13,7 +13,8 @@ module read_file
 	save
 	
 contains
-	subroutine read_input(unitnum,filename,simu_type, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, materialprops, gravity)
+	subroutine read_input(unitnum,filename,simu_type, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, materialprops, &
+						  gravity, isbinary)
 		implicit none
 		
 		integer, intent(in) :: unitnum
@@ -22,9 +23,9 @@ contains
 		character(100) :: text
 		character(1) :: flag=':'
 		integer :: i, j, k, l, ios
-		real(8) :: temp(17)
+		real(8) :: temp(18)
 	
-		integer, intent(out) :: simu_type, maxit, nsteps, nprint
+		integer, intent(out) :: simu_type, maxit, nsteps, nprint, isbinary
 		real(8), intent(out) :: firststep, adjust, tol, dt, damp, materialprops(5), gravity(3)
 	
 		open(unit=unitnum,file=filename)
@@ -56,7 +57,7 @@ contains
 		damp=temp(9)
 		materialprops(:)=temp(10:14)
 		gravity(:)=temp(15:17)
-	
+	    isbinary = temp(18)
 		close(10)
 	end subroutine read_input
 	

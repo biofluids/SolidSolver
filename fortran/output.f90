@@ -89,7 +89,7 @@ contains
 			write(11) buffer
 			i = 1
 			write(11) i
-			buffer = 'Another useless discription line'
+			buffer = 'solid'
 			write(11) buffer
 			buffer = 'coordinates'
 			write(11) buffer
@@ -98,9 +98,9 @@ contains
 				nodeid(i) = i
 			end do
 			write(11) nodeid
-			write(11) coords1(1,:)
-			write(11) coords1(2,:)
-			write(11) coords1(3,:)
+			write(11) sngl(coords1(1,:))
+			write(11) sngl(coords1(2,:))
+			write(11) sngl(coords1(3,:))
 			if (nsd==2) then
 			    if (nen==3) then
 					buffer = 'tria3'
@@ -203,7 +203,7 @@ contains
 			buffer = 'coordinates'
 			write(11) buffer
 			do i = 1, 3
-				write(11) displacement(i,:)
+				write(11) sngl(displacement(i,:))
 			end do
 			close(11)
 		else
@@ -357,8 +357,9 @@ contains
 			i = 1
 			write(11) i
 			buffer = 'coordinates'
+			write(11) buffer
 			do i = 1, 6
-				write(11) sum_sigma(i,:)
+				write(11) sngl(sum_sigma(i,:))
 			end do
 			close(11)
 		else
