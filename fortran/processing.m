@@ -1,4 +1,4 @@
-function processing
+%function processing
 nsd=2;
 nen=4;
 filename='2dvessel.inp';
@@ -75,17 +75,28 @@ while ~feof(infile)
         content=fgets(infile);
     end
 end
+fclose(infile);
+infile=fopen(filename,'r');
 %% surface: name, element, face, pressure, traction
+while ~feof(infile)
+    content=fgets(infile);
+    if (strncmp('*End Instance',content,13)==1)
+        break
+    end
+end
 nsf=0;
 while ~feof(infile)
+    % Two possibilities: new surface, or new element face of a existing surface
     if strncmp('*Elset, elset=_Surf-',content,20)
+        % new surface
         nsf=nsf+1;
-        surface(nsf).name=['Surf-' num2str(nsf)];
+        surface(nsf).id=[str2num(content(21)),str2num(content(24))];
         content=strtrim(content); % remove the leading and trailing spaces
         flag=content((length(content)-7):end);
         if strncmp('generate',flag,8) % structured mesh
             content=fgets(infile);
             temp=str2num(content);
+            surface(nsf).number=(temp(2)-temp(1))/temp(3)+1;
             surface(nsf).element=temp(1):temp(3):temp(2); 
             content=fgets(infile);
         else % unstructured mesh
@@ -96,15 +107,35 @@ while ~feof(infile)
                 content=fgets(infile);
             end
             surface(nsf).element=surface(nsf).element(2:end);
+            surface(nsf).number=length(surface(nsf).element);
         end
-        content=fgets(infile);
-        content=strtrim(content);
-        surface(nsf).face=str2num(content(end));
+        surface(nsf).face=surface(nsf).id(2)*ones(1,surface(nsf).number);
     elseif (strncmp('*End Assembly',content,13)==1)
         break
     else
         content=fgets(infile);
     end
+end 
+% form the supersurface
+nsuper=0;
+for i=1:nsf
+    if surface(i).id(1)>nsuper
+        nsuper=nsuper+1;
+        super(nsuper).name=['Surf-' num2str(nsuper)];
+        super(nsuper).element=0;
+        super(nsuper).face=0;
+        super(nsuper).element=[super(nsuper).element,surface(i).element];
+        super(nsuper).face=[super(nsuper).face,surface(i).face];
+    else
+        id=surface(i).id(1);
+        super(id).element=[super(id).element,surface(i).element];
+        super(id).face=[super(id).face,surface(i).face];
+    end
+end
+for i=1:nsuper
+    super(i).element=super(i).element(2:end);
+    super(i).face=super(i).face(2:end);
+    super(i).pressure=1;
 end
 %% boundary conditions
 isbc=0;
@@ -147,9 +178,9 @@ while ~feof(infile)
     if strncmp('*Dsload',content,7)
         isload=1;
         content=fgets(infile);
-        for i=1:nsf
-            if strncmp(surface(i).name,content,length(surface(i).name))
-                surface(i).pressure=str2num(content((length(surface(i).name)+6):end));
+        for i=1:nsuper
+            if strncmp(super(i).name,content,length(super(i).name))
+                super(i).pressure=str2num(content((length(super(i).name)+6):end));
             end
         end
     elseif strncmp('** OUTPUT',content,9)
@@ -160,8 +191,14 @@ fclose(infile);
 %% write file: coords
 outfile1=fopen('coords.txt','w');
 fprintf(outfile1,'%10d\t%10d\n',nsd,nn);
-for i=1:nn
-    fprintf(outfile1,'%12.8f\t%12.8f\t%12.8f\n',coords(:,i));
+if (nsd==3)
+    for i=1:nn
+        fprintf(outfile1,'%12.8f\t%12.8f\t%12.8f\n',coords(:,i));
+    end
+else
+    for i=1:nn
+        fprintf(outfile1,'%12.8f\t%12.8f\n',coords(:,i));
+    end
 end
 fclose(outfile1);
 %% write file: connect
@@ -209,13 +246,13 @@ outfile4=fopen('load.txt','w');
 if (isload == 1)
     load=zeros(2+nsd,1);
     no_load=0;
-    for i=1:nsf
-        no_load=no_load+length(surface(i).element);
-        surface(i).traction=zeros(nsd,1);
-        face=surface(i).face;
-        temp=facenodes(nsd,nen,face);
-        for j=1:length(surface(i).element)
-            list=connect(temp,surface(i).element(j));
+    for i=1:nsuper
+        no_load=no_load+length(super(i).element);
+        super(i).norm=zeros(nsd,length(super(i).element));
+        for j=1:length(super(i).element)
+            face=super(i).face(j);
+            temp=facenodes(nsd,nen,face);
+            list=connect(temp,super(i).element(j));
             elecoord=coords(:,list);
             if nsd==3
                 norm=cross(elecoord(:,2)-elecoord(:,1),elecoord(:,3)-elecoord(:,2));
@@ -224,23 +261,23 @@ if (isload == 1)
                 norm=[-a(2),a(1)];  
             end
             norm=norm/sqrt(dot(norm,norm));
-            surface(i).traction=[surface(i).traction,(surface(i).pressure)*norm];
-        end
-        surface(i).traction = surface(i).traction(:,2:end);
+            super(i).norm(:,j)=transpose(norm);
+        end  
     end
     fprintf(outfile4,'%10d\n',no_load);
-    for i=1:nsf
-        for j=1:length(surface(i).element)
-            fprintf(outfile4,'%12.8f\t',surface(i).element(j),surface(i).face,...
-                surface(i).traction(:,j));
-            fprintf(outfile4,'\n');
+    for i=1:nsuper
+        for j=1:length(super(i).element)
+            fprintf(outfile4,'%12.8f\t',super(i).element(j),...
+                    super(i).face(j),super(i).pressure*super(i).norm(:,j));
+            fprintf(outfile4,'\n');            
         end
-    end
+    end    
 else
     fprintf(outfile4,'%10d\n',0);
 end
 fclose(outfile4);
-end
+%end
+%{
 %% auxilary functions
 function n=no_facenodes(nsd,nen)
 if nsd==2
@@ -291,3 +328,4 @@ elseif nsd==3
     end
 end
 end
+%}

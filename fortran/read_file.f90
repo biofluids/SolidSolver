@@ -72,7 +72,7 @@ contains
 	
 		open(10,file='coords.txt')
 		read(10,*) nsd, nn
-		allocate(coords(3,nn)) 
+		allocate(coords(nsd,nn)) 
 		do i=1,nn
 			read(10,*) coords(:,i)
 		end do
@@ -101,10 +101,16 @@ contains
 	
 		open(10,file='load.txt')
 		read(10,*) no_bc2
-		allocate(bc2(5,no_bc2))
-		do i=1,no_bc2
-			read(10,*) bc2(:,i)
-		end do
+		if (no_bc2 /= 0) then
+			allocate(bc2(2+nsd,no_bc2))
+			do i=1,no_bc2
+				read(10,*) bc2(:,i)
+			end do
+		else
+			allocate(bc2(2+nsd,1))
+			bc2 = -1
+		end if
+		close(10)
 		
 		ned = nsd
 		

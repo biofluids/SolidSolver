@@ -2,18 +2,17 @@ module output
 	implicit none
 	
 contains
-	subroutine write_results(filepath,dofs,isbinary)
-		use read_file, only: simu_type, step, nn, ned
+	subroutine write_results(filepath,dofs)
+		use read_file, only: simu_type, step, nn, ned, isbinary
 		implicit none
 		character(80) :: filepath
-		integer, intent(in) :: isbinary
 		real(8), dimension(nn*ned), intent(in) :: dofs
 		if (step == 0) then
 			call write_case(filepath)
 		end if
-		call write_geometry(filepath,dofs,isbinary)
-		call write_displacement(filepath,dofs,isbinary)
-		call write_stress(filepath,dofs,isbinary)
+		call write_geometry(filepath,dofs)
+		call write_displacement(filepath,dofs)
+		call write_stress(filepath,dofs)
 		
 	end subroutine write_results
 	subroutine write_case(filepath)
@@ -46,10 +45,9 @@ contains
 		close(10)
 	end subroutine write_case
 	
-	subroutine write_geometry(filepath,dofs,isbinary)
-		use read_file, only: step, nn, nsd,ned, nen, nel, connect, coords, nprint
+	subroutine write_geometry(filepath,dofs)
+		use read_file, only: step, nn, nsd,ned, nen, nel, connect, coords, nprint, isbinary
 		implicit none
-		integer, intent(in) :: isbinary
 		real(8), dimension(nn*ned), intent(in) :: dofs
 		character(80) :: filepath, filename, buffer
 		integer :: i,j
@@ -166,12 +164,11 @@ contains
 	end subroutine write_geometry
 	
 	
-	subroutine write_displacement(filepath,dofs,isbinary)
-		use read_file, only: step, nsd, ned, nn, coords, nel, nen, connect, nprint
+	subroutine write_displacement(filepath,dofs)
+		use read_file, only: step, nsd, ned, nn, coords, nel, nen, connect, nprint, isbinary
 		implicit none
 		
 		real(8), dimension(nn*ned), intent(in) :: dofs
-		integer, intent(in) :: isbinary
 		character(80) :: filepath, filename, buffer
 		integer :: i,j,row
 		character(6) :: temp
@@ -222,8 +219,8 @@ contains
 	end subroutine write_displacement
 		
 	
-	subroutine write_stress(filepath,dofs,isbinary)
-		use read_file, only: step, nsd, ned, nn, coords, nel, nen, connect, materialprops, share, nprint
+	subroutine write_stress(filepath,dofs)
+		use read_file, only: step, nsd, ned, nn, coords, nel, nen, connect, materialprops, share, nprint, isbinary
 		use shapefunction
 		use integration
 		use material
@@ -231,7 +228,6 @@ contains
 		implicit none
 		
 		real(8), dimension(nn*ned), intent(in) :: dofs
-		integer, intent(in) :: isbinary
 		character(80) :: filepath, filename, buffer
 		character(6) :: temp
 		real(8), dimension(nsd,nen) :: elecoord

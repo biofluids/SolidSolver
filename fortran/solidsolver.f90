@@ -13,7 +13,7 @@ program solidsolver
 	call read_input(10,'input.txt',simu_type, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, &
 					materialprops, gravity, isbinary)
 	call read_mesh(nsd,ned,nn,nel,nen,coords,connect,bc1,bc2,share)
-	
+
 	if (simu_type == 0) then 
 		call statics(filepath)
 	else if (simu_type == 1) then
@@ -70,7 +70,7 @@ subroutine statics(filepath)
 	loadfactor = 0.
 	increment = firststep
 	step = 0
-	call write_results(filepath,w,isbinary)
+	call write_results(filepath,w)
 	call force_traction(F1)
 	call force_body(F2)
 	Fext = F1 + F2
@@ -123,7 +123,7 @@ subroutine statics(filepath)
 		end if
 	end do
 	step = nprint
-	call write_results(filepath,w,0)
+	call write_results(filepath,w)
 	v1 = volume(w)
 	write(*,*) '================================================================================================' 
 	write(*,'("Total volume change:",e12.4)') v1/v - 1.
@@ -197,7 +197,7 @@ subroutine dynamics(filepath)
 	beta = 0.25
 	v = volume(w)
 	
-	call write_results(filepath,w,isbinary)
+	call write_results(filepath,w)
 	call mass_matrix(M)
 	call force_traction(F1)
 	call force_body(F2)
@@ -267,7 +267,7 @@ subroutine dynamics(filepath)
 		v1 = volume(w)
 		write(*,'("Total volume change:",e12.4)') v1/v - 1.
 		if (MOD(step,nprint)==0) then
-			call write_results(filepath,w,isbinary)
+			call write_results(filepath,w)
 		end if
 	end do
 

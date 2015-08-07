@@ -325,7 +325,7 @@ _Surf-1_S2, S2
 ** 
 ** Name: Load-1   Type: Pressure
 *Dsload
-Surf-1, P, 1000.
+Surf-1, P, 0.01
 ** 
 ** OUTPUT REQUESTS
 ** 
