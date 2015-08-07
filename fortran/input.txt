@@ -27,4 +27,4 @@ y_gravity:	0.
 z_gravity:	0.
 
 ======================Output======================
-isbinary:	0
+isbinary:	1

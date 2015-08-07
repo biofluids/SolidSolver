@@ -88,10 +88,15 @@ contains
 	
 		open(10,file='bc.txt')
 		read(10,*) no_bc1
-		allocate(bc1(2,no_bc1))
-		do i=1,no_bc1
-			read(10,*) bc1(:,i)
-		end do
+		if (no_bc1 /= 0) then
+			allocate(bc1(2,no_bc1))
+			do i=1,no_bc1
+				read(10,*) bc1(:,i)
+			end do
+		else
+			allocate(bc1(2,1))
+			bc1 = -1
+		end if	
 		close(10)
 	
 		open(10,file='load.txt')

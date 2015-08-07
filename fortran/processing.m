@@ -1,7 +1,8 @@
 function processing
-nsd=3;
-nen=8;
-infile=fopen('rotation.inp','r');
+nsd=2;
+nen=4;
+filename='2dvessel.inp';
+infile=fopen(filename,'r');
 %
 content=fgets(infile);
 %% number of nodes and coords
@@ -106,36 +107,45 @@ while ~feof(infile)
     end
 end
 %% boundary conditions
+isbc=0;
 for i=1:nset
     set(i).dof=0;
 end
-while (strncmp('** BOUNDARY CONDITIONS',content,22)==0)
+while ~feof(infile)
     content=fgets(infile);
-end
-content=fgets(infile);
-while (strncmp('** -',content,4)==0) 
-    content=fgets(infile);
-    if strncmp('*Boundary',content,9)
-        while (strncmp('**',content,2)==0)
+    if (strncmp('** BOUNDARY CONDITIONS',content,22)==1)
+        isbc=1;
+        content=fgets(infile);
+        while (strncmp('** -',content,4)==0) 
             content=fgets(infile);
-            for i=1:nset
-                if strncmp(set(i).name,content,length(set(i).name))
-                    if (str2num(content(length(set(i).name)+3)) == 1)
-                        set(i).dof=set(i).dof+100;
-                    elseif (str2num(content(length(set(i).name)+3)) == 2)
-                        set(i).dof=set(i).dof+10;
-                    elseif (str2num(content(length(set(i).name)+3)) == 3)
-                        set(i).dof=set(i).dof+1;
-                    end
+            if strncmp('*Boundary',content,9)
+                while (strncmp('**',content,2)==0)
+                    content=fgets(infile);
+                    for i=1:nset
+                        if strncmp(set(i).name,content,length(set(i).name))
+                            if (str2num(content(length(set(i).name)+3)) == 1)
+                                set(i).dof=set(i).dof+100;
+                            elseif (str2num(content(length(set(i).name)+3)) == 2)
+                                set(i).dof=set(i).dof+10;
+                            elseif (str2num(content(length(set(i).name)+3)) == 3)
+                                set(i).dof=set(i).dof+1;
+                            end
+                        end
+                    end          
                 end
-            end          
+            end
         end
+        break
     end
 end
+fclose(infile);
 %% pressure load
+isload=0;
+infile=fopen(filename,'r');
 while ~feof(infile)
     content=fgets(infile);
     if strncmp('*Dsload',content,7)
+        isload=1;
         content=fgets(infile);
         for i=1:nsf
             if strncmp(surface(i).name,content,length(surface(i).name))
@@ -146,6 +156,7 @@ while ~feof(infile)
         break
     end
 end
+fclose(infile);
 %% write file: coords
 outfile1=fopen('coords.txt','w');
 fprintf(outfile1,'%10d\t%10d\n',nsd,nn);
@@ -164,61 +175,69 @@ for i=1:nel
 end
 fclose(outfile2);
 %% write file: bc
-bc=[0;0];
-for i=1:nset
-    if (set(i).dof>=100) % x is fixed
-        bc=[bc,[set(i).node;ones(1,length(set(i).node))]];
-        set(i).dof=set(i).dof-100;
-    end
-    if (set(i).dof>=10) % y is fixed
-        bc=[bc,[set(i).node;2*ones(1,length(set(i).node))]];
-        set(i).dof=set(i).dof-10;
-    end
-    if (set(i).dof==1) % z is fixed
-        bc=[bc,[set(i).node;3*ones(1,length(set(i).node))]];
-        set(i).dof=set(i).dof-1;
-    end 
-end
-bc=bc(:,2:end);
 outfile3=fopen('bc.txt','w');
-fprintf(outfile3,'%10d\n',size(bc,2));
-for i=1:size(bc,2)
-    for j=1:2
-        fprintf(outfile3,'%10d\t',bc(j,i));
+if (isbc==1)
+    bc=[0;0];
+    for i=1:nset
+        if (set(i).dof>=100) % x is fixed
+            bc=[bc,[set(i).node;ones(1,length(set(i).node))]];
+            set(i).dof=set(i).dof-100;
+        end
+        if (set(i).dof>=10) % y is fixed
+            bc=[bc,[set(i).node;2*ones(1,length(set(i).node))]];
+            set(i).dof=set(i).dof-10;
+        end
+        if (set(i).dof==1) % z is fixed
+            bc=[bc,[set(i).node;3*ones(1,length(set(i).node))]];
+            set(i).dof=set(i).dof-1;
+        end 
     end
-    fprintf(outfile3,'\n');
+    bc=bc(:,2:end);
+    fprintf(outfile3,'%10d\n',size(bc,2));
+    for i=1:size(bc,2)
+        for j=1:2
+            fprintf(outfile3,'%10d\t',bc(j,i));
+        end
+        fprintf(outfile3,'\n');
+    end
+else
+    fprintf(outfile3,'%10d\n',0);
 end
 fclose(outfile3);
 %% write file: load
-load=zeros(2+nsd,1);
-no_load=0;
-for i=1:nsf
-    no_load=no_load+length(surface(i).element);
-    surface(i).traction=zeros(nsd,1);
-    face=surface(i).face;
-    temp=facenodes(nsd,nen,face);
-    for j=1:length(surface(i).element)
-        list=connect(temp,surface(i).element(j));
-        elecoord=coords(:,list);
-        if nsd==3
-            norm=cross(elecoord(:,2)-elecoord(:,1),elecoord(:,3)-elecoord(:,2));
-        else
-            a=elecoord(:,2)-elecoord(:,1);
-            norm=[-a(2),a(1)];  
-        end
-        norm=norm/sqrt(dot(norm,norm));
-        surface(i).traction=[surface(i).traction,(surface(i).pressure)*norm];
-    end
-    surface(i).traction = surface(i).traction(:,2:end);
-end
 outfile4=fopen('load.txt','w');
-fprintf(outfile4,'%10d\n',no_load);
-for i=1:nsf
-    for j=1:length(surface(i).element)
-        fprintf(outfile4,'%12.8f\t',surface(i).element(j),surface(i).face,...
-            surface(i).traction(:,j));
-        fprintf(outfile4,'\n');
+if (isload == 1)
+    load=zeros(2+nsd,1);
+    no_load=0;
+    for i=1:nsf
+        no_load=no_load+length(surface(i).element);
+        surface(i).traction=zeros(nsd,1);
+        face=surface(i).face;
+        temp=facenodes(nsd,nen,face);
+        for j=1:length(surface(i).element)
+            list=connect(temp,surface(i).element(j));
+            elecoord=coords(:,list);
+            if nsd==3
+                norm=cross(elecoord(:,2)-elecoord(:,1),elecoord(:,3)-elecoord(:,2));
+            else
+                a=elecoord(:,2)-elecoord(:,1);
+                norm=[-a(2),a(1)];  
+            end
+            norm=norm/sqrt(dot(norm,norm));
+            surface(i).traction=[surface(i).traction,(surface(i).pressure)*norm];
+        end
+        surface(i).traction = surface(i).traction(:,2:end);
     end
+    fprintf(outfile4,'%10d\n',no_load);
+    for i=1:nsf
+        for j=1:length(surface(i).element)
+            fprintf(outfile4,'%12.8f\t',surface(i).element(j),surface(i).face,...
+                surface(i).traction(:,j));
+            fprintf(outfile4,'\n');
+        end
+    end
+else
+    fprintf(outfile4,'%10d\n',0);
 end
 fclose(outfile4);
 end

@@ -92,15 +92,17 @@ subroutine statics(filepath)
 			A = tangent_internal(w)
 			R = Fint - loadfactor*Fext
 			! fix the prescribed displacement
-			do i=1,size(bc1,2)
-				row = ned*(bc1(1,i)-1) + bc1(2,i)
-				do col=1,ned*nn
-					A(row,col) = 0.
-					A(col,row) = 0.
+			if (bc1(1,1) /= -1) then
+				do i=1,size(bc1,2)
+					row = ned*(bc1(1,i)-1) + bc1(2,i)
+					do col=1,ned*nn
+						A(row,col) = 0.
+						A(col,row) = 0.
+					end do
+					A(row,row) = 1.
+					R(row) = w(row)
 				end do
-				A(row,row) = 1.
-				R(row) = w(row)
-			end do
+			end if
 			! solve
 			!call solve_mgmres(nn*ned,A,-R,dw)
 			call ma57ds(nn*ned,A,-R,dw)
