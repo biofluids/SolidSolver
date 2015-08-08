@@ -1,7 +1,7 @@
 %function processing
 nsd=2;
 nen=4;
-filename='2dvessel.inp';
+filename='expansion.inp';
 infile=fopen(filename,'r');
 %
 content=fgets(infile);
