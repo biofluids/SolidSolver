@@ -92,15 +92,15 @@ subroutine statics(filepath)
 			A = tangent_internal(w)
 			R = Fint - loadfactor*Fext
 			! fix the prescribed displacement
-			if (bc1(1,1) /= -1) then
+			if (bc1(1,1) /= -1.) then
 				do i=1,size(bc1,2)
-					row = ned*(bc1(1,i)-1) + bc1(2,i)
+					row = ned*(int(bc1(1,i))-1) + int(bc1(2,i))
 					do col=1,ned*nn
 						A(row,col) = 0.
 						A(col,row) = 0.
 					end do
 					A(row,row) = 1.
-					R(row) = w(row)
+					R(row) = w(row) - bc1(3,i)
 				end do
 			end if
 			! solve
@@ -207,7 +207,7 @@ subroutine dynamics(filepath)
 	
 	! in order to get an right, modify
 	do i=1,size(bc1,2)
-		row = ned*(bc1(1,i)-1) + bc1(2,i)
+		row = ned*(int(bc1(1,i))-1) + int(bc1(2,i))
 		do col=1,ned*nn
 			M(row,col) = 0.
 			M(col,row) = 0.
@@ -235,13 +235,13 @@ subroutine dynamics(filepath)
 			R = matmul(M,an1) - F
 			! Modify to get A and R right
 			do i=1,size(bc1,2)
-				row = ned*(bc1(1,i)-1) + bc1(2,i)
+				row = ned*(int(bc1(1,i))-1) + int(bc1(2,i))
 				do col=1,ned*nn
 					Kint(row,col) = 0.
 					Kint(col,row) = 0.
 				end do
 				Kint(row,row) = 1. - 1./(beta*dt**2)
-				R(row) = w(row)
+				R(row) = w(row) - bc1(3,i)
 			end do
 			! Jacobian
 			do i=1,nn*ned

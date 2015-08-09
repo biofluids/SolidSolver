@@ -161,6 +161,7 @@ while ~feof(infile)
                             elseif (str2num(content(length(set(i).name)+3)) == 3)
                                 set(i).dof=set(i).dof+1;
                             end
+                            set(i).value=str2num(content(length(set(i).name)+6));
                         end
                     end          
                 end
@@ -214,18 +215,21 @@ fclose(outfile2);
 %% write file: bc
 outfile3=fopen('bc.txt','w');
 if (isbc==1)
-    bc=[0;0];
+    bc=[0;0;0.0];
     for i=1:nset
         if (set(i).dof>=100) % x is fixed
-            bc=[bc,[set(i).node;ones(1,length(set(i).node))]];
+            bc=[bc,[set(i).node;ones(1,length(set(i).node));...
+                set(i).value*ones(1,length(set(i).node))]];
             set(i).dof=set(i).dof-100;
         end
         if (set(i).dof>=10) % y is fixed
-            bc=[bc,[set(i).node;2*ones(1,length(set(i).node))]];
+            bc=[bc,[set(i).node;2*ones(1,length(set(i).node));...
+                set(i).value*ones(1,length(set(i).node))]];
             set(i).dof=set(i).dof-10;
         end
         if (set(i).dof==1) % z is fixed
-            bc=[bc,[set(i).node;3*ones(1,length(set(i).node))]];
+            bc=[bc,[set(i).node;3*ones(1,length(set(i).node));...
+                set(i).value*ones(1,length(set(i).node))]];
             set(i).dof=set(i).dof-1;
         end 
     end
@@ -235,6 +239,7 @@ if (isbc==1)
         for j=1:2
             fprintf(outfile3,'%10d\t',bc(j,i));
         end
+        fprintf(outfile3,'%12.8f',bc(3,i));
         fprintf(outfile3,'\n');
     end
 else
@@ -267,8 +272,8 @@ if (isload == 1)
     fprintf(outfile4,'%10d\n',no_load);
     for i=1:nsuper
         for j=1:length(super(i).element)
-            fprintf(outfile4,'%12.8f\t',super(i).element(j),...
-                    super(i).face(j),super(i).pressure*super(i).norm(:,j));
+            fprintf(outfile4,'%10d\t',super(i).element(j),super(i).face(j));
+            fprintf(outfile4,'%12.8f\t',super(i).pressure*super(i).norm(:,j));
             fprintf(outfile4,'\n');            
         end
     end    

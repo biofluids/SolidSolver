@@ -6,8 +6,8 @@ module read_file
 	real(8) :: firststep, adjust, tol, dt, damp
 	real(8) :: materialprops(5), gravity(3)
 	integer :: nsd, nen, nn, nel, no_bc1, no_bc2, ned
-	integer, allocatable :: connect(:,:), bc1(:,:)
-	real(8), allocatable :: coords(:,:), bc2(:,:)
+	integer, allocatable :: connect(:,:)
+	real(8), allocatable :: coords(:,:), bc2(:,:), bc1(:,:)
 	integer, allocatable :: share(:)
 	
 	save
@@ -65,8 +65,8 @@ contains
 		implicit none
 		
 		integer, intent(out) :: nsd, ned, nen, nn, nel
-		integer, allocatable, intent(out) :: connect(:,:), bc1(:,:)
-		real(8), allocatable, intent(out) :: coords(:,:), bc2(:,:)
+		integer, allocatable, intent(out) :: connect(:,:)
+		real(8), allocatable, intent(out) :: coords(:,:), bc2(:,:), bc1(:,:)
 		integer, allocatable :: share(:)
 		integer :: no_bc1, no_bc2, i,j
 	
@@ -89,13 +89,13 @@ contains
 		open(10,file='bc.txt')
 		read(10,*) no_bc1
 		if (no_bc1 /= 0) then
-			allocate(bc1(2,no_bc1))
+			allocate(bc1(3,no_bc1))
 			do i=1,no_bc1
 				read(10,*) bc1(:,i)
 			end do
 		else
-			allocate(bc1(2,1))
-			bc1 = -1
+			allocate(bc1(3,1))
+			bc1 = -1.0
 		end if	
 		close(10)
 	
@@ -108,7 +108,7 @@ contains
 			end do
 		else
 			allocate(bc2(2+nsd,1))
-			bc2 = -1
+			bc2 = -1.0
 		end if
 		close(10)
 		
