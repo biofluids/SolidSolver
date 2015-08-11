@@ -1231,7 +1231,7 @@ Set-2, 2, 0.0
 ** 
 ** Name: Load-1   Type: Pressure
 *Dsload
-Surf-1, P, 100000.
+Surf-1, P, 100.
 ** 
 ** OUTPUT REQUESTS
 ** 

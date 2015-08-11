@@ -14,10 +14,10 @@ print interval:	10
 damping:	0.0
 
 =====================Material=====================
-Material type(neo-Hookean~2/Mooney-Rivlin~3):	3
+Material type(neo-Hookean~2/Mooney-Rivlin~3):	2
 
 Material coefficients
-mu1:	0.39d6
+mu1:	0.4d6
 mu2:	0.015d6
 K1:	1d11
 rho:	1.52
