@@ -1,5 +1,5 @@
 ====================Simulation====================
-Dynamic analysis or not:	0
+Dynamic analysis or not:	2
 tolerance:	0.0001
 maximum number of newton iteration:	20
 
@@ -27,4 +27,4 @@ y_gravity:	0.
 z_gravity:	0.
 
 ======================Output======================
-isbinary:	1
+isbinary:	0

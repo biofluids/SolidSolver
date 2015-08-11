@@ -18,6 +18,8 @@ program solidsolver
 		call statics(filepath)
 	else if (simu_type == 1) then
 		call dynamics(filepath)
+	else if (simu_type == 2) then
+		call debug(filepath) 
 	end if
 	
 	call system_clock(ct1)
@@ -25,6 +27,56 @@ program solidsolver
 	write(*,'("time elapsed:",f12.2,3x,"seconds")') , dble(ct1-ct)/dble(ct_rate)
 	
 end program solidsolver
+
+subroutine debug(filepath)
+	! This is to read displacment file from Abaqus and output the stress	
+	use read_file
+	use output
+	use volumecheck
+
+	implicit none
+	
+	integer :: i,nit,row,col,j,k
+	real(8), allocatable, dimension(:,:) :: u
+	real(8), allocatable, dimension(:) :: w
+	real(8) :: v, v1
+	character(80) :: filepath
+	
+	allocate(u(nsd+1,nn))
+	allocate(w(nn*ned))
+	
+	! initialize w
+	w = 0.
+	v = volume(w)
+	
+	nprint=1
+	nsteps=1
+	dt=1.
+	step = 0
+	call write_results(filepath,w)
+
+	! read displacment file
+	open(40,file='abaqus.rpt')
+	do i = 1, nn
+		read(40,*) u(:,i)
+	end do
+	close(40)
+	
+	do i = 1, nn
+		do j = 1, nsd
+			k = nsd*(i-1) + j
+			w(k) = u(j+1,i)
+		end do
+	end do
+	
+	step = nprint
+	call write_results(filepath,w)
+	v1 = volume(w)
+	write(*,'("Total volume change:",e12.4)') v1/v - 1.
+	
+	deallocate(w)
+	deallocate(u)
+end subroutine debug
 	
 subroutine statics(filepath)	
 	use read_file
@@ -39,6 +91,8 @@ subroutine statics(filepath)
 	use directsolver
 	use output
 	use volumecheck
+	use full_internalforce
+	use full_tangentstiffness
 	
 	implicit none
 	
@@ -88,8 +142,8 @@ subroutine statics(filepath)
 		write(*,'("==============================Step",i5,5x,"Load",e12.4,"====================================")') step,loadfactor
 		do while (((err1>tol) .OR. (err2>tol)) .and. (nit<maxit))
 			nit = nit + 1
-			Fint = force_internal(w)
-			A = tangent_internal(w)
+			Fint = full_force_internal(w)
+			A = full_tangent_internal(w)
 			R = Fint - loadfactor*Fext
 			! fix the prescribed displacement
 			if (bc1(1,1) /= -1.) then
