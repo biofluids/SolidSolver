@@ -32,14 +32,14 @@ subroutine debug(filepath)
 	! This is to read displacment file from Abaqus and output the stress	
 	use read_file
 	use output
-	use volumecheck
+!	use volumecheck
 
 	implicit none
 	
 	integer :: i,nit,row,col,j,k
 	real(8), allocatable, dimension(:,:) :: u
 	real(8), allocatable, dimension(:) :: w
-	real(8) :: v, v1
+!	real(8) :: v, v1
 	character(80) :: filepath
 	
 	allocate(u(nsd+1,nn))
@@ -47,7 +47,7 @@ subroutine debug(filepath)
 	
 	! initialize w
 	w = 0.
-	v = volume(w)
+!	v = volume(w)
 	
 	nprint=1
 	nsteps=1
@@ -71,8 +71,8 @@ subroutine debug(filepath)
 	
 	step = nprint
 	call write_results(filepath,w)
-	v1 = volume(w)
-	write(*,'("Total volume change:",e12.4)') v1/v - 1.
+!	v1 = volume(w)
+!	write(*,'("Total volume change:",e12.4)') v1/v - 1.
 	
 	deallocate(w)
 	deallocate(u)
@@ -90,7 +90,7 @@ subroutine statics(filepath)
     use mgmres
 	use directsolver
 	use output
-	use volumecheck
+!	use volumecheck
 	use full_internalforce
 	use full_tangentstiffness
 	
@@ -100,7 +100,7 @@ subroutine statics(filepath)
 	real(8), allocatable, dimension(:) :: Fext, F1, F2, Fint, R, w, w1, dw
 	real(8), allocatable, dimension(:,:) ::  A
 	real(8) :: loadfactor, increment, err1, err2
-	real(8) :: v, v1
+!	real(8) :: v, v1
 	character(80) :: filepath
 	
 	allocate(Fext(nn*ned))
@@ -116,7 +116,7 @@ subroutine statics(filepath)
 	
 	! initialize w
 	w = 0.
-	v = volume(w)
+!	v = volume(w)
 	
 	nprint=1
 	nsteps=1
@@ -142,8 +142,8 @@ subroutine statics(filepath)
 		write(*,'("==============================Step",i5,5x,"Load",e12.4,"====================================")') step,loadfactor
 		do while (((err1>tol) .OR. (err2>tol)) .and. (nit<maxit))
 			nit = nit + 1
-			Fint = full_force_internal(w)
-			A = full_tangent_internal(w)
+			Fint = force_internal(w)
+			A = tangent_internal(w)
 			R = Fint - loadfactor*Fext
 			! fix the prescribed displacement
 			if (bc1(1,1) /= -1.) then
@@ -178,9 +178,9 @@ subroutine statics(filepath)
 	end do
 	step = nprint
 	call write_results(filepath,w)
-	v1 = volume(w)
+!	v1 = volume(w)
 	write(*,*) '================================================================================================' 
-	write(*,'("Total volume change:",e12.4)') v1/v - 1.
+!	write(*,'("Total volume change:",e12.4)') v1/v - 1.
 	
 	deallocate(Fext)
 	deallocate(F1)

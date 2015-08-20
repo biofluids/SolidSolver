@@ -1,5 +1,13 @@
 module volumecheck
 	
+	! This module was originally designed to compute the volume of the whole part before and after deformation.
+	! But I could not find a nice formulation to calculate the volume of an arbitrary hexahedron given the
+	! coordinates of its nodes.
+	! Therefore the volume change rate of individual elements are checked in the output subroutine instead,
+	! assuming all the elements are of the same size, average volume change rate is computed.
+	! This module is not in use until the volume formulation is found.  
+    ! Jie Cheng, 08/13/15
+	
 	implicit none
 	
 contains

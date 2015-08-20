@@ -238,7 +238,8 @@ contains
 		real(8), dimension(nsd,nsd) :: dxdxi, dxidx, F, B, eye
 		real(8), allocatable, dimension(:,:) :: xilist
 		integer :: ele,a,i,npt,j,intpt
-		real(8) :: Ja
+		real(8) :: Ja, avg_vcr
+		real(8), dimension(nel) :: vcr, abs_vcr ! volume change rate
 		real(8), dimension(nsd) :: xi
 		real(8), dimension(nsd) :: work ! for lapack inverse
 		integer, dimension(nsd) :: ipiv ! for lapack inverse
@@ -267,7 +268,7 @@ contains
 				sum_sigma(i,j) = 0.
 			end do
 		end do
-		
+		vcr = 0.
 		! allocate
 		if (.NOT. allocated(xilist)) then
 			npt = int_number(nsd,nen,0)
@@ -301,13 +302,7 @@ contains
 				! inverse matrix and determinant
 				dxidx = dxdxi
 				call DGETRF(n1,n1,dxidx,n1,ipiv,info)
-				if (info /= 0) then
-					stop 'Matrix is numerically singular!'
-				end if
 				call DGETRI(n1,dxidx,n1,ipiv,work,n1,info)
-				if (info /= 0) then
-					stop 'Matrix inversion failed!'
-				end if	
 				! compute dNdx
 				dNdx = matmul(dNdxi,dxidx)
 				! deformation gradient, F_ij = delta_ij + dU_i/dx_j
@@ -321,6 +316,7 @@ contains
 						  - F(1,2)*F(2,1)*F(3,3) + F(1,2)*F(2,3)*F(3,1) &
 						  + F(1,3)*F(2,1)*F(3,2) - F(1,3)*F(2,2)*F(3,1)
 				end if
+				vcr(ele) = vcr(ele) + Ja
 				! compute the Kirchhoff stress
 				stress = Kirchhoffstress(nsd,ned,B,Ja,materialprops)
 				! Cauchy stress
@@ -334,11 +330,24 @@ contains
 				! average the stress
 				temp_sigma = temp_sigma + sigma
 			end do
+			vcr(ele) = vcr(ele)/npt
 			sigma = temp_sigma/npt ! average sigma in this element
 			do a=1,nen
 				sum_sigma(:,connect(a,ele)) = sum_sigma(:,connect(a,ele)) + sigma
 			end do
 		end do
+		vcr = vcr - 1.
+		abs_vcr = abs(vcr)
+		avg_vcr = 0.
+		i = maxloc(abs_vcr,1)
+		j = minloc(abs_vcr,1)
+		do a = 1, nel
+			avg_vcr = avg_vcr + vcr(a)
+		end do
+		avg_vcr = avg_vcr/nel
+		write(*,'("The maximum volume change is",e12.5,1x,"in element",i10)'),vcr(i),i
+		write(*,'("The minimum volume change is",e12.5,1x,"in element",i10)'),vcr(j),j
+		write(*,'("The average volume change is",e12.5)'),avg_vcr
 		! sigma per node
 		do i=1,nn
 			sum_sigma(:,i) = sum_sigma(:,i)/dble(share(i))
