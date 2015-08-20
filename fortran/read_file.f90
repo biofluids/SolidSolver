@@ -3,9 +3,9 @@ module read_file
 	implicit none
 	
 	integer :: simu_type, maxit, nsteps, nprint, step, isbinary
-	real(8) :: firststep, adjust, tol, dt, damp
+	real(8) :: firststep, adjust, tol, dt, damp, penalty
 	real(8) :: materialprops(5), gravity(3)
-	integer :: nsd, nen, nn, nel, no_bc1, no_bc2, ned
+	integer :: nsd, nen, nn, nel, ned
 	integer, allocatable :: connect(:,:)
 	real(8), allocatable :: coords(:,:), bc2(:,:), bc1(:,:)
 	integer, allocatable :: share(:)
@@ -14,7 +14,7 @@ module read_file
 	
 contains
 	subroutine read_input(unitnum,filename,simu_type, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, materialprops, &
-						  gravity, isbinary)
+						  gravity, isbinary, penalty)
 		implicit none
 		
 		integer, intent(in) :: unitnum
@@ -23,10 +23,10 @@ contains
 		character(100) :: text
 		character(1) :: flag=':'
 		integer :: i, j, k, l, ios
-		real(8) :: temp(18)
+		real(8) :: temp(19)
 	
 		integer, intent(out) :: simu_type, maxit, nsteps, nprint, isbinary
-		real(8), intent(out) :: firststep, adjust, tol, dt, damp, materialprops(5), gravity(3)
+		real(8), intent(out) :: firststep, adjust, tol, dt, damp, materialprops(5), gravity(3), penalty
 	
 		open(unit=unitnum,file=filename)
 		i=0
@@ -58,6 +58,7 @@ contains
 		materialprops(:)=temp(10:14)
 		gravity(:)=temp(15:17)
 	    isbinary = temp(18)
+		penalty = temp(19)
 		close(10)
 	end subroutine read_input
 	

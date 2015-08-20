@@ -11,7 +11,7 @@ program solidsolver
 	call system_clock(ct,ct_rate,ct_max)
 	
 	call read_input(10,'input.txt',simu_type, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, &
-					materialprops, gravity, isbinary)
+					materialprops, gravity, isbinary,penalty)
 	call read_mesh(nsd,ned,nn,nel,nen,coords,connect,bc1,bc2,share)
 
 	if (simu_type == 0) then 
@@ -100,6 +100,8 @@ subroutine statics(filepath)
 	real(8), allocatable, dimension(:) :: Fext, F1, F2, Fint, R, w, w1, dw
 	real(8), allocatable, dimension(:,:) ::  A
 	real(8) :: loadfactor, increment, err1, err2
+	real(8), dimension(size(bc1,2)) :: constraint
+	real(8), dimension(size(bc1,2),nn*ned) :: der_constraint
 !	real(8) :: v, v1
 	character(80) :: filepath
 	
@@ -116,6 +118,8 @@ subroutine statics(filepath)
 	
 	! initialize w
 	w = 0.
+	constraint = 0.
+	der_constraint = 0.
 !	v = volume(w)
 	
 	nprint=1
@@ -145,17 +149,23 @@ subroutine statics(filepath)
 			Fint = force_internal(w)
 			A = tangent_internal(w)
 			R = Fint - loadfactor*Fext
-			! fix the prescribed displacement
-			if (bc1(1,1) /= -1.) then
-				do i=1,size(bc1,2)
+			! Apply the bc with penalty method
+			if (size(bc1,2) /= 0) then
+				do i = 1, size(bc1,2)
 					row = ned*(int(bc1(1,i))-1) + int(bc1(2,i))
-					do col=1,ned*nn
-						A(row,col) = 0.
-						A(col,row) = 0.
-					end do
-					A(row,row) = 1.
-					R(row) = w(row) - bc1(3,i)
+					constraint(i) = w(row) - bc1(3,i)
+					der_constraint(i,row) = 1. 
 				end do
+				! Explicit multiplication is used to avoid large sparse matrix multiplication
+				! Actually
+				! A = A + penalty*matmul(transpose(der_constraint),der_constraint)
+				! R = R + penalty*matmul(transpose(der_constraint),constraint)
+				do i = 1, size(bc1,2)
+					row = ned*(int(bc1(1,i))-1) + int(bc1(2,i))
+					A(row,row) = A(row,row) + penalty*der_constraint(i,row)*der_constraint(i,row)
+					R(row) = R(row) + penalty*der_constraint(i,row)*constraint(i)
+				end do
+				
 			end if
 			! solve
 			!call solve_mgmres(nn*ned,A,-R,dw)
