@@ -6,22 +6,20 @@ program solidsolver
 	integer :: ct, ct_rate, ct_max, ct1  
 	
 	call timestamp()
-	
 	filepath = '/Users/jiecheng/Documents/SolidResults/'
 	call system_clock(ct,ct_rate,ct_max)
-	
 	call read_input(10,'input.txt',simu_type, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, &
 					materialprops, gravity, isbinary,penalty)
 	call read_mesh(nsd,ned,nn,nel,nen,coords,connect,bc1,bc2,share)
-
 	if (simu_type == 0) then 
 		call statics(filepath)
 	else if (simu_type == 1) then
 		call dynamics(filepath)
 	else if (simu_type == 2) then
-		call debug(filepath) 
+		call debug(filepath)
+	else if (simu_type == 3) then 
+		call residualstress(filepath)
 	end if
-	
 	call system_clock(ct1)
 	call timestamp()
 	write(*,'("time elapsed:",f12.2,3x,"seconds")') , dble(ct1-ct)/dble(ct_rate)
@@ -39,22 +37,18 @@ subroutine debug(filepath)
 	integer :: i,nit,row,col,j,k
 	real(8), allocatable, dimension(:,:) :: u
 	real(8), allocatable, dimension(:) :: w
-!	real(8) :: v, v1
 	character(80) :: filepath
 	
 	allocate(u(nsd+1,nn))
 	allocate(w(nn*ned))
-	
+
 	! initialize w
 	w = 0.
-!	v = volume(w)
-	
 	nprint=1
 	nsteps=1
 	dt=1.
 	step = 0
 	call write_results(filepath,w)
-
 	! read displacment file
 	open(40,file='abaqus.rpt')
 	do i = 1, nn
@@ -71,12 +65,103 @@ subroutine debug(filepath)
 	
 	step = nprint
 	call write_results(filepath,w)
-!	v1 = volume(w)
-!	write(*,'("Total volume change:",e12.4)') v1/v - 1.
-	
 	deallocate(w)
 	deallocate(u)
 end subroutine debug
+
+subroutine residualstress(filepath)	
+	use read_file
+	use integration
+	use face
+	use shapefunction
+	use material
+	use externalforce
+	use internalforce
+	use tangentstiffness
+    use mgmres
+	use directsolver
+	use output
+	use full_internalforce
+	use full_tangentstiffness
+	
+	implicit none
+	
+	integer :: i,nit,row,col,j,k
+	real(8), allocatable, dimension(:) :: Fint, R, w, w1, dw
+	real(8), allocatable, dimension(:,:) ::  A
+	real(8) :: err1, err2
+	real(8), dimension(size(bc1,2)) :: constraint
+	real(8), dimension(size(bc1,2),nn*ned) :: der_constraint
+	character(80) :: filepath
+	
+
+	allocate(Fint(nn*ned))
+	allocate(R(nn*ned))
+	allocate(w(nn*ned))
+	allocate(w1(nn*ned))
+	allocate(dw(nn*ned))
+	allocate(A(nn*ned,nn*ned))
+	
+	! initialize w
+	w = 0.
+	constraint = 0.
+	der_constraint = 0.
+	
+	nprint=1
+	nsteps=1
+	dt=1.
+	step = 0
+	call write_results(filepath,w)
+	
+	w1 = w
+
+	err1 = 1.
+	err2 = 1.
+	nit = 0
+
+	do while (((err1>tol) .OR. (err2>tol)) .and. (nit<maxit))
+		nit = nit + 1
+		Fint = force_internal(w)
+		A = tangent_internal(w)
+		R = Fint
+		! Apply the bc with penalty method
+		if (size(bc1,2) /= 0) then
+			do i = 1, size(bc1,2)
+				row = ned*(int(bc1(1,i))-1) + int(bc1(2,i))
+				constraint(i) = w(row) - bc1(3,i)
+				der_constraint(i,row) = 1. 
+			end do
+			! Explicit multiplication is used to avoid large sparse matrix multiplication
+			! Actually
+			! A = A + penalty*matmul(transpose(der_constraint),der_constraint)
+			! R = R + penalty*matmul(transpose(der_constraint),constraint)
+			do i = 1, size(bc1,2)
+				row = ned*(int(bc1(1,i))-1) + int(bc1(2,i))
+				A(row,row) = A(row,row) + penalty*der_constraint(i,row)*der_constraint(i,row)
+				R(row) = R(row) + penalty*der_constraint(i,row)*constraint(i)
+			end do	
+		end if
+		! solve
+		!call solve_mgmres(nn*ned,A,-R,dw)
+		call ma57ds(nn*ned,A,-R,dw)
+		w = w + dw
+		! check convergence
+		err1 = sqrt(dot_product(dw,dw)/dot_product(w,w))
+		err2 = sqrt(dot_product(R,R))/(ned*nn)
+		write(*,'("Iteration number:",i8,5x,"Err1:",E12.4,5x,"Err2:",E12.4,5x,"Tolerance:",E12.4)') nit,err1,err2,tol
+	end do
+	
+	step = nprint
+	call write_results(filepath,w)
+	write(*,*) '================================================================================================' 
+
+	deallocate(Fint)
+	deallocate(R)
+	deallocate(w)
+	deallocate(w1)
+	deallocate(dw)
+	deallocate(A)
+end subroutine residualstress
 	
 subroutine statics(filepath)	
 	use read_file

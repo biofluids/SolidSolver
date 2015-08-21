@@ -1,5 +1,5 @@
 ====================Simulation====================
-Dynamic analysis or not:	0
+Dynamic analysis or not:	3
 tolerance:	0.0001
 maximum number of newton iteration:	20
 

@@ -1,7 +1,7 @@
 %function processing
 nsd=3;
 nen=8;
-filename='vessel.inp';
+filename='residual3d.inp';
 infile=fopen(filename,'r');
 %
 content=fgets(infile);
@@ -161,7 +161,8 @@ while ~feof(infile)
                             elseif (str2num(content(length(set(i).name)+3)) == 3)
                                 set(i).dof=set(i).dof+1;
                             end
-                            set(i).value=str2num(content(length(set(i).name)+6));
+                            set(i).value=str2num(content(length(set(i).name)+6))...
+                                *ones(1,length(set(i).node));
                         end
                     end          
                 end
@@ -212,6 +213,11 @@ for i=1:nel
     fprintf(outfile2,'\n');
 end
 fclose(outfile2);
+%% rewrite set(2)
+for i = 1:length(set(2).node)
+    set(2).value(i) = -sin(2.5*3.14159/180)*...
+        sqrt(coords(1,set(2).node(i))^2+coords(2,set(2).node(i))^2+coords(3,set(2).node(i))^2);
+end
 %% write file: bc
 outfile3=fopen('bc.txt','w');
 if (isbc==1)
@@ -219,17 +225,17 @@ if (isbc==1)
     for i=1:nset
         if (set(i).dof>=100) % x is fixed
             bc=[bc,[set(i).node;ones(1,length(set(i).node));...
-                set(i).value*ones(1,length(set(i).node))]];
+                set(i).value]];
             set(i).dof=set(i).dof-100;
         end
         if (set(i).dof>=10) % y is fixed
             bc=[bc,[set(i).node;2*ones(1,length(set(i).node));...
-                set(i).value*ones(1,length(set(i).node))]];
+                set(i).value]];
             set(i).dof=set(i).dof-10;
         end
         if (set(i).dof==1) % z is fixed
             bc=[bc,[set(i).node;3*ones(1,length(set(i).node));...
-                set(i).value*ones(1,length(set(i).node))]];
+                set(i).value]];
             set(i).dof=set(i).dof-1;
         end 
     end
