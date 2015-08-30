@@ -92,6 +92,7 @@ subroutine residualstress(filepath)
 	real(8) :: err1, err2
 	real(8), dimension(size(bc1,2)) :: constraint
 	real(8), dimension(size(bc1,2),nn*ned) :: der_constraint
+	real(8), dimension(nn*ned) :: shapeconstraint
 	character(80) :: filepath
 	
 
@@ -106,6 +107,11 @@ subroutine residualstress(filepath)
 	w = 0.
 	constraint = 0.
 	der_constraint = 0.
+	shapeconstraint = 0.
+	shapeconstraint(1) = 1.
+	shapeconstraint(109) = 1.
+	shapeconstraint(551) = -1.
+	shapeconstraint(659) = -1.
 	
 	nprint=1
 	nsteps=1
@@ -139,7 +145,15 @@ subroutine residualstress(filepath)
 				row = ned*(int(bc1(1,i))-1) + int(bc1(2,i))
 				A(row,row) = A(row,row) + penalty*der_constraint(i,row)*der_constraint(i,row)
 				R(row) = R(row) + penalty*der_constraint(i,row)*constraint(i)
-			end do	
+			end do
+			!A(1,:) = A(1,:) + shapeconstraint
+			!A(109,:) = A(109,:) + shapeconstraint
+			!A(551,:) = A(551,:) - shapeconstraint
+			!A(659,:) = A(659,:) - shapeconstraint
+			!R(1) = R(1) + w(1) + w(109) - w(551) - w(659) - 9.5d-7
+			!R(109) = R(109) + w(1) + w(109) - w(551) - w(659) - 9.5d-7
+			!R(551) = R(551) - (w(1) + w(109) - w(551) - w(659) - 9.5d-7)
+			!R(659) = R(659) - (w(1) + w(109) - w(551) - w(659) - 9.5d-7)
 		end if
 		! solve
 		!call solve_mgmres(nn*ned,A,-R,dw)
@@ -154,7 +168,8 @@ subroutine residualstress(filepath)
 	step = nprint
 	call write_results(filepath,w)
 	write(*,*) '================================================================================================' 
-
+	write(*,*) 'new center',((coords(1,210)+w(419)+coords(1,169)+w(337))/2 + (coords(1,42)+w(83)+coords(1,1)+w(1))/2)/2
+	write(*,*) 'length difference',(coords(1,210)+w(419)-coords(1,42)-w(83)),(coords(1,1)+w(1)-coords(1,169)-w(337))
 	deallocate(Fint)
 	deallocate(R)
 	deallocate(w)
