@@ -87,16 +87,18 @@ subroutine residualstress(filepath)
 	implicit none
 	
 	integer :: i,nit,row,col,j,k
-	real(8), allocatable, dimension(:) :: Fint, R, w, w1, dw
+	real(8), allocatable, dimension(:) :: Fint, R, w, w1, dw, Fext, F1, F2
 	real(8), allocatable, dimension(:,:) ::  A
-	real(8) :: err1, err2
+	real(8) :: err1, err2, increment, loadfactor
 	real(8), dimension(size(bc1,2)) :: constraint
 	real(8), dimension(size(bc1,2),nn*ned) :: der_constraint
-	real(8), dimension(nn*ned) :: shapeconstraint
 	character(80) :: filepath
 	
 
 	allocate(Fint(nn*ned))
+	allocate(Fext(nn*ned))
+	allocate(F1(nn*ned))
+	allocate(F2(nn*ned))
 	allocate(R(nn*ned))
 	allocate(w(nn*ned))
 	allocate(w1(nn*ned))
@@ -107,17 +109,18 @@ subroutine residualstress(filepath)
 	w = 0.
 	constraint = 0.
 	der_constraint = 0.
-	shapeconstraint = 0.
-	shapeconstraint(1) = 1.
-	shapeconstraint(109) = 1.
-	shapeconstraint(551) = -1.
-	shapeconstraint(659) = -1.
 	
 	nprint=1
 	nsteps=1
 	dt=1.
+	loadfactor = 0.
+	increment = firststep
 	step = 0
+	
 	call write_results(filepath,w)
+	call force_traction(F1)
+	call force_body(F2)
+	Fext = F1 + F2
 	
 	w1 = w
 
@@ -146,14 +149,6 @@ subroutine residualstress(filepath)
 				A(row,row) = A(row,row) + penalty*der_constraint(i,row)*der_constraint(i,row)
 				R(row) = R(row) + penalty*der_constraint(i,row)*constraint(i)
 			end do
-			!A(1,:) = A(1,:) + shapeconstraint
-			!A(109,:) = A(109,:) + shapeconstraint
-			!A(551,:) = A(551,:) - shapeconstraint
-			!A(659,:) = A(659,:) - shapeconstraint
-			!R(1) = R(1) + w(1) + w(109) - w(551) - w(659) - 9.5d-7
-			!R(109) = R(109) + w(1) + w(109) - w(551) - w(659) - 9.5d-7
-			!R(551) = R(551) - (w(1) + w(109) - w(551) - w(659) - 9.5d-7)
-			!R(659) = R(659) - (w(1) + w(109) - w(551) - w(659) - 9.5d-7)
 		end if
 		! solve
 		!call solve_mgmres(nn*ned,A,-R,dw)
@@ -168,9 +163,71 @@ subroutine residualstress(filepath)
 	step = nprint
 	call write_results(filepath,w)
 	write(*,*) '================================================================================================' 
-	write(*,*) 'new center',((coords(1,210)+w(419)+coords(1,169)+w(337))/2 + (coords(1,42)+w(83)+coords(1,1)+w(1))/2)/2
-	write(*,*) 'length difference',(coords(1,210)+w(419)-coords(1,42)-w(83)),(coords(1,1)+w(1)-coords(1,169)-w(337))
+	write(*,*) 'left curve', coords(1,756)+w(1511)-coords(1,84)-w(167)
+	write(*,*) 'right curve', coords(1,1)+w(1)-coords(1,673)-w(1345)
+	write(*,*) 'difference', ((coords(1,1)+w(1)-coords(1,673)-w(1345))&
+							-(coords(1,756)+w(1511)-coords(1,84)-w(167))) &
+							/(coords(1,756)+w(1511)-coords(1,84)-w(167))
+	write(*,*) 'new center',(coords(1,1)+w(1)+coords(1,673)+w(1345)+coords(1,84)+w(167)+coords(1,756)+w(1511))/4
+	
+	! apply pressure
+	do while (loadfactor < 1.)
+		step = step + 1
+		if (loadfactor+increment>1.) then
+			increment = 1. - loadfactor
+		end if
+		w1 = w
+		loadfactor  = loadfactor + increment
+		err1 = 1.
+		err2 = 1.
+		nit = 0
+		write(*,'("==============================Step",i5,5x,"Load",e12.4,"====================================")') step,loadfactor
+		do while (((err1>tol) .OR. (err2>tol)) .and. (nit<maxit))
+			nit = nit + 1
+			Fint = force_internal(w)
+			A = tangent_internal(w)
+			R = Fint - loadfactor*Fext
+			! Apply the bc with penalty method
+			if (size(bc1,2) /= 0) then
+				do i = 1, size(bc1,2)
+					row = ned*(int(bc1(1,i))-1) + int(bc1(2,i))
+					constraint(i) = w(row) - bc1(3,i)
+					der_constraint(i,row) = 1. 
+				end do
+				do i = 1, size(bc1,2)
+					row = ned*(int(bc1(1,i))-1) + int(bc1(2,i))
+					A(row,row) = A(row,row) + penalty*der_constraint(i,row)*der_constraint(i,row)
+					R(row) = R(row) + penalty*der_constraint(i,row)*constraint(i)
+				end do	
+			end if
+			! solve
+			call ma57ds(nn*ned,A,-R,dw)
+			w = w + dw
+			! check convergence
+			err1 = sqrt(dot_product(dw,dw)/dot_product(w,w))
+			err2 = sqrt(dot_product(R,R))/(ned*nn)
+			write(*,'("Iteration number:",i8,5x,"Err1:",E12.4,5x,"Err2:",E12.4,5x,"Tolerance:",E12.4)') nit,err1,err2,tol
+		end do
+		if (nit == maxit) then
+			w = w1
+			loadfactor = loadfactor - increment
+			increment = increment / 2
+		else if (nit > 6) then
+			increment = increment*(1-adjust)
+		else if (nit < 6) then
+			increment = increment*(1+adjust)
+		end if
+	end do
+	step = 2*nprint
+	call write_results(filepath,w)
+	write(*,*) '================================================================================================' 
+	
+	
+
 	deallocate(Fint)
+	deallocate(Fext)
+	deallocate(F1)
+	deallocate(F2)
 	deallocate(R)
 	deallocate(w)
 	deallocate(w1)

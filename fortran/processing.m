@@ -215,7 +215,7 @@ end
 fclose(outfile2);
 %% rewrite set(2)
 for i = 1:length(set(2).node)
-    set(2).value(i) = -sin(15*3.14159/180)*...
+    set(2).value(i) = -sin(10*3.14159/180)*...
         sqrt(coords(1,set(2).node(i))^2+coords(2,set(2).node(i))^2);
 end
 %% write file: bc
