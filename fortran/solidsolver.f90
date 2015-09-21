@@ -163,12 +163,12 @@ subroutine residualstress(filepath)
 	step = nprint
 	call write_results(filepath,w)
 	write(*,*) '================================================================================================' 
-	write(*,*) 'left curve', coords(1,756)+w(1511)-coords(1,84)-w(167)
-	write(*,*) 'right curve', coords(1,1)+w(1)-coords(1,673)-w(1345)
-	write(*,*) 'difference', ((coords(1,1)+w(1)-coords(1,673)-w(1345))&
-							-(coords(1,756)+w(1511)-coords(1,84)-w(167))) &
-							/(coords(1,756)+w(1511)-coords(1,84)-w(167))
-	write(*,*) 'new center',(coords(1,1)+w(1)+coords(1,673)+w(1345)+coords(1,84)+w(167)+coords(1,756)+w(1511))/4
+	!write(*,*) 'left curve', coords(1,756)+w(1511)-coords(1,84)-w(167)
+	!write(*,*) 'right curve', coords(1,1)+w(1)-coords(1,673)-w(1345)
+	!write(*,*) 'difference', ((coords(1,1)+w(1)-coords(1,673)-w(1345))&
+	!						-(coords(1,756)+w(1511)-coords(1,84)-w(167))) &
+	!						/(coords(1,756)+w(1511)-coords(1,84)-w(167))
+	!write(*,*) 'new center',(coords(1,1)+w(1)+coords(1,673)+w(1345)+coords(1,84)+w(167)+coords(1,756)+w(1511))/4
 	
 	! apply pressure
 	do while (loadfactor < 1.)

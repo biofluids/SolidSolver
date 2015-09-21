@@ -8,7 +8,7 @@ MODULES = read_file.mod integration.mod face.mod shapefunction.mod material.mod 
 FC = gfortran
 
 main.exe: $(OBJECTS)
-	$(FC) -o main.exe $(OBJECTS) $(LIBS)
+	$(FC) -o main $(OBJECTS) $(LIBS)
 			
 solidsolver.o: $(MODULES) solidsolver.f90
 	$(FC) -c solidsolver.f90
@@ -20,4 +20,4 @@ solidsolver.o: $(MODULES) solidsolver.f90
 	$(FC) -c $<
 	
 clean:
-	rm -f *.o *.mod main.exe
+	rm -f *.o *.mod main

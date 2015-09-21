@@ -35,3 +35,10 @@
 *.exe
 *.out
 *.app
+main
+
+# My Input Files
+bc.txt
+connect.txt
+coords.txt
+load.txt
