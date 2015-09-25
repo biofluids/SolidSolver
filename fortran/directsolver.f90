@@ -61,9 +61,9 @@ contains
 		call MA57AD(n,ne,irn,jcn,lkeep,keep,iwork,icntl,info,rinfo)
 	
 		! Factorize matrix
-		lfact = 2*info(9)
+		lfact = info(9) + info(9)/5
 		allocate(fact(lfact))
-		lifact = 2*info(10)
+		lifact = info(10) + info(10)/5
 		allocate(ifact(lifact))
 		!write(*,*) "info(9): ", info(9)
 		call MA57BD(n,ne,a,fact,lfact,ifact,lifact,lkeep,keep,iwork,icntl,cntl,info,rinfo)

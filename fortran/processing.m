@@ -1,7 +1,7 @@
 %function processing
 nsd=3;
 nen=8;
-filename='full_long_cylinder_18520.inp';
+filename='half_long_cylinder_residual.inp';
 infile=fopen(filename,'r');
 %
 content=fgets(infile);
@@ -214,10 +214,10 @@ for i=1:nel
 end
 fclose(outfile2);
 %% rewrite set(2)
-%for i = 1:length(set(3).node)
-%    set(3).value(i) = -sin(5*3.14159/180)*...
-%        sqrt(coords(1,set(3).node(i))^2+coords(2,set(3).node(i))^2);
-%end
+for i = 1:length(set(3).node)
+    set(3).value(i) = -sin(5*3.14159/180)*...
+        sqrt(coords(1,set(3).node(i))^2+coords(2,set(3).node(i))^2);
+end
 %% write file: bc
 outfile3=fopen('bc.txt','w');
 if (isbc==1)
