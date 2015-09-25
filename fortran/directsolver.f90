@@ -17,7 +17,7 @@ contains
 		integer, dimension(40) :: info
 		real(8), dimension(20) :: rinfo
 		! trivial parameters
-		integer :: i, j, k 
+		integer :: i, j, k, ic 
 		
 		external MA57ID, MA57AD, MA57BD, MA57CD
 	
@@ -61,11 +61,13 @@ contains
 		call MA57AD(n,ne,irn,jcn,lkeep,keep,iwork,icntl,info,rinfo)
 	
 		! Factorize matrix
-		lfact = 100*info(9)
+		lfact = 2*info(9)
 		allocate(fact(lfact))
-		lifact = 100*info(10)
+		lifact = 2*info(10)
 		allocate(ifact(lifact))
+		!write(*,*) "info(9): ", info(9)
 		call MA57BD(n,ne,a,fact,lfact,ifact,lifact,lkeep,keep,iwork,icntl,cntl,info,rinfo)
+		!write(*,*) "info(17) ", info(17)
 	
 		! Solve the equations
 		job = 1

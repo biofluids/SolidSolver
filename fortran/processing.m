@@ -1,7 +1,7 @@
 %function processing
 nsd=3;
 nen=8;
-filename='residual3d_full_small.inp';
+filename='full_long_cylinder_18520.inp';
 infile=fopen(filename,'r');
 %
 content=fgets(infile);
