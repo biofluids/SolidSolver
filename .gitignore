@@ -35,10 +35,15 @@
 *.exe
 *.out
 *.app
-main
+mixed_main
+reduced_main
+full_main
+compute_poisson_ratio
+pre_preocessing
 
 # My Input Files
 bc.txt
 connect.txt
 coords.txt
 load.txt
+.DS_Store

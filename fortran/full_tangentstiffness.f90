@@ -1,17 +1,16 @@
 module full_tangentstiffness
-	
-	
+
 	implicit none
 	
 contains
-	function full_tangent_internal(dofs)
+	function tangent_internal(dofs)
 		use read_file, only: nsd, ned, nn, coords, nel, nen, connect, materialprops
 		use shapefunction
 		use integration
-		use material
+		use full_material
 		implicit none
 		real(8), dimension(nn*ned), intent(in) :: dofs
-		real(8), dimension(nn*ned,nn*ned) :: full_tangent_internal
+		real(8), dimension(nn*ned,nn*ned) :: tangent_internal
 		real(8), dimension(ned,nsd,ned,nsd) :: C
 		real(8), dimension(nsd,nen) :: elecoord
 		real(8), dimension(ned,nen) :: eledof
@@ -43,17 +42,14 @@ contains
 			end do
 		end do
 		! initialize 
-		do i=1,ned*nn
-			do j=1,ned*nn
-				full_tangent_internal(i,j) = 0.
-			end do
-		end do
+		tangent_internal = 0.
 		! allocate
-		if (.NOT. allocated(xilist)) then
-			npt = int_number(nsd,nen,0)
-			allocate(xilist(nsd,npt))
-			allocate(weights(npt))
-		end if	
+		npt = int_number(nsd,nen,0)
+		allocate(xilist(nsd,npt))
+		allocate(weights(npt))
+		xilist = int_points(nsd,nen,npt)
+		weights = int_weights(nsd,nen,npt)
+				
 		! loop over elements
 		do ele=1,nel
 			! extract coords of nodes, and dofs for the element
@@ -64,16 +60,7 @@ contains
 				end do
 			end do
 			! initialize
-			do i=1,nen*ned
-				do j=1,nen*ned
-					kint(i,j) = 0.
-				end do
-			end do
-			! fully integration
-			! set up integration points and weights
-			npt = int_number(nsd,nen,0)
-			xilist = int_points(nsd,nen,npt)
-			weights = int_weights(nsd,nen,npt)
+			kint = 0.
 			! loop over integration points
 			do intpt=1,npt
 				xi = xilist(:,intpt)
@@ -83,14 +70,7 @@ contains
 				! inverse matrix and determinant
 				dxidx = dxdxi
 				call DGETRF(n1,n1,dxidx,n1,ipiv,info)
-				if (info /= 0) then
-					stop 'Matrix is numerically singular!'
-				end if
 				call DGETRI(n1,dxidx,n1,ipiv,work,n1,info)
-				if (info /= 0) then
-					stop 'Matrix inversion failed!'
-				end if	
-				!
 				if (nsd == 2) then
 					det = dxdxi(1,1)*dxdxi(2,2) - dxdxi(1,2)*dxdxi(2,1)
 				else if (nsd == 3) then
@@ -115,14 +95,7 @@ contains
 				! inverse of F
 				Finv = F
 				call DGETRF(n1,n1,Finv,n1,ipiv,info)
-				if (info /= 0) then
-					stop 'Matrix is numerically singular!'
-				end if
 				call DGETRI(n1,Finv,n1,ipiv,work,n1,info)
-				if (info /= 0) then
-					stop 'Matrix inversion failed!'
-				end if	
-				!
 				dNdy = matmul(dNdx,Finv)
 				! compute the Kirchhoff stress
 				stress = Kirchhoffstress(nsd,ned,B,Ja,materialprops)
@@ -138,10 +111,8 @@ contains
 								do j=1,nsd
 									do l=1,nsd
 										kint(row,col) = kint(row,col) + &
-											            C(i,j,k,l)*dNdy(a,j)*dNdy(d,l)*weights(intpt)*det;			
+											            (eye(i,k)*stress(j,l)+C(i,j,k,l))*dNdy(a,j)*dNdy(d,l)*weights(intpt)*det;			
 									end do
-									kint(row,col) = kint(row,col) - &
-									                stress(i,j)*dNdy(a,k)*dNdy(d,j)*det*weights(intpt);
 								end do
 							end do
 						end do
@@ -156,12 +127,16 @@ contains
 						do k=1,ned
 							row = ned*(connect(a,ele)-1) + i;
 							col = ned*(connect(d,ele)-1) + k;
-		                    full_tangent_internal(row,col) = full_tangent_internal(row,col) + kint(ned*(a-1)+i,ned*(d-1)+k);
+		                    tangent_internal(row,col) = tangent_internal(row,col) + kint(ned*(a-1)+i,ned*(d-1)+k);
 						end do
 					end do
 				end do
 			end do
 		end do
-	end function full_tangent_internal
+		
+		deallocate(xilist)
+		deallocate(weights)
+		
+	end function tangent_internal
 end module full_tangentstiffness
 		

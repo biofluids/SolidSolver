@@ -1,0 +1,22 @@
+LIBS = /usr/local/lib/liblapack.a  /usr/local/lib/libblas.a /usr/local/lib/libma57.a /usr/local/lib/libmetis.a
+OBJECTS = read_file.o integration.o face.o shapefunction.o full_material.o externalforce.o full_internalforce.o \
+	      full_tangentstiffness.o symmetric_solver.o full_output.o mass.o \
+		  full_solidsolver.o
+MODULES = read_file.mod integration.mod face.mod shapefunction.mod full_material.mod externalforce.mod full_internalforce.mod \
+          full_tangentstiffness.mod symmetric_solver.mod full_output.mod mass.mod
+FC = gfortran
+
+main: $(OBJECTS)
+	$(FC) -o full_main $(OBJECTS) $(LIBS)
+			
+solidsolver.o: $(MODULES) full_solidsolver.f90
+	$(FC) -c full_solidsolver.f90
+
+%.mod: %.f90
+	$(FC) -c $<
+	
+%.o: %.f90
+	$(FC) -c $<
+	
+clean:
+	rm -f *.o *.mod full_main

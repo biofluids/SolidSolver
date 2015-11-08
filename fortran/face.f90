@@ -1,12 +1,12 @@
 module face
 	implicit none
-	! this module contains 3 functions which return the number of faces in a element, number of nodes on a face,
-	! and the ids of the nodes on a face
 	
 contains
 	
 	function face_number(nsd, nen)
+		! Return the number of faces in an element
 		implicit none
+		
 		integer, intent(in) :: nsd, nen
 		integer :: face_number
 		
@@ -26,7 +26,9 @@ contains
 	end function face_number
 	
 	function face_nodes_no(nsd, nen)
+		! Return the number of nodes on a face
 		implicit none
+		
 		integer, intent(in) :: nsd, nen
 		integer :: face_nodes_no
 		
@@ -42,7 +44,9 @@ contains
 	end function face_nodes_no
 	
 	function face_nodes(nsd, nen, nodes, face)
+		! Return the ids of the nodes on a face
 		implicit none
+		
 		integer, intent(in) :: nsd,nen,nodes,face
 		integer, dimension(nodes) :: face_nodes
 		integer, dimension(3) :: i3
@@ -84,7 +88,6 @@ contains
 			end if
 		end if
 	end function face_nodes
-
 	
 end module face
 		

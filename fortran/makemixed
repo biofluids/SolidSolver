@@ -1,0 +1,23 @@
+LIBS = /usr/local/lib/liblapack.a  /usr/local/lib/libblas.a /usr/local/lib/libmetis.a /usr/local/lib/libma57.a
+OBJECTS = read_file.o integration.o face.o shapefunction.o mixed_material.o mixed_externalforce.o mixed_output.o \
+	      symmetric_solver.o mass.o \
+		  mixed_tangentstiffness.o mixed_internalforce.o mixed_solidsolver.o
+MODULES = read_file.mod integration.mod face.mod shapefunction.mod mixed_material.mod mixed_externalforce.mod \
+          symmetric_solver.mod mass.mod \
+		  mixed_tangentstiffness.mod mixed_internalforce.mod mixed_output.mod
+FC = gfortran
+
+main: $(OBJECTS)
+	$(FC) -o mixed_main $(OBJECTS) $(LIBS)
+			
+mixed_solidsolver.o: $(MODULES) mixed_solidsolver.f90
+	$(FC) -c mixed_solidsolver.f90
+
+%.mod: %.f90
+	$(FC) -c $<
+	
+%.o: %.f90
+	$(FC) -c $<
+	
+clean:
+	rm -f *.o *.mod main

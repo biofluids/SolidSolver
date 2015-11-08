@@ -1,0 +1,22 @@
+LIBS = /usr/local/lib/liblapack.a  /usr/local/lib/libblas.a /usr/local/lib/libma57.a /usr/local/lib/libmetis.a
+OBJECTS = read_file.o integration.o face.o shapefunction.o reduced_material.o externalforce.o reduced_internalforce.o \
+	      reduced_tangentstiffness.o symmetric_solver.o reduced_output.o mass.o \
+		  reduced_solidsolver.o
+MODULES = read_file.mod integration.mod face.mod shapefunction.mod reduced_material.mod externalforce.mod reduced_internalforce.mod \
+          reduced_tangentstiffness.mod symmetric_solver.mod reduced_output.mod mass.mod
+FC = gfortran
+
+main: $(OBJECTS)
+	$(FC) -o reduced_main $(OBJECTS) $(LIBS)
+			
+solidsolver.o: $(MODULES) reduced_solidsolver.f90
+	$(FC) -c reduced_solidsolver.f90
+
+%.mod: %.f90
+	$(FC) -c $<
+	
+%.o: %.f90
+	$(FC) -c $<
+	
+clean:
+	rm -f *.o *.mod reduced_main

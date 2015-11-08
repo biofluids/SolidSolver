@@ -2,12 +2,12 @@ module integration
 	
 	implicit none
 	
-	! this module contains 3 functions that are used to compute the number/weights/coordinates of the integration points
-	
 contains
 	
 	function int_number(nsd, nen, reduced)
+		!  Return the number of integration points
 		implicit none
+		
 		integer, intent(in) :: nsd, nen, reduced
 		integer :: int_number
 		
@@ -48,10 +48,13 @@ contains
 				end if
 			end if
 		end if
+		
     end function int_number
 	
 	function int_weights(nsd, nen, npt)
+		! Return the weights of integration points
 		implicit none
+		
 		integer, intent(in) :: nsd, nen, npt
 		real(8), dimension(npt) :: int_weights
 		
@@ -84,10 +87,13 @@ contains
 				end if
 			end if
 		end if
+		
 	end function int_weights
 	
 	function int_points(nsd, nen, npt)
+		! Return the coordinates of integration points
 		implicit none
+		
 		integer, intent(in) :: nsd, nen, npt
 		real(8), dimension(nsd,npt) :: int_points
 		real(8) :: temp = 1/sqrt(3.)

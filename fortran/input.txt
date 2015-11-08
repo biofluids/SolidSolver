@@ -1,5 +1,5 @@
 ====================Simulation====================
-Dynamic analysis or not:	3
+mode(static->0/dynamic->1):	0
 tolerance:	0.0001
 maximum number of newton iteration:	20
 
@@ -14,12 +14,12 @@ print interval:	10
 damping:	0.0
 
 =====================Material=====================
-Material type(neo-Hookean~2/Mooney-Rivlin~3):	3
+Material type(neo-Hookean~2/Mooney-Rivlin~3):	2
 
 Material coefficients
-mu1:	0.39d6
-mu2:	0.015d6
-K1:	1d8
+mu1:	6d6
+mu2:	3d6
+K1:	1d11
 rho:	1.52
 
 x_gravity:	0.

@@ -1,4 +1,4 @@
-module material
+module reduced_material
 	implicit none
 	! this module contains a function to compute the material stiffness tensor, and a function to compute Kirchhoff stress
 	
@@ -130,4 +130,4 @@ contains
 		end do
 	end function Kirchhoffstress	
 	
-end module material
+end module reduced_material

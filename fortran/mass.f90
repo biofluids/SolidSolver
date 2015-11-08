@@ -1,4 +1,5 @@
 module mass
+	
 	implicit none
 	
 contains
@@ -6,7 +7,9 @@ contains
 		use read_file, only:  nsd, ned, nn, coords, nel, nen, connect, materialprops
 		use shapefunction
 		use integration
+		
 		implicit none
+		
 		real(8), dimension(nn*ned,nn*ned), intent(out) :: M
 		real(8), dimension(nen*ned,nen*ned) :: mele
 		real(8), dimension(nsd,nen) :: elecoord
@@ -23,17 +26,12 @@ contains
 		rho = materialprops(5)
 		
 		! allocate
-		if (.NOT. allocated(xilist)) then
-			npt = int_number(nsd,nen,0)
-			allocate(xilist(nsd,npt))
-			allocate(weights(npt))
-		end if
+		npt = int_number(nsd,nen,0)
+		allocate(xilist(nsd,npt))
+		allocate(weights(npt))
+			
 		! initialize
-		do i=1,nn*ned
-			do j=1,nn*ned
-				M(i,j) = 0.
-			end do
-		end do
+		M = 0.
 		
 		! loop over elements
 		do ele=1,nel
@@ -43,17 +41,12 @@ contains
 			end do
 			! fully integration
 			! set up integration points and weights
-			npt = int_number(nsd,nen,0)
 			xilist = int_points(nsd,nen,npt)
 			weights = int_weights(nsd,nen,npt)
 			! initialize
-			do i=1,nen*ned
-				do j=1,nen*ned
-					mele(i,j) = 0.
-				end do
-			end do
+			mele = 0.
 			! loop over integration points
-			do intpt=1,npt
+			do intpt=1, npt
 				xi = xilist(:,intpt)
 				dNdxi = sfder(nen,nsd,xi)
 				N = sf(nen,nsd,xi)
@@ -68,9 +61,9 @@ contains
 						  + dxdxi(1,3)*dxdxi(2,1)*dxdxi(3,2) - dxdxi(1,3)*dxdxi(2,2)*dxdxi(3,1)
 				end if
 				! compute the element mass matrix
-				do a=1,nen
-					do b=1,nen
-						do i=1,ned
+				do a = 1, nen
+					do b = 1, nen
+						do i = 1, ned
 							row = ned*(a-1) + i
 							col = ned*(b-1) + i
 							mele(row,col) = mele(row,col) + N(a)*N(b)*rho*det*weights(intpt)
@@ -91,5 +84,9 @@ contains
 				end do
 			end do
 		end do
+		
+		deallocate(xilist)
+		deallocate(weights)
+		
 	end subroutine mass_matrix
 end module

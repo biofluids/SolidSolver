@@ -1,9 +1,9 @@
-module output
+module reduced_output
 	implicit none
 	
 contains
 	subroutine write_results(filepath,dofs)
-		use read_file, only: simu_type, step, nn, ned, isbinary
+		use read_file, only: mode, step, nn, ned, isbinary
 		implicit none
 		character(80) :: filepath
 		real(8), dimension(nn*ned), intent(in) :: dofs
@@ -12,9 +12,9 @@ contains
 		end if
 		call write_geometry(filepath,dofs)
 		call write_displacement(filepath,dofs)
-		call write_stress(filepath,dofs)
-		
+		call write_stress(filepath,dofs)	
 	end subroutine write_results
+	
 	subroutine write_case(filepath)
 		use read_file, only: nsteps, nprint, dt, ned, nn
 		implicit none
@@ -223,7 +223,7 @@ contains
 		use read_file, only: step, nsd, ned, nn, coords, nel, nen, connect, materialprops, share, nprint, isbinary
 		use shapefunction
 		use integration
-		use material
+		use reduced_material
 		
 		implicit none
 		
@@ -381,12 +381,4 @@ contains
 			close(10)	
 		end if
 	end subroutine write_stress
-end module output
-			
-			
-		
-		
-		
-		
-		
-		
+end module reduced_output

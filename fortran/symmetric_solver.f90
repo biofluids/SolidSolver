@@ -1,4 +1,4 @@
-module directsolver
+module symmetric_solver
 	implicit none
 	
 contains
@@ -17,7 +17,7 @@ contains
 		integer, dimension(40) :: info
 		real(8), dimension(20) :: rinfo
 		! trivial parameters
-		integer :: i, j, k, ic 
+		integer :: i, j, k 
 		
 		external MA57ID, MA57AD, MA57BD, MA57CD
 	
@@ -61,13 +61,11 @@ contains
 		call MA57AD(n,ne,irn,jcn,lkeep,keep,iwork,icntl,info,rinfo)
 	
 		! Factorize matrix
-		lfact = info(9) + info(9)/5
+		lfact = 100*info(9)
 		allocate(fact(lfact))
-		lifact = info(10) + info(10)/5
+		lifact = 100*info(10)
 		allocate(ifact(lifact))
-		!write(*,*) "info(9): ", info(9)
 		call MA57BD(n,ne,a,fact,lfact,ifact,lifact,lkeep,keep,iwork,icntl,cntl,info,rinfo)
-		!write(*,*) "info(17) ", info(17)
 	
 		! Solve the equations
 		job = 1
@@ -89,4 +87,4 @@ contains
 		deallocate(work)
 		deallocate(a)
 	end subroutine ma57ds
-end module directsolver
+end module symmetric_solver

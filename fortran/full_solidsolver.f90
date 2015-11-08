@@ -1,36 +1,52 @@
 program solidsolver
+	
+	! **********************************************************************
+	! Main program to conduct the analysis
+	! Currently 4 modes are available: static, dynamic, residual and debug
+	! Full formulation is in use
+	! **********************************************************************
+	
 	use read_file
 	
 	implicit none
-	character(80) :: filepath
-	integer :: ct, ct_rate, ct_max, ct1  
 	
+	character(80) :: filepath
+	integer :: ct, ct_rate, ct_max, ct1
+	real(8) :: time_elapsed  
 	call timestamp()
-	filepath = '/Users/jiecheng/Documents/SolidResults/'
+	filepath = '/Users/Jie/Documents/SolidResults/'
 	call system_clock(ct,ct_rate,ct_max)
-	call read_input(10,'input.txt',simu_type, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, &
+	call read_input(10, 'input.txt', mode, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, &
 					materialprops, gravity, isbinary,penalty)
-	call read_mesh(nsd,ned,nn,nel,nen,coords,connect,bc1,bc2,share)
-	if (simu_type == 0) then 
+	call read_mesh(nsd, ned, nn, nel, nen, coords, connect, bc1, bc2, share)
+	if (mode == 0) then 
 		call statics(filepath)
-	else if (simu_type == 1) then
+	else if (mode == 1) then
 		call dynamics(filepath)
-	else if (simu_type == 2) then
-		call debug(filepath)
-	else if (simu_type == 3) then 
+	else if (mode == 2) then
 		call residualstress(filepath)
+	else if (mode == 3) then 
+		call debug(filepath)
 	end if
 	call system_clock(ct1)
 	call timestamp()
-	write(*,'("time elapsed:",f12.2,3x,"seconds")') , dble(ct1-ct)/dble(ct_rate)
+	time_elapsed = dble(ct1-ct)/dble(ct_rate)
+	if (time_elapsed < 3600) then
+		! print result in minute
+		time_elapsed = time_elapsed/60
+		write(*,'("time elapsed:", f12.2, 3x, "minutes")'), time_elapsed
+	else 
+		! print result in hour
+		time_elapsed = time_elapsed/3600
+		write(*,'("time elapsed:", f12.2, 3x, "hours")'), time_elapsed
+	end if
 	
 end program solidsolver
 
 subroutine debug(filepath)
-	! This is to read displacment file from Abaqus and output the stress	
+	! This is to read displacment file from Abaqus and compute the stress	
 	use read_file
-	use output
-!	use volumecheck
+	use full_output
 
 	implicit none
 	
@@ -74,15 +90,12 @@ subroutine residualstress(filepath)
 	use integration
 	use face
 	use shapefunction
-	use material
+	use full_material
 	use externalforce
-	use internalforce
-	use tangentstiffness
-    use mgmres
-	use directsolver
-	use output
 	use full_internalforce
 	use full_tangentstiffness
+	use symmetric_solver
+	use full_output
 	
 	implicit none
 	
@@ -162,14 +175,7 @@ subroutine residualstress(filepath)
 	
 	step = nprint
 	call write_results(filepath,w)
-	write(*,*) '================================================================================================' 
-	!write(*,*) 'left curve', coords(1,756)+w(1511)-coords(1,84)-w(167)
-	!write(*,*) 'right curve', coords(1,1)+w(1)-coords(1,673)-w(1345)
-	!write(*,*) 'difference', ((coords(1,1)+w(1)-coords(1,673)-w(1345))&
-	!						-(coords(1,756)+w(1511)-coords(1,84)-w(167))) &
-	!						/(coords(1,756)+w(1511)-coords(1,84)-w(167))
-	!write(*,*) 'new center',(coords(1,1)+w(1)+coords(1,673)+w(1345)+coords(1,84)+w(167)+coords(1,756)+w(1511))/4
-	
+	write(*,*) repeat("=", 95) 
 	! apply pressure
 	do while (loadfactor < 1.)
 		step = step + 1
@@ -181,8 +187,8 @@ subroutine residualstress(filepath)
 		err1 = 1.
 		err2 = 1.
 		nit = 0
-		write(*,'("==============================Step",i5,5x,"Load",e12.4,"====================================")') step,loadfactor
-		do while (((err1>tol) .OR. (err2>tol)) .and. (nit<maxit))
+		write(*,'(A, A, i5, 5x, A, e12.4, A)') repeat('=', 30), 'Step', step, 'Load', loadfactor, repeat('=', 36)
+		do while (((err1>tol) .or. (err2>tol)) .and. (nit<maxit))
 			nit = nit + 1
 			Fint = force_internal(w)
 			A = tangent_internal(w)
@@ -220,9 +226,7 @@ subroutine residualstress(filepath)
 	end do
 	step = 2*nprint
 	call write_results(filepath,w)
-	write(*,*) '================================================================================================' 
-	
-	
+	write(*,*) repeat("=", 95)
 
 	deallocate(Fint)
 	deallocate(Fext)
@@ -233,6 +237,7 @@ subroutine residualstress(filepath)
 	deallocate(w1)
 	deallocate(dw)
 	deallocate(A)
+	
 end subroutine residualstress
 	
 subroutine statics(filepath)	
@@ -240,16 +245,12 @@ subroutine statics(filepath)
 	use integration
 	use face
 	use shapefunction
-	use material
+	use full_material
 	use externalforce
-	use internalforce
-	use tangentstiffness
-    use mgmres
-	use directsolver
-	use output
-!	use volumecheck
 	use full_internalforce
 	use full_tangentstiffness
+	use symmetric_solver
+	use full_output
 	
 	implicit none
 	
@@ -259,7 +260,6 @@ subroutine statics(filepath)
 	real(8) :: loadfactor, increment, err1, err2
 	real(8), dimension(size(bc1,2)) :: constraint
 	real(8), dimension(size(bc1,2),nn*ned) :: der_constraint
-!	real(8) :: v, v1
 	character(80) :: filepath
 	
 	allocate(Fext(nn*ned))
@@ -272,12 +272,10 @@ subroutine statics(filepath)
 	allocate(dw(nn*ned))
 	allocate(A(nn*ned,nn*ned))
 	
-	
 	! initialize w
 	w = 0.
 	constraint = 0.
 	der_constraint = 0.
-!	v = volume(w)
 	
 	nprint=1
 	nsteps=1
@@ -300,8 +298,8 @@ subroutine statics(filepath)
 		err1 = 1.
 		err2 = 1.
 		nit = 0
-		write(*,'("==============================Step",i5,5x,"Load",e12.4,"====================================")') step,loadfactor
-		do while (((err1>tol) .OR. (err2>tol)) .and. (nit<maxit))
+		write(*,'(A, A, i5, 5x, A, e12.4, A)') repeat('=', 30), 'Step', step, 'Load', loadfactor, repeat('=', 36)
+		do while (((err1>tol) .or. (err2>tol)) .and. (nit<maxit))
 			nit = nit + 1
 			Fint = force_internal(w)
 			A = tangent_internal(w)
@@ -345,9 +343,7 @@ subroutine statics(filepath)
 	end do
 	step = nprint
 	call write_results(filepath,w)
-!	v1 = volume(w)
-	write(*,*) '================================================================================================' 
-!	write(*,'("Total volume change:",e12.4)') v1/v - 1.
+	write(*,*) repeat("=", 95)
 	
 	deallocate(Fext)
 	deallocate(F1)
@@ -365,15 +361,13 @@ subroutine dynamics(filepath)
 	use integration
 	use face
 	use shapefunction
-	use material
+	use full_material
 	use externalforce
-	use internalforce
-	use tangentstiffness
-    use mgmres
-	use directsolver
-	use output
+	use full_internalforce
+	use full_tangentstiffness
+	use symmetric_solver
+	use full_output
 	use mass
-	use volumecheck
 	
 	implicit none
 	
@@ -416,7 +410,6 @@ subroutine dynamics(filepath)
 	an1 = 0.
 	gamma = 0.5
 	beta = 0.25
-	v = volume(w)
 	
 	call write_results(filepath,w)
 	call mass_matrix(M)
@@ -441,7 +434,7 @@ subroutine dynamics(filepath)
 	call ma57ds(nn*ned,M,F,an)
 	
 	do step = 1,nsteps
-		write(*,'("==============================Step",i5,5x,"Time",e12.4,"====================================")') step,step*dt
+		write(*,'(A, A, i5, 5x, A, e12.4, A)') repeat('=', 30), 'Step', step, 'Time', step*dt, repeat('=', 36)
 		err1 = 1.
 		err2 = 1.
 		nit = 0
@@ -484,9 +477,7 @@ subroutine dynamics(filepath)
 		write(*,'("Iteration number:",i8,5x,"Err1:",E12.4,5x,"Err2:",E12.4,5x,"Tolerance:",E12.4)') nit,err1,err2,tol
 		vn = vn1
 		un = w
-		an = an1
-		v1 = volume(w)
-		write(*,'("Total volume change:",e12.4)') v1/v - 1.
+		an = an1		
 		if (MOD(step,nprint)==0) then
 			call write_results(filepath,w)
 		end if
@@ -516,14 +507,15 @@ end subroutine dynamics
 
 subroutine timestamp ( )
 
-!*****************************************************************************80
+! *****************************************************************************
 !
-!! TIMESTAMP prints the current YMDHMS date as a time stamp.
+!  TIMESTAMP prints the current YMDHMS date as a time stamp.
 ! 
 !  Author:
 !
 !    John Burkardt
-!
+! *****************************************************************************
+
   implicit none
 
   character ( len = 8 ) ampm

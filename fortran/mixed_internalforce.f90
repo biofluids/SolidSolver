@@ -1,27 +1,26 @@
-module mixed_internalforce
+module mixed_internalforce	
 	implicit none
-	
 contains
-	function force_internal_full(dofs)
+	function force_internal(dofs)
 		use read_file, only: nsd, ned, nn, coords, nel, nen, connect, materialprops
 		use shapefunction
 		use integration
-		use material
+		use mixed_material
 		implicit none
-		real(8), dimension(nn*ned), intent(in) :: dofs
-		real(8), dimension(nn*ned) :: force_internal_full
+		real(8), dimension(nn*ned+nel), intent(in) :: dofs
+		real(8), dimension(nn*ned+nel) :: force_internal
 		real(8), dimension(nsd,nen) :: elecoord
 		real(8), dimension(ned,nen) :: eledof
 		real(8), dimension(nen,nsd) :: dNdx, dNdy
 		real(8), dimension(ned,nsd) :: stress
-		real(8), dimension(nen*ned) :: fele
+		real(8), dimension(nen*ned+1) :: fele
 		real(8), dimension(nsd) :: xi
 		real(8), dimension(nen,nsd) :: dNdxi 
 		real(8), dimension(nsd,nsd) :: dxdxi, dxidx, F, Finv, B, eye
 		real(8), allocatable, dimension(:,:) :: xilist
 		real(8), allocatable, dimension(:) :: weights
-		integer :: ele,a,i,npt,j,row,intpt,npt1
-		real(8) :: det, Ja
+		integer :: ele,a,i,npt,j,row,intpt
+		real(8) :: det, Ja, pressure
 		real(8), dimension(nsd) :: work ! for lapack inverse
 		integer, dimension(nsd) :: ipiv ! for lapack inverse
 		integer :: info, n1 ! for lapack inverse
@@ -29,6 +28,7 @@ contains
 		external DGETRF
 		external DGETRI
 		n1 = nsd
+		
 		! square matrix
 		do i=1,nsd
 			do j=1,nsd
@@ -40,18 +40,13 @@ contains
 			end do
 		end do
 		
-		! initialize force_internal_full
-		do i=1,nn*ned
-			force_internal_full(i) = 0.
-		end do
+		! initialize force_internal
+		force_internal = 0.
 		
 		! allocate
-		if (.NOT. allocated(xilist)) then
-			npt = int_number(nsd,nen,0)
-			allocate(xilist(nsd,npt))
-			allocate(weights(npt))
-		end if
-		
+		npt = int_number(nsd,nen,0)
+		allocate(xilist(nsd,npt))
+		allocate(weights(npt))
 		
 		! loop over elements
 		do ele=1,nel
@@ -62,11 +57,11 @@ contains
 					eledof(i,a) = dofs(ned*(connect(a,ele)-1)+i)
 				end do
 			end do
+			! extract the element pressure
+			pressure = dofs(ned*nn+ele)
 			! compute the internal force
 			! initialize
-			do i=1,ned*nen
-				fele(i) = 0.
-			end do
+			fele = 0.
 			! fully integration
 			! set up integration points and weights
 			npt = int_number(nsd,nen,0)
@@ -81,14 +76,7 @@ contains
 				! inverse matrix and determinant
 				dxidx = dxdxi
 				call DGETRF(n1,n1,dxidx,n1,ipiv,info)
-				if (info /= 0) then
-					stop 'Matrix is numerically singular!'
-				end if
 				call DGETRI(n1,dxidx,n1,ipiv,work,n1,info)
-				if (info /= 0) then
-					stop 'Matrix inversion failed!'
-				end if	
-				!
 				if (nsd == 2) then
 					det = dxdxi(1,1)*dxdxi(2,2) - dxdxi(1,2)*dxdxi(2,1)
 				else if (nsd == 3) then
@@ -113,17 +101,10 @@ contains
 				! inverse of F
 				Finv = F
 				call DGETRF(n1,n1,Finv,n1,ipiv,info)
-				if (info /= 0) then
-					stop 'Matrix is numerically singular!'
-				end if
-				call DGETRI(n1,Finv,n1,ipiv,work,n1,info)
-				if (info /= 0) then
-					stop 'Matrix inversion failed!'
-				end if	
-				!
+				call DGETRI(n1,Finv,n1,ipiv,work,n1,info)	
 				dNdy = matmul(dNdx,Finv)
 				! compute the Kirchhoff stress
-				stress = Kirchhoffstress(nsd,ned,B,Ja,materialprops)
+				stress = Kirchhoffstress(nsd,ned,B,Ja,pressure,materialprops)
 				! compute the element internal force
 				do a=1,nen
 					do i=1,nsd
@@ -133,15 +114,22 @@ contains
 						end do
 					end do
 				end do
+				fele(nen*ned+1) = fele(nen*ned+1) + ((Ja-1)-pressure/materialprops(4))*weights(intpt)*det
 			end do
 			! scatter the element internal force into the global internal force
-			!
 			do a=1,nen
 				do i=1,ned
 					row = ned*(connect(a,ele)-1) + i;
-					force_internal_full(row) = force_internal_full(row) + fele(ned*(a-1)+i);
+					force_internal(row) = force_internal(row) + fele(ned*(a-1)+i);
 				end do
 			end do
+			! scatter the element pressure
+			row = nn*ned + ele
+			force_internal(row) = force_internal(row) + fele(ned*nen+1)
 		end do
-	end function force_internal_full
+		
+		deallocate(xilist)
+		deallocate(weights)
+		
+	end function force_internal	
 end module mixed_internalforce

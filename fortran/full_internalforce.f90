@@ -4,14 +4,16 @@ module full_internalforce
 	implicit none
 	
 contains
-	function full_force_internal(dofs)
+	function force_internal(dofs)
 		use read_file, only: nsd, ned, nn, coords, nel, nen, connect, materialprops
 		use shapefunction
 		use integration
-		use material
+		use full_material
+		
 		implicit none
+		
 		real(8), dimension(nn*ned), intent(in) :: dofs
-		real(8), dimension(nn*ned) :: full_force_internal
+		real(8), dimension(nn*ned) :: force_internal
 		real(8), dimension(nsd,nen) :: elecoord
 		real(8), dimension(ned,nen) :: eledof
 		real(8), dimension(nen,nsd) :: dNdx, dNdy
@@ -30,6 +32,7 @@ contains
 		
 		external DGETRF
 		external DGETRI
+		
 		n1 = nsd
 		! square matrix
 		do i=1,nsd
@@ -42,18 +45,15 @@ contains
 			end do
 		end do
 		
-		! initialize full_force_internal
-		do i=1,nn*ned
-			full_force_internal(i) = 0.
-		end do
-		
+		! initialize force_internal
+		force_internal = 0.
+			
 		! allocate
-		if (.NOT. allocated(xilist)) then
-			npt = int_number(nsd,nen,0)
-			allocate(xilist(nsd,npt))
-			allocate(weights(npt))
-		end if
-		
+		npt = int_number(nsd,nen,0)
+		allocate(xilist(nsd,npt))
+		allocate(weights(npt))
+		xilist = int_points(nsd,nen,npt)
+		weights = int_weights(nsd,nen,npt)
 		
 		! loop over elements
 		do ele=1,nel
@@ -66,14 +66,7 @@ contains
 			end do
 			! compute the internal force
 			! initialize
-			do i=1,ned*nen
-				fele(i) = 0.
-			end do
-			! fully integration
-			! set up integration points and weights
-			npt = int_number(nsd,nen,0)
-			xilist = int_points(nsd,nen,npt)
-			weights = int_weights(nsd,nen,npt)
+			fele = 0.
 			! loop over integration points
 			do intpt=1,npt
 				xi = xilist(:,intpt)
@@ -83,14 +76,7 @@ contains
 				! inverse matrix and determinant
 				dxidx = dxdxi
 				call DGETRF(n1,n1,dxidx,n1,ipiv,info)
-				if (info /= 0) then
-					stop 'Matrix is numerically singular!'
-				end if
 				call DGETRI(n1,dxidx,n1,ipiv,work,n1,info)
-				if (info /= 0) then
-					stop 'Matrix inversion failed!'
-				end if	
-				!
 				if (nsd == 2) then
 					det = dxdxi(1,1)*dxdxi(2,2) - dxdxi(1,2)*dxdxi(2,1)
 				else if (nsd == 3) then
@@ -115,14 +101,7 @@ contains
 				! inverse of F
 				Finv = F
 				call DGETRF(n1,n1,Finv,n1,ipiv,info)
-				if (info /= 0) then
-					stop 'Matrix is numerically singular!'
-				end if
 				call DGETRI(n1,Finv,n1,ipiv,work,n1,info)
-				if (info /= 0) then
-					stop 'Matrix inversion failed!'
-				end if	
-				!
 				dNdy = matmul(dNdx,Finv)
 				! compute the Kirchhoff stress
 				stress = Kirchhoffstress(nsd,ned,B,Ja,materialprops)
@@ -141,24 +120,14 @@ contains
 			do a=1,nen
 				do i=1,ned
 					row = ned*(connect(a,ele)-1) + i;
-					full_force_internal(row) = full_force_internal(row) + fele(ned*(a-1)+i);
+					force_internal(row) = force_internal(row) + fele(ned*(a-1)+i);
 				end do
 			end do
 		end do
-	end function full_force_internal
+		
+		deallocate(xilist)
+		deallocate(weights)
+		
+	end function force_internal
 	
-end module full_internalforce
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-	
+end module full_internalforce	
