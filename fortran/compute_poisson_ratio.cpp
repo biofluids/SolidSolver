@@ -9,5 +9,5 @@ int main() {
     std::cin >> K;
     nu = K/G;
     nu = (3*nu - 2)/(2*(3*nu + 1));
-    std::cout << "Poisson's ratio: " << std::fixed << std::setprecision(5) << nu << std::endl;
+    std::cout << "Poisson's ratio: " << std::fixed << std::setprecision(8) << nu << std::endl;
 }
