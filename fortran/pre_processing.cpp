@@ -122,7 +122,7 @@ int main (int argc, char* argv[]) {
         cerr << "Invalid file type, .inp is expected." << endl;
         return 1;
     }
-    ifstream instr(filename);
+    ifstream instr(filename.c_str());
     if (!instr.good()) {
         cerr << "Cannot open input file!" << endl;
         return 1;
@@ -140,7 +140,7 @@ int main (int argc, char* argv[]) {
         }
     }
     instr.close();
-    instr.open(filename);
+    instr.open(filename.c_str());
 
     // Head line of coordinates
     while (getline(instr, buffer)) {
@@ -291,7 +291,7 @@ int main (int argc, char* argv[]) {
 
 // ========================================================================================================================
     // Surfaces
-    instr.open(filename);
+    instr.open(filename.c_str());
     while (getline(instr, buffer)) {
         trim(buffer);
         if (!buffer.compare(0, 13, "*End Instance")) {
