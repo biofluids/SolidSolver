@@ -1,6 +1,15 @@
 module mixed_tangentstiffness
 	implicit none
 contains
+	function cross(a, b)
+		real(8), dimension(3) :: cross
+		real(8), dimension(3), intent(in) :: a, b
+		
+		cross(1) = a(2)*b(3) - a(3)*b(2)
+		cross(2) = a(3)*b(1) - a(1)*b(3)
+		cross(3) = a(1)*b(2) - a(2)*b(1)
+	end function cross
+	
 	function tangent_internal(dofs)
 		use read_file, only: nsd, ned, nn, coords, nel, nen, connect, materialprops
 		use shapefunction
@@ -180,6 +189,7 @@ contains
 		integer, allocatable, dimension(:) :: nodelist
 		integer :: i, j, ele, faceid, nfacenodes, a, npt, intpt, b, k, row, col, l
 		real(8), dimension(nsd,nsd,nsd) :: epsilon
+		real(8), dimension(nsd) :: normal
 		
 		! initialize
 		tangent_external = 0.
@@ -226,16 +236,16 @@ contains
 				N(:) = sf(nfacenodes,nsd-1,xi)
 				! set up the jacobian matrix
 				dydxi(:,:) = matmul(face_coord+face_dof, dNdxi)
+				normal = cross(dydxi(:,1), dydxi(:,2))
 				do a = 1, nfacenodes
 					do i = 1, nsd
 						row = nsd*(a-1) + i
 						do b = 1, nfacenodes
 							do k = 1, nsd
 								col = nsd*(b-1) + k
-								do j = 1, nsd
-									kext(row,col) = kext(row,col) + N(a)*epsilon(i,k,j) &
-									*(dNdxi(b,1)*dydxi(j,2)-dNdxi(b,2)*dydxi(j,1))*weights(intpt)*external_pressure
-								end do
+								kext(row, col) = kext(row, col) - (normal(i)*dydxi(k,1)*N(b)*dNdxi(a,1) &
+								- normal(k)*dydxi(i,1)*N(b)*dNdxi(a,1) + normal(i)*dydxi(k,2)*N(b)*dNdxi(a,2) - normal(k)*dydxi(i,2)*N(b)*dNdxi(a,2)) &
+								*weights(intpt)*external_pressure
 							end do
 						end do
 					end do
