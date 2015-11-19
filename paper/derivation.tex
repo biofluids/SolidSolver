@@ -1,0 +1,95 @@
+\documentclass[preprint,11pt]{elsarticle}
+\usepackage[bookmarks=true,colorlinks=true,linkcolor=blue]{hyperref}
+
+\pdfoutput=1
+
+\biboptions{sort&compress}
+
+\newcommand{\old}[1]{{\color{red}old: #1}}
+\newcommand{\wdh}[1]{{\color{blue}wdh: #1}}
+\usepackage{soul}
+
+\usepackage{color}
+\usepackage{amssymb,amsmath}
+\usepackage{amsthm}
+
+\hbadness=10000 
+\sloppy \hfuzz=30pt
+
+\usepackage{calc}
+\usepackage{tensor}
+\usepackage{bbold}
+
+\usepackage{calc}
+\usepackage[margin=1.in]{geometry}
+
+%\input texFiles/defs
+
+\usepackage{tikz}
+
+\input texFiles/trimFig.tex
+
+\setlength\fboxsep{0pt} 
+\setlength\fboxrule{0.5pt}
+
+\usepackage{algorithm} 
+\usepackage{algpseudocode}
+\usepackage{textcomp}
+
+\renewcommand\floatpagefraction{.99}
+\renewcommand\topfraction{.99}
+\renewcommand\bottomfraction{.99}
+\renewcommand\textfraction{.01}   
+\setcounter{totalnumber}{50}
+\setcounter{topnumber}{50}
+\setcounter{bottomnumber}{50}
+
+
+\begin{document}
+
+\small
+
+\begin{frontmatter}
+\title{Derivation}
+
+
+\author[rpi]{J.~Cheng}
+\ead{chengj5@rpi.edu}
+
+\address[rpi]{Department of Mechanical Aerospace and Nuclear Engineering, Rensselaer Polytechnic Institute, Troy, NY 12180, USA}
+
+\cortext[cor1]{Department of Mechanical Aerospace and Nuclear Engineering, Rensselaer Polytechnic Institute, 110 8th Street, Troy, NY 12180, USA.}
+
+
+\end{frontmatter}
+
+
+\tableofcontents
+
+% ----------------------------
+\input texFiles/introduction
+\input texFiles/general_form
+\input texFiles/mooney_rivlin
+\input texFiles/tests
+\input texFiles/conclusions
+
+\clearpage
+
+
+
+
+
+
+\clearpage
+\bibliographystyle{elsart-num}
+\bibliography{journal-ISI,jwb,henshaw,henshawPapers,fsi}
+
+\end{document}
+
+
+
+
+
+
+ 
+ 

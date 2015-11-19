@@ -1,0 +1,274 @@
+\section{The General Formulations}
+The general formulations for the fem, the stress calculation, and the elasticity tensor
+
+\subsection{Stress Calculation for Hyperelastic Materials}
+Generally in continuum mechanics we use constitutive equations to describe the stress components in terms of other functions such as strain. This functional relationship distinguishes different types of materials. One important type of material that is widely used in biomechanics is hyperelastic material. For hyperelastic material, we postulate there exists a Helmholtz free-energy function $\Psi$, which is defined per unit reference volume. If $\Psi$ is uniquely determined by deformation tensor $\bold{F}$ or other strain tensor, it is called strain-energy function.
+
+Assuming the reference configuration is stress-free we have the normalization condition
+\begin{equation}
+\Psi(\bold I) = 0
+\end{equation}
+
+It can be proved that the work done on hyperelastic materials in a dynamical process within a time interval $[t_1, t_2]$ is
+\begin{equation}
+\delta{W_{int}} = \int_{t_1}^{t_2}\bold{P}:\dot{\bold{F}}dt = \int_{t_1}^{t_2}\bold{S}:\dot{\bold{E}}dt = 
+\int_{t_1}^{t_2}\boldsymbol{\sigma}:\dot{\bold{e}}dt = \Psi({\bold{F_2}}) - \Psi({\bold{F_1}})
+\end{equation}
+where $\bold{P}$ is the first Piola-Kirchhoff stress, $\bold{S}$ is the second Piola-Kirchhoff stress tensor, $\bold{E}$ is the Green-Lagrange strain tensor and $\bold{e}$ is Euler-Almansi strain tensor which is defined as the symmetric part of the gradient of displacement in current configuration.
+\begin{equation}
+\delta\bold{e} = \frac{1}{2}{ grad^T\delta\bold{u} + grad\delta\bold{u}}
+\end{equation}
+
+For homogeneous hyperelastic materials the second Piola-Kirchhoff stress $\bold{S}$ can be determined by 
+\begin{equation}
+\bold{S} = 2\frac{\partial\Psi(\bold{C})}{\partial{\bold{C}}} = \frac{\partial\Psi(\bold{E})}{\partial{\bold{E}}}
+\end{equation}
+in which $\bold{C}$ is the right Cauchy-Green strain tensor. Furthermore, for isotropic hyperelastic materials, the second Piola-Kirchhoff stress can be expressed as a function of the three invariants of right (or left) Cauchy-Green tensor
+\begin{equation} \label{PK2}
+\bold{S} = 2\frac{\partial\Psi({\bold{C})}}{\partial{\bold{C}}} = 2\left[\left( \frac{\partial\Psi}{\partial{I_1}} + I_1 \frac{\partial\Psi}{\partial{I_2}} \right)\bold{I} -  \frac{\partial\Psi}{\partial{I_2}}\bold{C} + I_3 \frac{\partial\Psi}{\partial{I_3}}{\bold{C}}^{-1} \right]
+\end{equation}
+%A push-forward operation on Equation \ref{PK2} gives the expression of Cauchy stress
+%\begin{equation} 
+%\bold{\sigma} = 2J^{-1}\left[I_3\frac{\partial\Psi}{\partial{I_3}}\bold{I} + \left( \frac{\partial\Psi}{\partial{I_1}} + I_1\frac{\partial\Psi}{\partial{I_2}}   \right)\bold{B} - \frac{\partial\Psi}{\partial{I_2}}{\bold{B}}^2 \right]
+%\end{equation}
+%where $\bold{B}$ is the left Cauchy-Green tensor.
+
+To model compressible hyperelasticity, the deformation tensors are usually split into a volumetric part and an isochoric part. For example
+\begin{equation} \label{split1}
+\bold{F} = (J^{1/3}\bold{I})\overline{\bold{F}}
+\qquad
+\bold{C} = (J^{2/3}\bold{I})\overline{\bold{C}}
+\end{equation}
+The terms $J^{1/3}\bold{I}$ and $J^{2/3}\bold{I}$ are the volumetric parts while $\overline{\bold{F}}$ and $\overline{\bold{C}}$ are the isochoric parts. $\overline{\bold{F}}$ and $\overline{\bold{C}}$ are also referred as modified deformation gradient and modified right Cauchy-Green tensor. Meanwhile, the strain-energy function is postulated to have a unique decoupled form
+\begin{equation} \label{split2}
+\Psi(\bold{C}) = \Psi_{vol}(J) + \Psi_{iso}(\overline{\bold{C}})
+\end{equation}
+where $\Psi_{vol}(J)$ and $\Psi_{iso}(\overline{\bold{C}})$ are volumetric and isochoric response of the material respectively. It's worth to point out that for incompressible hyperelastic material, the volumetric part acts as a penalty to enforce the incompressible condition. And since $J = 1$, there is no difference between the modified tensors and the original tensors.
+
+Correspondingly, the second Piola-Kirchhoff stress can be split into volumetric part and a isochoric part
+\begin{equation}
+\bold{S} =  2\frac{\partial{\Psi({\bold{C})}}}{\partial{\bold{C}}} = \bold{S_{vol}}  + \bold{S_{iso}} 
+\end{equation}
+\begin{equation} \label{Svol}
+\bold{S_{vol}} = 2\frac{\partial{\Psi({\bold{C_{vol}})}}}{\partial{\bold{C}}} = Jp{\bold{C}} ^{-1}
+\end{equation}
+\begin{equation} \label{Siso}
+\begin{split}
+\bold{S_{iso}} & = 2\frac{\partial{\Psi({\bold{C_{iso}})}}}{\partial{\bold{C}}} = J^{-2/3}(\mathbb{I} - \frac{1}{3}\bold{C}^{-1} \otimes \bold{C}):\overline{\bold{S}} \\
+&  = J^{-2/3}Dev\overline{\bold{S}} = J^{-2/3}\mathbb{P}:\overline{\bold{S}}
+\end{split}
+\end{equation}
+where $p$ is the hydrostatic pressure, $\overline{\bold{S}}$ is the fictitious second Piola-Kirchhoff stress defined by
+\begin{equation}
+p = \frac{d\Psi_{vol}(J)}{dJ}
+\qquad
+\overline{\bold{S}} = 2\frac{\partial\Psi_{iso}({\overline{\bold{C}})}}{\partial\overline{\bold{C}}}
+\end{equation}
+and $\mathbb{P}$ is the projection tensor defined by $\mathbb{P} = \mathbb{I} - \frac{1}{3}\bold{C}^{-1} \otimes \bold{C} $. $\mathbb{I}$ is the fourth order identity tensor. The symbol $Dev$ is a calculator defined as $Dev(\bullet) = \mathbb{P}:(\bullet)$.
+Note that for compressible material $p$ is determined by the constitutive law. However for incompressible material $p$ is determined from the equilibrium equations and the boundary conditions. 
+
+
+\subsection{Elasticity Tensor}
+The solutions in nonlinear finite element methods are often obtained incrementally. Newton iteration is frequently used. To apply Newton iteration, the virtual work must be linearized. The elasticity tensors is crucial to the linearization.
+
+The elasticity tensor in the material description (reference configuration) is defined as the gradient of the second Piola-Kirchhoff stress to its work conjugate strain, which is Green-Lagrange strain.
+\begin{equation}
+\mathbb{C} = \frac{\partial{\bold{S}(\bold{E})}}{\partial{\bold{E}}} =  2\frac{\partial{\bold{S}(\bold{C})}} {\partial{\bold{C}}} = 4 \frac{\partial^2{\Psi(\bold{C})}}{{\partial{\bold{C}}}{\partial{\bold{C}}}}
+\end{equation}
+Based on the split of deformation tensors in Equation \ref{split1} and the assumption in Equation \ref{split2}, the elasticity tensors can be rewritten in the decoupled form
+\begin{equation}
+\mathbb{C} = 2\frac{\partial{\bold{S}}}{\partial{\bold{C}}} = \mathbb{C}_{vol} + \mathbb{C}_{iso} 
+\end{equation}
+\begin{equation}
+\mathbb{C}_{vol} = 2\frac{\partial{\bold{S}_{vol}}}{\partial{\bold{C}}}
+\quad
+\mathbb{C}_{iso} = 2\frac{\partial{\bold{S}_{iso}}}{\partial{\bold{C}}}
+\end{equation}
+Substituting Equation \ref{Svol} and \ref{Siso}  into these, we can obtain the expressions for $\mathbb{C}_{vol}$ and $\mathbb{C}_{iso}$ .
+\begin{equation}
+\mathbb{C}_{vol} = J\tilde{p}\bold{C}^{-1}\otimes\bold{C}^{-1} - 2Jp\bold{C}^{-1}\odot\bold{C}^{-1}
+\end{equation}
+\begin{equation}
+\mathbb{C}_{iso} = \mathbb{P} : \overline{\mathbb{C}} : \mathbb{P}^T + \frac{2}{3}Tr(J^{-2/3}\overline{\bold{S}})\tilde{\mathbb{P}} - \frac{2}{3}(\bold{C}^{-1}\otimes\bold{S}_{iso} + \bold{S}_{iso}\otimes \bold{C}^{-1})
+\end{equation}
+The definitions involved above are
+\begin{equation}
+\tilde{p} = p + J\frac{dp}{dJ}
+\end{equation}
+\begin{equation}
+\overline{\mathbb{C}} = 2J^{-4/3}\frac{\partial^2\Psi_{iso}(\overline{\bold{C}})}{\partial{\overline{\bold{C}}}{\partial{\overline{\bold{C}}}}}
+\end{equation}
+\begin{equation}
+\tilde{\mathbb{P}} = \bold{C}^{-1} \odot \bold{C}^{-1} -  \frac{1}{3}\bold{C}^{-1} \otimes \bold{C}^{-1} 
+\end{equation}
+\begin{equation}
+\bold{C}^{-1}\odot\bold{C}^{-1} = - \frac{\partial{\bold{C}^{-1}}}{\partial{\bold{C}}}
+\end{equation}
+\begin{equation}
+Tr(\bullet) = (\bullet) : \bold{C}
+\end{equation}
+Note that for incompressible material, $\tilde{p} = p$ because $p$ is independent on $J$.
+
+
+\subsection{Principle of virtual work}
+The variational approach is the cornerstone for finite element methods. The variation of basic balance equations leads to the principle of virtual work.
+\begin{equation} \label{basic}
+\delta{W_{int}} = \delta{W_{ext}}
+\end{equation}
+in which kinematic term is neglected. $\delta{W_{int}}$ and $\delta{W_{int}}$ are written in the current configuration or reference configuration
+\begin{equation} \label{Wint}
+\delta W_{int}(\bold{u}, \delta\bold{u}) = \int_\Omega \boldsymbol\sigma : \delta\bold{e}dv = \int_{\Omega_{0}}\bold{S} : \delta\bold{E}dV
+\end{equation}
+\begin{equation} \label{Wext}
+\delta W_{ext}(\bold{u}, \delta\bold{u}) = \int_\Omega\bold{b}\cdot\delta\bold{u}dv +  \int_{\partial\Omega}\overline{\bold{t}}\cdot\delta{\bold{u}}ds = \int_\Omega\bold{B}\cdot\delta\bold{u}dV +  \int_{\partial{\Omega_0}}\overline{\bold{T}}\cdot\delta{\bold{u}}dS
+\end{equation}
+The internal work is done by Cauchy stress $\bold\sigma$ along the virtual Euler-Almansi strain $\delta\bold{e}$ about region $\Omega$ and the external work is done by the body force $\bold{b}$ and the surface traction $\overline{\bold{t}}$, along the virtual displacement $\delta{u}$ about region $\Omega$ and its boundary surface $\partial\Omega$ respectively. However, in many cases the surface traction $\overline{\bold{t}}$ is not given explicitly. Instead, the pressure on the current boundary surface is constant, i.e. $\overline{\bold{t}} = \boldsymbol{\sigma{n}} = p\bold{n}$ where p is a given constant, $\bold{n}$ is the unit normal vector of the current surface. The external virtual work done by the constant pressure $p$ along the virtual displacement $\delta{\bold{u}}$ is defined by
+\begin{equation} \label{Wext2}
+\delta{W_{ext}}(\bold{u}, \delta{\bold{u}}) = p\int_{\partial\Omega} \bold{n}\cdot\delta{\bold{u}}ds
+\end{equation}
+
+
+\subsection{Linearization of Virtual Work}
+In order to solve Equation \ref{basic} which is nonlinear, we need to linearize $\delta{W_{int}}$ and $\delta{W_{ext}}$ respectively so that Newton's method can be applied. Here we adopt the convention in Holzapfel using $D_{\Delta{x}}f(x, y, \textit{etc.})$ to represent the directional derivative of $f$ as a function of $(x, y, \textit{etc.})$ along the direction of $\Delta{x}$ where $x$, $y$, \textit{etc.} can be scalar or tensor of any other order. The directional derivative $D_{\Delta{x}}f(x, y, \textit{etc.})$ is equivalent to the first variation of functional $f$ with respect to $x$.
+
+Differentiate Equation \ref{Wint} with respect to $\Delta{\bold{u}}$, we can show that the first variation of the virtual internal work is
+\begin{equation} \label{Kint}
+D_{\Delta{\bold{u}}}\delta{W_{int}}(\bold{u}, \delta{\bold{u}}) = \int_{\Omega_0}(Grad\delta\bold{u} : Grad\Delta\bold{u}\bold{S} + \bold{F}^TGrad\delta{u} : \mathbb{C} : \bold{F}^T Grad\Delta\bold{u})dV
+\end{equation}
+The first part of the integration is called initial stress contribution since the $\bold{S}$ characterize the initial stress at every increment. The second part is called material contribution because the $\mathbb{C}$ characterize the material response to the displacement.
+
+For the first type of loading as in Equation \ref{Wext}, the external work is independent on the displacement. So the variation vanishes. But for the second type of loading as in \ref{Wext2}, the external work is changing with the current configuration due to the change of normal $\bold{n}$ and integration area $ds$. So we only need to deal with the second situation.
+
+Let $\bold{x}$ be an arbitrary point on the surface of a 3D element, $\xi$ and $\eta$ be the parent coordinates on that surface. Then the unit normal vector of that surface $\bold{n}$ as well as the infinite small area $ds$ can be expressed as
+\begin{equation}
+\bold{n} = \frac{  \frac{\partial{\bold{x}}}{\partial{\xi}} \times  \frac{\partial{\bold{x}}}{\partial{\eta}} }{\left| \frac{\partial{\bold{x}}}{\partial{\xi}} \times  \frac{\partial{\bold{x}}}{\partial{\eta}} \right|}
+\end{equation}
+\begin{equation}
+ds = \left|\frac{\partial{\bold{x}}}{\partial{\xi}} \times  \frac{\partial{\bold{x}}}{\partial{\eta}}\right| d\xi{d\eta}
+\end{equation}
+With these two equations, we can express Equation \ref{Wext2} as
+\begin{equation} \label{Kext}
+\delta{W_{ext}}(\bold{u}, \delta{\bold{u}}) = p\int_{\Omega_{\xi}}  \left(\frac{\partial{\bold{x}}}{\partial{\xi}} \times  \frac{\partial{\bold{x}}}{\partial{\eta}}\right) \cdot\delta{\bold{u}}d\xi{d\eta}
+\end{equation}
+The linearization is obtained by a straight forward derivation with respect to $\Delta\bold{u}$. For more readings on this please refer to blah blah.
+\begin{equation}
+D_{\Delta{\bold{u}}}\delta{W_{ext}}(\bold{u}, \delta{\bold{u}}) =  p\int_{\Omega_{\xi}}  \left(\frac{\partial{\bold{x}}}{\partial{\eta}} \times \delta\bold{u}\right) \cdot\Delta{\bold{u}}_{,\xi} - 
+\left(\frac{\partial{\bold{x}}}{\partial{\xi}} \times \delta\bold{u}\right) \cdot\Delta{\bold{u}}_{,\eta} d\xi{d\eta}
+\end{equation}
+With Equation \ref{Kint} and \ref{Kext} we are able to obtain the matrix form for displacement-based formulation.
+\begin{equation} \label{matrix}
+\left[ D_{\Delta{\bold{u}}}\delta{W_{int}}(\bold{u}, \delta{\bold{u}}) - D_{\Delta{\bold{u}}}\delta{W_{ext}}(\bold{u}, \delta{\bold{u}}) \right] \Delta\bold{u} = \left[\delta{W_{int}} - \delta{W_{ext}}\right]
+\end{equation}
+
+
+
+\subsection{Energy Potential and Mixed Formulation}
+Equation \ref{Wint} to \ref{Wext2} are general principles in mechanics. No particular material is taken into account. Next we assume there exists an energy potential $\Pi_{int}$ and $\Pi_{ext}$ for the stresses and the loads respectively, and their sum is constant so that the system is conservative. The total potential energy, internal potential energy and the external potential energy are functions of $\bold{u}$ in the displacement-based  formulation. While in displacement/pressure mixed formulation, they are functions of both $\bold{u}$ and $p$. We deal with displacement-based formulation first.
+\begin{equation}
+\Pi(\bold{u}) = \Pi_{int}(\bold{u}) + \Pi_{ext}(\bold{u})
+\end{equation}
+\begin{equation} \label{pint}
+\Pi_{int}(\bold{u}) = \int_{\Omega_{0}}\Psi(\bold{F}(\bold{u}))dV
+\end{equation}
+\begin{equation} \label{pext}
+\Pi_{ext}(\bold{u}) =  - \int_\Omega\bold{B}\cdot\bold{u}dV -  \int_{\partial{\Omega_0}}\overline{\bold{T}}\cdot{\bold{u}}dS
+\end{equation}
+
+Our objective is to find the state of equilibrium for which the potential is stationary. In displacement-based formulation, this means the directional derivative with respect to the displacement $\bold{u}$ to vanish in all directions $\delta{\bold{u}}$.
+\begin{equation} \label{equilibrium}
+D_{\delta\bold{u}}\Pi(\bold{u}) = D_{\delta\bold{u}}\Pi_{int}(\bold{u}) + D_{\delta\bold{u}}\Pi_{ext}(\bold{u}) = 0
+\end{equation} 
+ In other words, we require the first variation of the total energy potential $\delta\Pi$ to vanish.
+ \begin{equation} \label{potential}
+\delta\Pi(\bold{u}, \delta\bold{u}) =\delta\Pi_{int}(\bold{u}) + \delta\Pi_{ext}(\bold{u}) = 0
+\end{equation}
+
+Equation \ref{equilibrium} or \ref{potential} is the equation we want to solve in the displacement-based formulation. Solving them requires linearization with respect to $\Delta{\bold{u}}$, which is a second variation of potential. 
+\begin{equation} \label{matrix2}
+D_{\delta\bold{u}, \Delta\bold{u}}\Pi^2(\bold{u}) = 0
+\end{equation}
+
+
+From Equation \ref{pint} and \ref{pext}, it is easy to show that
+\begin{equation}
+D_{\delta\bold{u}}\Pi_{int}(\bold{u}) = \delta W_{int}(\bold{u}, \delta\bold{u}) \quad and \quad
+D_{\delta\bold{u}}\Pi_{ext}(\bold{u}) = - \delta W_{ext}(\bold{u}, \delta\bold{u})
+\end{equation}
+We can see that Equation \ref{equilibrium} or \ref{potential} is identical to Equation \ref{basic}. Therefore the matrix form of Equation \ref{matrix2} is the same as Equation \ref{matrix}.
+
+In mixed formulation, hydrostatic pressure $p$ is treated as an independent variable. The energy potential is a function of both $u$ and $p$. Equation \ref{equilibrium} becomes
+\begin{equation} \label{target}
+D_{\delta\bold{u}}\Pi(\bold{u}, p) = 0 \quad and \quad D_{\delta{p}}\Pi(\bold{u}, p) = 0
+\end{equation}
+Now, our target is Equation \ref{target}. These two equations need to be linearized with respect to both $\bold{u}$ and $p$. The final matrix form of the linear system will be
+\begin{equation} \label{linear}
+\begin{bmatrix} % or pmatrix or bmatrix or Bmatrix or ...
+D_{\delta\bold{u}, \Delta\bold{u}}^2 \Pi(\bold{u}, p)  && D_{\delta\bold{u}, \Delta{p}}^2 \Pi(\bold{u}, p)  \\ D_{\delta{p}, \Delta\bold{u}}^2 \Pi(\bold{u}, p)  && D_{\delta{p}, \Delta{p}}^2 \Pi(\bold{u}, p) 
+\end{bmatrix}
+\begin{bmatrix}
+\Delta\bold{u} \\ \Delta{p}
+\end{bmatrix}
+= 
+\begin{bmatrix}
+D_{\delta\bold{u}}\Pi(\bold{u}, p) \\ D_{\delta{p}}\Pi(\bold{u}, p) 
+\end{bmatrix}
+\end{equation}
+We deal with right hand side first. For incompressible material, the incompressibility condition is applied with Lagrange-multiplier method. The volumetric part of internal energy potential in Equation \ref{split2} is modified to $p(J - 1)$
+\begin{equation} \label{split3}
+\Pi_{int}(\bold{u}, p) = \int_{\Omega_0} \left[ p(J(\bold{u}) - 1) + \Psi_{iso}(\overline{\bold{C}}(\bold{u}))\right] dV
+\end{equation}
+Using the chain rule and some other transformations, it can be derived that
+\begin{equation}\label{rhs1}
+D_{\delta\bold{u}}\Pi(\bold{u}, p) = \int_{\Omega_0}\left( J(\bold{u})p\bold{C}^{-1}(\bold{u}) + 
+2\frac{\partial{\Psi_{iso}(\overline{\bold{C}}(\bold{u}))}}{\partial{\bold{C}}}  \right) : \delta\bold{E}(\bold{u}) dV + D_{\delta\bold{u}}\Pi_{ext}(\bold{u})
+\end{equation}
+\begin{equation}\label{rhs2}
+D_{\delta{p}}\Pi(\bold{u}, p) = \int_{\Omega_0} (J(\bold{u}) - 1 )\delta{p} dV
+\end{equation}
+For the left hand side,
+$D_{\delta\bold{u}, \Delta\bold{u}}^2 \Pi(\bold{u}, p)$ is equivalent to $D_{\Delta{\bold{u}}}\delta{W_{int}}(\bold{u}, \delta{\bold{u}}) - D_{\Delta{\bold{u}}}\delta{W_{ext}}(\bold{u}, \delta{\bold{u}})$. So that
+\begin{equation} \label{lhs1}
+\begin{split}
+D_{\delta\bold{u}, \Delta\bold{u}}^2 \Pi(\bold{u}, p) = & \int_{\Omega_0}(Grad\delta\bold{u} : Grad\Delta\bold{u}\bold{S} + \bold{F}^TGrad\delta{u} : \mathbb{C} : \bold{F}^T Grad\Delta\bold{u})dV  \\
+ - & p\int_{\Omega_{\xi}}  \left(\frac{\partial{\bold{x}}}{\partial{\eta}} \times \delta\bold{u}\right) \cdot\Delta{\bold{u}}_{,\xi} - 
+\left(\frac{\partial{\bold{x}}}{\partial{\xi}} \times \delta\bold{u}\right) \cdot\Delta{\bold{u}}_{,\eta} d\xi{d\eta}
+\end{split}
+\end{equation}
+It is a little tricky but not complicated to obtain that
+\begin{equation} \label{lhs2}
+D_{\delta\bold{u}, \Delta{p}}^2 \Pi(\bold{u}, p) = \int_{\Omega_0} J(\bold{u})\Delta{p}div\delta{\bold{u}}dV
+\end{equation}
+\begin{equation} \label{lhs3}
+D_{\delta{p}, \Delta\bold{u}}^2 \Pi(\bold{u}, p) = \int_{\Omega_0} J(\bold{u})div\Delta{\bold{u}}\delta{p}dV
+\end{equation}
+Since $\Pi$ is a first order function with respect to p, we have
+\begin{equation} \label{lhs4}
+D_{\delta{p}, \Delta{p}}^2 \Pi(\bold{u}, p) = 0
+\end{equation}
+Inserting Equation \ref{rhs1} to \ref{lhs4} into Equation \ref{linear} we can solve Equation \ref{equilibrium} incrementally.
+
+For nearly-compressible material, a penalty method is used to model the compressibility, i.e., $\Psi_{vol}(J) = \kappa{G(J)}$. $\kappa$ is a large number which models a slight compressibility. It has a physical meaning of bulk modulus. In this case, although pressure is an independent variable, it is no longer arbitrary. Equation \ref{rhs2} which is used to implement the incompressibility is changed to relate pressure to displacement.
+\begin{equation} \label{relation}
+D_{\delta{p}}\Pi(\bold{u}, p) = \int_{\Omega_0}\left(  \frac{dG(J(\bold{u}))}{dJ} - \frac{p}{\kappa} \right)\delta{p}dV = 0
+\end{equation}
+Accordingly, Equation \ref{lhs4} becomes
+\begin{equation} \label{lhs42}
+D_{\delta{p}, \Delta{p}}^2 \Pi(\bold{u}, p) = - \int_{\Omega_0}\frac{1}{\kappa}\Delta{p}\delta{p}dV
+\end{equation}
+While Equation \ref{lhs1} to \ref{lhs3} and Equation \ref{rhs1} remain the same.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

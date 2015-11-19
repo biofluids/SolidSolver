@@ -47,3 +47,12 @@ connect.txt
 coords.txt
 load.txt
 .DS_Store
+
+# LaTex files
+*.aux
+*.log
+*.out
+*.spl
+*.gz
+*.toc
+*.pdf
