@@ -14,7 +14,7 @@ program solidsolver
 	integer :: ct, ct_rate, ct_max, ct1
 	real(8) :: time_elapsed  
 	call timestamp()
-	filepath = '/Users/Jie/Documents/SolidResults/'
+	filepath = '/Users/jiecheng/Documents/SolidResults/'
 	call system_clock(ct,ct_rate,ct_max)
 	call read_input(10, 'input.txt', mode, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, &
 					materialprops, gravity, isbinary, penalty)
@@ -106,16 +106,27 @@ subroutine statics(filepath)
 			end if
 			A = tangent_internal(w)
 			R = Fint - loadfactor*Fext
-			! Apply the bc with old method
-			do i = 1, size(bc1, 2)
-				row = ned*(int(bc1(1, i))-1) + int(bc1(2, i))
-				do col = 1, ned*nn + nel
-					A(row, col) = 0.
-					A(col, row) = 0.
-				end do
-				A(row, row) = 1.
-				R(row) = w(row) - bc1(3,i)
+			! penalty
+			do i = 1, size(bc1,2)
+				row = ned*(int(bc1(1,i))-1) + int(bc1(2,i))
+				constraint(i) = w(row) - bc1(3,i)
+				der_constraint(i,row) = 1. 
 			end do
+			do i = 1, size(bc1,2)
+				row = ned*(int(bc1(1,i))-1) + int(bc1(2,i))
+				A(row,row) = A(row,row) + penalty*der_constraint(i,row)*der_constraint(i,row)
+				R(row) = R(row) + penalty*der_constraint(i,row)*constraint(i)
+			end do
+			! Apply the bc with old method
+			!do i = 1, size(bc1, 2)
+			!	row = ned*(int(bc1(1, i))-1) + int(bc1(2, i))
+			!	do col = 1, ned*nn + nel
+			!		A(row, col) = 0.
+			!		A(col, row) = 0.
+			!	end do
+			!	A(row, row) = 1.
+			!	R(row) = w(row) - bc1(3,i)
+			!end do
 			! Solve
 			!call ma41ds(nn*ned+nel,A,-R,dw)
 			call ma57ds(nn*ned+nel,A,-R,dw)
