@@ -1,5 +1,11 @@
-\section{The General Formulations}
-The general formulations for the fem, the stress calculation, and the elasticity tensor
+\section{The General Process}
+In this section, we briefly review the decomposition of hyperelastic models, the general method to derive stress and elasticity tensor, the principle of virtual work, principle of stationary energy and its linearization. Thses topics cover the complete process of deriving the displacement-based formulation and mixed formulation for hyperelastic material. Inserting a specific hyperelastic model, following the steps in this section, as shown in Figure \ref{fig:flowchart}, we will derive an incremented linear system to solve for our unknowns. 
+\begin{figure}[h!]
+\centering
+\includegraphics[width=.6\textwidth]{./figures/flowchart.png}
+\caption{Procedures to Follow}
+\label{fig:flowchart}
+\end{figure}
 
 %
 \subsection{Hyperelastic Model}
@@ -72,10 +78,11 @@ Note that for incompressible material, the hydrostatic pressure $p$ is independe
 \begin{equation} \label{pressure}
 p = \frac{d\Psi_{vol}(J)}{dJ}
 \end{equation}
+If we leave $p$ as an unknown and implement Equation \ref{pressure} as additional constraint, we will have a mixed formulation. If we replace $p$ with $\bold{u}$ using Equation \ref{pressure}, we end up with a displacement-base formulation.
 
 %
 \subsection{Elasticity Tensor}
-The solutions in nonlinear finite element methods are often obtained incrementally with Newton's method. The elasticity tensors is crucial in the application of Newton's method.
+The solutions in nonlinear finite element methods are often obtained incrementally with Newton's method. The elasticity tensors is crucial in the implementation of Newton's method.
 In the material description (reference configuration), the elasticity tensor is defined as the gradient of the second Piola-Kirchhoff stress to its work conjugate strain, which is Green-Lagrange strain.
 \begin{equation}
 \mathbb{C} = \frac{\partial{\bold{S}(\bold{E})}}{\partial{\bold{E}}} =  2\frac{\partial{\bold{S}(\bold{C})}} {\partial{\bold{C}}} = 4 \frac{\partial^2{\Psi(\bold{C})}}{{\partial{\bold{C}}}{\partial{\bold{C}}}}
