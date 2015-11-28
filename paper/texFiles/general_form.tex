@@ -1,4 +1,4 @@
-\section{The General Process}
+\section{The General Process} \label{general}
 In this section, we briefly review the decomposition of hyperelastic models, the general method to derive stress and elasticity tensor, the principle of virtual work, principle of stationary energy and its linearization. Thses topics cover the complete process of deriving the displacement-based formulation and mixed formulation for hyperelastic material. Inserting a specific hyperelastic model, following the steps in this section, as shown in Figure \ref{fig:flowchart}, we will derive an incremented linear system to solve for our unknowns. 
 \begin{figure}[h!]
 \centering
@@ -60,11 +60,11 @@ Correspondingly, the second Piola-Kirchhoff stress can be split into a volumetri
 \bold{S} =  2\frac{\partial{\Psi({\bold{C})}}}{\partial{\bold{C}}} = \bold{S_{vol}}  + \bold{S_{iso}} 
 \end{equation}
 \begin{equation} \label{Svol}
-\bold{S_{vol}} = 2\frac{\partial{\Psi({\bold{C_{vol}})}}}{\partial{\bold{C}}} = Jp{\bold{C}} ^{-1}
+\bold{S_{vol}} = 2\frac{\partial{\Psi(J)}}{\partial{\bold{C}}} = Jp{\bold{C}} ^{-1}
 \end{equation}
 \begin{equation} \label{Siso}
 \begin{split}
-\bold{S_{iso}} & = 2\frac{\partial{\Psi({\bold{C_{iso}})}}}{\partial{\bold{C}}} = J^{-2/3}(\mathbb{I} - \frac{1}{3}\bold{C}^{-1} \otimes \bold{C}):\overline{\bold{S}} \\
+\bold{S_{iso}} & = 2\frac{\partial{\Psi({\bold{C})}}}{\partial{\bold{C}}} = J^{-2/3}(\mathbb{I} - \frac{1}{3}\bold{C}^{-1} \otimes \bold{C}):\overline{\bold{S}} \\
 &  = J^{-2/3}Dev\overline{\bold{S}} = J^{-2/3}\mathbb{P}:\overline{\bold{S}}
 \end{split}
 \end{equation}
@@ -91,7 +91,7 @@ Based on the split of deformation tensors in Equation \ref{split1} and the assum
 \begin{equation} \label{C}
 \mathbb{C} = 2\frac{\partial{\bold{S}}}{\partial{\bold{C}}} = \mathbb{C}_{vol} + \mathbb{C}_{iso} 
 \end{equation}
-\begin{equation}
+\begin{equation} \label{Cvol}
 \mathbb{C}_{vol} = 2\frac{\partial{\bold{S}_{vol}}}{\partial{\bold{C}}}
 \quad
 \mathbb{C}_{iso} = 2\frac{\partial{\bold{S}_{iso}}}{\partial{\bold{C}}}
@@ -104,19 +104,19 @@ Substituting Equation \ref{Svol} and \ref{Siso}  into these, we can obtain the e
 \mathbb{C}_{iso} = \mathbb{P} : \overline{\mathbb{C}} : \mathbb{P}^T + \frac{2}{3}Tr(J^{-2/3}\overline{\bold{S}})\tilde{\mathbb{P}} - \frac{2}{3}(\bold{C}^{-1}\otimes\bold{S}_{iso} + \bold{S}_{iso}\otimes \bold{C}^{-1})
 \end{equation}
 The definitions involved above are
-\begin{equation}
+\begin{equation} \label{tildep}
 \tilde{p} = p + J\frac{dp}{dJ}
 \end{equation}
-\begin{equation}
+\begin{equation} \label{barcc}
 \overline{\mathbb{C}} = 2J^{-4/3}\frac{\partial^2\Psi_{iso}(\overline{\bold{C}})}{\partial{\overline{\bold{C}}}{\partial{\overline{\bold{C}}}}}
 \end{equation}
-\begin{equation}
+\begin{equation} \label{tildepp}
 \tilde{\mathbb{P}} = \bold{C}^{-1} \odot \bold{C}^{-1} -  \frac{1}{3}\bold{C}^{-1} \otimes \bold{C}^{-1} 
 \end{equation}
-\begin{equation}
+\begin{equation} \label{circlecc}
 \bold{C}^{-1}\odot\bold{C}^{-1} = - \frac{\partial{\bold{C}^{-1}}}{\partial{\bold{C}}}
 \end{equation}
-\begin{equation}
+\begin{equation} \label{tracec}
 Tr(\bullet) = (\bullet) : \bold{C}
 \end{equation}
 Plug in a specific model of Equation \ref{split2} and corresponding Equation \ref{S} to \ref{Siso} into Equation \ref{C}, \ref{Cvol} and \ref{Ciso}, we can obtain the elasticity tensor. Note that for incompressible material, $\tilde{p} = p$ because $p$ is independent on $J$.
@@ -273,7 +273,6 @@ Accordingly, the second variation on $p$ is no longer $0$. Equation \ref{lhs4} i
 D_{\delta{p}, \Delta{p}}^2 \Pi(\bold{u}, p) = - \int_{\Omega_0}\frac{1}{\kappa}\Delta{p}\delta{p}dV
 \end{equation}
 Equation \ref{lhs1} to \ref{lhs3} and Equation \ref{rhs1} remain the same. The linear equation is closed, we do not need additional information on $p$.
-
 
 
 
