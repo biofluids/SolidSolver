@@ -1,4 +1,4 @@
-\section{The General Process} \label{general}
+\section{Numerical Framework for Rubber-like Materials} \label{general}
 In this section, we briefly review the decomposition of hyperelastic models, the general method to derive stress and elasticity tensor, the principle of virtual work, principle of stationary energy and its linearization. Thses topics cover the complete process of deriving the displacement-based formulation and mixed formulation for hyperelastic material. Inserting a specific hyperelastic model, following the steps in this section, as shown in Figure \ref{fig:flowchart}, we will derive an incremented linear system to solve for our unknowns. 
 \begin{figure}[h!]
 \centering
@@ -11,13 +11,13 @@ In this section, we briefly review the decomposition of hyperelastic models, the
 \subsection{Hyperelastic Model}
 Generally in continuum mechanics we use constitutive equations to describe the stress components in terms of other functions such as strain. This functional relationship distinguishes different types of materials. One important type of materials that is widely used in biomechanics is hyperelastic material. For hyperelastic material, we postulate there exists a Helmholtz free-energy function $\Psi$, which is defined per unit reference volume. If $\Psi$ is uniquely determined by deformation tensor $\bold{F}$ or other strain tensor, it is called strain-energy function. If the strain is given, the stress can be uniquely determined from the strain-energy function.  
 
-To model compressibility, the tensors related to the deformation are usually split into a volumetric part and an isochoric part. For example
+Our discussion will be focused on rubber-like materials which are modeled as incompressible or nearly incompressible. The tensors related to the deformation are usually split into a volumetric part and an isochoric part. The motivation is to let the determinant of the isochoric part to be $1$ so that it represents a volume-keeping component. For example, the deformation tensor $F$ and the right Cauchy-Green tensor $\bold{C}$ are decomposed as
 \begin{equation} \label{split1}
 \bold{F} = (J^{1/3}\bold{I})\overline{\bold{F}}
 \qquad
 \bold{C} = (J^{2/3}\bold{I})\overline{\bold{C}}
 \end{equation}
-where $J$ is the determinant of deformation tensor $F$, and $\bold{C}$ is right Cauchy-Green tensor. The terms $J^{1/3}\bold{I}$ and $J^{2/3}\bold{I}$ are the volumetric parts while $\overline{\bold{F}}$ and $\overline{\bold{C}}$ are the isochoric parts. $\overline{\bold{F}}$ and $\overline{\bold{C}}$ are also referred as modified deformation tensor and modified right Cauchy-Green tensor. Meanwhile, the strain-energy function is postulated to have a unique decoupled form
+where $J$ is the determinant of deformation tensor $\bold{F}$. The terms $J^{1/3}\bold{I}$ and $J^{2/3}\bold{I}$ are the volumetric parts while $\overline{\bold{F}}$ and $\overline{\bold{C}}$ are the isochoric parts. $\overline{\bold{F}}$ and $\overline{\bold{C}}$ are also referred as modified deformation tensor and modified right Cauchy-Green tensor. Meanwhile, the strain-energy function is postulated to have a unique decoupled form
 \begin{equation} \label{split2}
 \Psi(\bold{C}) = \Psi_{vol}(J) + \Psi_{iso}(\overline{\bold{C}})
 \end{equation}
@@ -33,8 +33,6 @@ where $\kappa$ is the penalty parameter and can be interpreted as the bulk modul
 \begin{equation} \label{penalty2}
 G(J) = \frac{1}{2}(J(\bold{u}) - 1 )^2
 \end{equation}
-
-There are many different models to characterize the isochoric behavior ($\Psi_{iso}$) of biomaterials in literature.  In this paper, we will use Mooney-Rivlin and Knowles model as examples.
 
 %
 \subsection{Stress Evaluation}
@@ -53,7 +51,7 @@ Furthermore, if the material is isotropic, the second Piola-Kirchhoff stress can
 \begin{equation} \label{PK2}
 \bold{S} = 2\frac{\partial\Psi({\bold{C})}}{\partial{\bold{C}}} = 2\left[\left( \frac{\partial\Psi}{\partial{I_1}} + I_1 \frac{\partial\Psi}{\partial{I_2}} \right)\bold{I} -  \frac{\partial\Psi}{\partial{I_2}}\bold{C} + I_3 \frac{\partial\Psi}{\partial{I_3}}{\bold{C}}^{-1} \right]
 \end{equation}
-where $I_1 = tr(\bold{C}) = tr(\bold{B})$, $I_2 = \frac{1}{2}(I_1^2 - tr(\bold{B}^2))$, and $I_3 = det(\bold{C}) = det(\bold{B}) = J^2$ are three invariants of the right Cauchy-Green tensor $\bold{C}$ or the left Cauchy-Green tensor $\bold{B}$. $I_1$ and $I_2$ also have their modified counterparts $\bar{I_1} = J^{-2/3}I_1$, $\bar{I_2} = J^{-4/3}I_2$.
+where $I_1 = tr(\bold{C}) = tr(\bold{B})$, $I_2 = \frac{1}{2}(I_1^2 - tr(\bold{B}^2))$, and $I_3 = det(\bold{C}) = det(\bold{B}) = J^2$ are three invariants of the right Cauchy-Green tensor $\bold{C}$ or the left Cauchy-Green tensor $\bold{B}$. $I_1$ and $I_2$ also have their modified counterparts $\bar{I_1} = J^{-2/3}I_1$, $\bar{I_2} = J^{-4/3}I_2$. But there are also constitutive models written as function of principal stretches instead of invariants. For instance Odgen's model. In this case the invariants must be replaced by principal stretches in Equation \ref{PK2}.
 
 Correspondingly, the second Piola-Kirchhoff stress can be split into a volumetric part and a isochoric part
 \begin{equation} \label{S}
@@ -72,13 +70,13 @@ where  $\overline{\bold{S}}$ is the fictitious second Piola-Kirchhoff stress def
 \begin{equation} \label{fictitious}
 \overline{\bold{S}} = 2\frac{\partial\Psi_{iso}({\overline{\bold{C}})}}{\partial\overline{\bold{C}}}
 \end{equation}
-and $\mathbb{P}$ is the projection tensor defined by $\mathbb{P} = \mathbb{I} - \frac{1}{3}\bold{C}^{-1} \otimes \bold{C} $. $\mathbb{I}$ is the fourth order identity tensor. The symbol $Dev$ is a calculator defined as $Dev(\bullet) = \mathbb{P}:(\bullet)$.
+and $\mathbb{P}$ is the projection tensor defined by $\mathbb{P} = \mathbb{I} - \frac{1}{3}\bold{C}^{-1} \otimes \bold{C} $. $\mathbb{I}$ is the fourth order identity tensor. The symbol $Dev$ is an operator defined as $Dev(\bullet) = \mathbb{P}:(\bullet)$.
 
-Note that for incompressible material, the hydrostatic pressure $p$ is independent from the displacement and has to be determined from equilibrium equation and boundary conditions. However, for compressible material,  $p$ is a function of displacement although it can be treated as an independent variable, and can be determined by the constitutive law
+Note that for incompressible material, the hydrostatic pressure $p$ is independent of the displacement and has to be determined from equilibrium equation and boundary conditions. However, for compressible material,  $p$ is a function of displacement although it can be treated as an independent variable, and can be determined by the constitutive law
 \begin{equation} \label{pressure}
 p = \frac{d\Psi_{vol}(J)}{dJ}
 \end{equation}
-If we leave $p$ as an unknown and implement Equation \ref{pressure} as additional constraint, we will have a mixed formulation. If we replace $p$ with $\bold{u}$ using Equation \ref{pressure}, we end up with a displacement-base formulation.
+If we leave $p$ as an unknown and implement Equation \ref{pressure} as additional constraint, we will have a displacement/pressure mixed formulation. If we replace $p$ with $\bold{u}$ using Equation \ref{pressure}, we end up with a displacement-base formulation.
 
 %
 \subsection{Elasticity Tensor}
@@ -103,7 +101,14 @@ Substituting Equation \ref{Svol} and \ref{Siso}  into these, we can obtain the e
 \begin{equation} \label{Ciso}
 \mathbb{C}_{iso} = \mathbb{P} : \overline{\mathbb{C}} : \mathbb{P}^T + \frac{2}{3}Tr(J^{-2/3}\overline{\bold{S}})\tilde{\mathbb{P}} - \frac{2}{3}(\bold{C}^{-1}\otimes\bold{S}_{iso} + \bold{S}_{iso}\otimes \bold{C}^{-1})
 \end{equation}
-The definitions involved above are
+where $\otimes$ denotes the dyadic product, $\odot$ is defined as the derivative of the inverse of a second order tensor with respect to itself, i.e.
+\begin{equation}\label{dyadic}
+{(\bold{A} \otimes \bold{B})}_{ijkl} = {\bold{A}}_{ij}{\bold{B}}_{kl}
+\end{equation}
+\begin{equation} \label{circlecc}
+\bold{C}^{-1}\odot\bold{C}^{-1} = - \frac{\partial{\bold{C}^{-1}}}{\partial{\bold{C}}}
+\end{equation}
+$\tilde{p}$, $\overline{\mathbb{C}}$, $\tilde{\mathbb{P}}$ and $Tr(\bullet)$ are defined as
 \begin{equation} \label{tildep}
 \tilde{p} = p + J\frac{dp}{dJ}
 \end{equation}
@@ -113,13 +118,11 @@ The definitions involved above are
 \begin{equation} \label{tildepp}
 \tilde{\mathbb{P}} = \bold{C}^{-1} \odot \bold{C}^{-1} -  \frac{1}{3}\bold{C}^{-1} \otimes \bold{C}^{-1} 
 \end{equation}
-\begin{equation} \label{circlecc}
-\bold{C}^{-1}\odot\bold{C}^{-1} = - \frac{\partial{\bold{C}^{-1}}}{\partial{\bold{C}}}
-\end{equation}
+
 \begin{equation} \label{tracec}
 Tr(\bullet) = (\bullet) : \bold{C}
 \end{equation}
-Plug in a specific model of Equation \ref{split2} and corresponding Equation \ref{S} to \ref{Siso} into Equation \ref{C}, \ref{Cvol} and \ref{Ciso}, we can obtain the elasticity tensor. Note that for incompressible material, $\tilde{p} = p$ because $p$ is independent on $J$.
+Plug in a specific model of Equation \ref{split2} and its corresponding Equations $(\ref{S} - \ref{Siso})$ into Equations \ref{C}, \ref{Cvol} and \ref{Ciso}, we can obtain the elasticity tensor. Note that for incompressible material, $\tilde{p} = p$ because $p$ is independent of $J$.
 
 %
 \subsection{Principle of Virtual Work} \label{PVW}
@@ -135,7 +138,7 @@ The variational approach is the cornerstone for finite element methods. The most
 \end{equation}
 The internal work is done by Cauchy stress $\bold\sigma$ along the virtual Euler-Almansi strain $\delta\bold{e}$ about region $\Omega$ and the external work is done by the body force $\bold{b}$ and the surface traction $\overline{\bold{t}}$, along the virtual displacement $\delta{u}$ about region $\Omega$ and its boundary surface $\partial\Omega$ respectively. They are assumed be mapped to the reference configuration. 
 
-If the external loading is given as fixed traction in reference configuration, the virtual external work is constant. Example for this type of loading is tension test when the external force with respect to reference configuration is given as a constant. Another type of loading, which is more frequently encountered in biomechanics is the fixed pressure loading.
+If the external loading is given as fixed traction in reference configuration, the virtual external work is constant. Example for this type of loading is tension test where the external force with respect to reference configuration is given as a constant. Another type of loading, which is more frequently encountered in biomechanics is the fixed pressure loading.
 In this case, the pressure on the current boundary surface is constant, i.e. $\overline{\bold{t}} = \boldsymbol{\sigma{n}} = p\bold{n}$ where p is a given constant, $\bold{n}$ is the unit normal vector of the current surface. The external virtual work done by the constant pressure $p$ along the virtual displacement $\delta{\bold{u}}$ is defined by
 \begin{equation} \label{Wext2}
 \delta{W_{ext}}(\bold{u}, \delta{\bold{u}}) = p\int_{\partial\Omega} \bold{n}\cdot\delta{\bold{u}}ds
@@ -166,16 +169,16 @@ D_{\delta\bold{u}}\Pi(\bold{u}) = D_{\delta\bold{u}}\Pi_{int}(\bold{u}) + D_{\de
 Here we adopt the convention in Holzapfel using $D_{\Delta{x}}f(x, y, \textit{etc.})$ to represent the directional derivative of $f$ as a function of $(x, y, \textit{etc.})$ along the direction of $\Delta{x}$ where $x$, $y$, \textit{etc.} can be scalar or tensor of any other order. The directional derivative $D_{\Delta{x}}f(x, y, \textit{etc.})$ is equivalent to the first variation of functional $f$ with respect to $x$.
 Equation \ref{equilibrium} or \ref{potential} is the equation we want to solve in the displacement-based formulation. It is easy to prove the following equivalence
 \begin{equation}
-D_{\delta\bold{u}}\Pi_{int}(\bold{u}) = \delta W_{int}(\bold{u}, \delta\bold{u}) \quad and \quad
+D_{\delta\bold{u}}\Pi_{int}(\bold{u}) = \delta W_{int}(\bold{u}, \delta\bold{u}) \quad
 D_{\delta\bold{u}}\Pi_{ext}(\bold{u}) = - \delta W_{ext}(\bold{u}, \delta\bold{u})
 \end{equation}
 So that Equation \ref{equilibrium} or \ref{potential} is equivalent to Equation \ref{basic}. 
 
-In mixed formulation, we have two independent unknowns, $\bold{u}$ and $p$. The state of equilibrium is with respect to both of them. Our objective equation becomes
+In mixed formulation, we have two independent variables, $\bold{u}$ and $p$. The state of equilibrium is with respect to both of them. Our objective equation becomes
 \begin{equation} \label{target}
-D_{\delta\bold{u}}\Pi(\bold{u}, p) = 0 \quad and \quad D_{\delta{p}}\Pi(\bold{u}, p) = 0
+D_{\delta\bold{u}}\Pi(\bold{u}, p) = 0 \quad D_{\delta{p}}\Pi(\bold{u}, p) = 0
 \end{equation}
-To summarize, in displacement-based formulation, our goal is to find an equilibrium state for total potential energy with respect to $\bold{u}$; in mixed formulation, we need to find an equilibrium state with respect to both $\bold{u}$ and $p$. To solve these equations, we have to linearize them at first. That is, finding the second variation of potential energy.
+To summarize, in displacement-based formulation, our goal is to find an equilibrium state for total potential energy with respect to $\bold{u}$; in mixed formulation, we need to find an equilibrium state with respect to both $\bold{u}$ and $p$. To solve these equations, we have to linearize them first. That is, finding the second variation of potential energy.
 
 
 %
@@ -186,7 +189,7 @@ D_{\delta\bold{u}, \Delta\bold{u}}\Pi_{int}^2(\bold{u}) = D_{\Delta{\bold{u}}}\d
 \end{equation}
 The first part of the integration is called initial stress contribution since the $\bold{S}$ characterize the initial stress at every increment. The second part is called material contribution because the $\mathbb{C}$ characterize the material response to the displacement.
 
-As discussed in Section \ref{PVW}, for the first type of external loading as in  Equation \ref{Wext}, the external work is independent on the displacement. So the variation vanishes.
+As discussed in Section \ref{PVW}, for the first type of external loading as in  Equation \ref{Wext}, the external work is independent of the displacement. So the variation vanishes.
 \begin{equation} \label{Kext}
 D_{\delta\bold{u}, \Delta\bold{u}}\Pi_{ext}^2(\bold{u}) = - D_{\Delta{\bold{u}}}\delta{W_{ext}}(\bold{u}, \delta{\bold{u}}) = 0
 \end{equation}
@@ -242,7 +245,7 @@ D_{\delta{p}}\Pi(\bold{u}, p) = \int_{\Omega_0} (J(\bold{u}) - 1 )\delta{p} dV
 For the left hand side, $D_{\delta\bold{u}, \Delta\bold{u}}^2 \Pi(\bold{u}, p)$ has already been derived in the last section as the sum of Equation \ref{Kint} and Equation \ref{Kext} or \ref{Kext2}, i.e.
 \begin{equation} \label{lhs0}
 D_{\delta\bold{u}, \Delta\bold{u}}^2 \Pi(\bold{u}, p) =  \int_{\Omega_0}(Grad\delta\bold{u} : Grad\Delta\bold{u}\bold{S} + \bold{F}^TGrad\delta{u} : \mathbb{C} : \bold{F}^T Grad\Delta\bold{u})dV  \end{equation}
-or
+when pressure boundary condition is applied
 \begin{equation} \label{lhs1}
 \begin{split}
 D_{\delta\bold{u}, \Delta\bold{u}}^2 \Pi(\bold{u}, p) = & \int_{\Omega_0}(Grad\delta\bold{u} : Grad\Delta\bold{u}\bold{S} + \bold{F}^TGrad\delta{u} : \mathbb{C} : \bold{F}^T Grad\Delta\bold{u})dV  \\
@@ -257,7 +260,7 @@ D_{\delta\bold{u}, \Delta{p}}^2 \Pi(\bold{u}, p) = \int_{\Omega_0} J(\bold{u})\D
 \begin{equation} \label{lhs3}
 D_{\delta{p}, \Delta\bold{u}}^2 \Pi(\bold{u}, p) = \int_{\Omega_0} J(\bold{u})div\Delta{\bold{u}}\delta{p}dV
 \end{equation}
-Since $\Pi$ is a first order function with respect to p, we have
+Since $\Pi$ is a first order function with respect to $p$, we have
 \begin{equation} \label{lhs4}
 D_{\delta{p}, \Delta{p}}^2 \Pi(\bold{u}, p) = 0
 \end{equation}
