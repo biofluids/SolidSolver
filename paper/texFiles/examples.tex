@@ -1,5 +1,5 @@
 \section{Examples}
-Mooney-Rivlin is one of the most frequently used model in biomechanics. This model predicts the stress in rubber-like materials very well when the deformation is not too large. In this section, we will use Mooney-Rivlin model to demonstrate the procedures described in Section \ref{general}. 
+In this section, we will derive the stress and elasticity tensor in detail for two models: Yeoh model and Mooney-Rivlin model, as demonstrations of the procedures described in Section \ref{general}. Both of them are designed to model incompressible rubber. In practice, a volumetric part is added to allow a small compressibility to make them more realistic.  Both models use invariants as variables and have a simple form. Mooney-Rivlin model is linear in both $\bar{I_1}$ and $\bar{I_2}$ while in Yeoh model $\bar{I_2}$ is neglected but higher order terms of $\bar{I_1}$ are added to capture the stiffening effect of rubber in the large strain domain.
 
 %
 \subsection{Mooney-Rivlin Model}
@@ -16,7 +16,7 @@ The decoupled form of compressible Mooney-Rivlin model is written as
 \end{equation}
 where $\mu_1$, $\mu_2$ and $\kappa$ are material constants. For small deformations, the shear modulus and bulk modulus can be approximated by $\mu_1+\mu_2$ and $\kappa$.
 
-For incompressible Mooney-Rivlin model, we replace Equation \ref{vol} with
+In mixed formulation we replace Equation \ref{vol} with
 \begin{equation}
 \Psi_{vol} = p(J - 1)
 \end{equation}
@@ -24,7 +24,7 @@ where $p$ is a Lagrangian multiplier to enforce the incompressibility condition 
 
 %
 \subsubsection{Stress}
-Substitute Equation \ref{vol} into Equation \ref{Svol}, and recall the definition in Equation \ref{pressure}, we can derive the expression for the second Piola-Kirchhoff stress.
+Substitute Equation \ref{vol} into Equation \ref{Svol}, and recall the definition in Equation \ref{pressure}, we can derive the expression for the PK2 stress.
 \begin{equation} \label{mSvol}
 \bold{S}_{vol} = Jp\bold{C}^{-1} = \kappa{J(J-1)}\bold{C}^{-1} = \kappa{J^{1/3}(J-1)}\bold{\overline{C}}^{-1}
 \end{equation}
@@ -41,7 +41,7 @@ To obtain the isochoric stress, first derive the fictitious stress in Equation \
 &= (\mu_1+\mu_2\bar{I_1})\bold{I} - \mu_2{\overline{\bold{C}}}
 \end{split}
 \end{equation}
-Multiply with the 4th order identity tensor
+Multiply with the 4th order projection tensor
 \begin{equation}
 \begin{split}
 \mathbb{P}:\overline{\bold{S}} &= ( \mathbb{I} - \frac{1}{3}\bold{C}^{-1} \otimes \bold{C} ) : \overline{\bold{S}} \\
@@ -51,7 +51,7 @@ Multiply with the 4th order identity tensor
 &= \overline{\bold{S}} -  \frac{1}{3}(\mu_1\bar{I_1} + 2\mu_2\bar{I_2}) \overline{\bold{C}}^{-1} 
 \end{split}
 \end{equation}
-Therefore the isochoric part of the second Piola-Kirchhoff stress is
+Therefore the isochoric part of the PK2 stress is
 \begin{equation} \label{mSiso}
 \bold{S_{iso}} = J^{-2/3}\mathbb{P}:\overline{\bold{S}} = J^{-2/3}\left[    - \frac{1}{3}(\mu_1\bar{I_1} + 2\mu_2\bar{I_2}) \overline{\bold{C}}^{-1}  + (\mu_1 + \mu_2\bar{I_1})\bold{I} - \mu_2\overline{\bold{C}} \right]
 \end{equation}
@@ -92,12 +92,12 @@ Next we follow Equation \ref{Ciso} and \ref{barcc} to \ref{tracec} to derive $\m
 \end{equation}
 Substituting into Equation \ref{barcc}
 \begin{equation}
-\overline{\mathbb{C}} = 2J^{-4/3}\frac{\partial^2\Psi_{iso}(\overline{\bold{C}})}{\partial{\overline{\bold{C}}}{\partial{\overline{\bold{C}}}}} = 2\mu_2{J^{-4/3}}(\bold{I} \otimes \bold{I} - \mathbb{I})
+\overline{\mathbb{C}} = 4J^{-4/3}\frac{\partial^2\Psi_{iso}(\overline{\bold{C}})}{\partial{\overline{\bold{C}}}{\partial{\overline{\bold{C}}}}} = 2\mu_2{J^{-4/3}}(\bold{I} \otimes \bold{I} - \mathbb{I})
 \end{equation}
 The first part of the right-hand-side Equation \ref{Ciso} is
 \begin{equation} \label{part1}
 \begin{split}
-\mathbb{P} : {\bold{C}} : {\mathbb{P}}^T &= 2\mu_2{J^{-4/3}} (\mathbb{I} - \frac{1}{3}{\bold{C}}^{-1} \otimes {\bold{C}})
+\mathbb{P} : {\overline{\mathbb{C}}} : {\mathbb{P}}^T &= 2\mu_2{J^{-4/3}} (\mathbb{I} - \frac{1}{3}{\bold{C}}^{-1} \otimes {\bold{C}})
 : (\bold{I} \otimes \bold{I} - \mathbb{I}) : (\mathbb{I} - \frac{1}{3}\overline{\bold{C}} \otimes {\bold{C}}^{-1}) \\
 &= 2\mu_2{J^{-4/3}}[\mathbb{I} : (\bold{I} \otimes \bold{I}) : \mathbb{I} - \frac{1}{3}\mathbb{I} : (\bold{I} \otimes \bold{I}) : ({{\bold{C}}} \otimes {{\bold{C}}}^{-1}) - \mathbb{I} : \mathbb{I} : \mathbb{I} \\
 &+ \mathbb{I} : \mathbb{I} : \frac{1}{3}({\bold{C}} \otimes {{\bold{C}}}^{-1}) - 
@@ -178,10 +178,68 @@ Combining Equation \ref{part1}, \ref{part2} and \ref{part3}, we have
 \subsubsection{Matrix Form}
 
 %
-\subsection{Another Model}
+\subsection{Yeoh Model}
 
+%
+We use the same volumetric part to account for compressibility as Mooney-Rivlin model. The volumetric part of both stress and elasticity tensor are the same as Mooney-Rivlin respectively. Therefore, we will only show the derivation of the isochoric components.
 
+%
+\subsubsection{The Decoupled Form of Yoeh Model}
+The isochoric part is written as
+\begin{equation} \label{isopart}
+\Psi_{iso} = c_1(\bar{I_1} - 3) + c_2(\bar{I_2} - 3)^2 + c_3(\bar{I_3} - 3)^3
+\end{equation}
+where $c_1$, $c_2$, $c_3$ are material constants. The shear modules is approximated by $\mu = 2c_1 + 4c_2(\bar{I_1} - 3) + 6c_3(\bar{I_1} - 3)^2$.
 
+%
+\subsubsection{Stress}
+Following the same way, first derive the fictitious stress
+\begin{equation} \label{yfictitious}
+\begin{split}
+\overline{\bold{S}} &= 2\frac{\partial\Psi_{iso}({\overline{\bold{C}})}}{\partial\overline{\bold{C}}} \\
+&= [2c_1 + 4c_2(\bar{I_1} - 3) + 6c_3(\bar{I_1} - 3)^2] \bold{I} \\
+\end{split}
+\end{equation}
+Then the isochoric part of the PK2 stress is obtained
+\begin{equation} \label{ySiso}
+\begin{split}
+{\bold{S}}_{iso} &= J^{-2/3}(\mathbb{I} - \frac{1}{3}\bold{C}^{-1} \otimes \bold{C}) : \overline{\bold{S}}\\
+&= J^{-2/3} [\overline{\bold{S}} - \frac{1}{3}({\overline{\bold{C}}}^{-1} \otimes  {\overline{\bold{C}}}) :  \overline{\bold{S}}] \\
+&= J^{-2/3}[\overline{\bold{S}} - \frac{1}{3} \overline{\bold{C}}^{-1} \otimes (\overline{\bold{C}} : \overline{\bold{S}})] \\
+&= J^{-2/3}\{\overline{\bold{S}} - \frac{1}{3} \overline{\bold{C}}^{-1} \otimes [2c_1 + 4c_2(\bar{I_1} - 3) + 6c_3(\bar{I_1} - 3)^2] \bar{I_1}\}\\
+&= J^{-2/3}[2c_1 + 4c_2(\bar{I_1} - 3) + 6c_3(\bar{I_1} - 3)^2] (\bold{I} - \frac{1}{3}\bar{I_1}{\overline{\bold{C}}}^{-1})
+\end{split}
+\end{equation}
+
+\subsubsection{Elasticity Tensor}
+The second order derivative of $\Psi_{iso}$ with respect to $\overline{\bold{C}}$ is
+\begin{equation}
+\begin{split}
+\frac{\partial^2\Psi_{iso}(\overline{\bold{C}})}{\partial\overline{\bold{C}}\partial\overline{\bold{C}}} &= 
+\bold{I} \otimes \frac{\partial[c_1 + 2c_2({\bar{I}}_1-3) + 3c_3({\bar{I}}_1-3)^2 ]}{\partial{\overline{\bold{C}}}} \\
+&= \bold{I} \otimes [2c_2\bold{I} + 6c_3({\bar{I}}_1-3)\bold{I}]\\
+&= [2c_2 + 6c_3({\bar{I}}_1-3)] \bold{I} \otimes \bold{I}
+\end{split}
+\end{equation}
+The fictitious elasticity tensor is
+\begin{equation}
+\overline{\mathbb{C}} = 4J^{-4/3}\frac{\partial^2\Psi_{iso}(\overline{\bold{C}})}{\partial{\overline{\bold{C}}}{\partial{\overline{\bold{C}}}}} = 8J^{-4/3}[c_2 + 3c_3({\bar{I}}_1 - 3) ]\bold{I} \otimes \bold{I}
+\end{equation}
+The first part of the right-hand-side of Equation \ref{Ciso} is
+\begin{equation} \label{ypart1}
+\begin{split}
+\mathbb{P} : \overline{\mathbb{C}} : {\mathbb{P}}^T &= 8J^{-4/3}[c_2 + 3c_3({\bar{I}}_1 - 3 )](\mathbb{I} - \frac{1}{3}{\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}) : (\bold{I} \otimes \bold{I}): (\mathbb{I} - \frac{1}{3}{\overline{\bold{C}}} \otimes {\overline{\bold{C}}}^{-1}) \\
+&= 8J^{-4/3}[c_2 + 3c_3({\bar{I}}_1 - 3 )][\mathbb{I}:(\bold{I} \otimes \bold{I}):\mathbb{I} - \mathbb{I}:(\bold{I} \otimes \bold{I}): \frac{1}{3} ({\overline{\bold{C}}} \otimes {\overline{\bold{C}}}^{-1}) \\
+&- \frac{1}{3} ({\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}) : (\bold{I} \otimes \bold{I}) : \mathbb{I} +  \frac{1}{9} ({\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}) : (\bold{I} \otimes \bold{I}) : ({\overline{\bold{C}}} \otimes {\overline{\bold{C}}}^{-1}) ] \\
+&= 8J^{-4/3}[c_2 + 3c_3({\bar{I}}_1 - 3 )] [\bold{I} \otimes \bold{I} - \frac{{\bar{I}}_1}{3}(\bold{I} \otimes {\overline{\bold{C}}}^{-1} +{\overline{\bold{C}}}^{-1}  \otimes  \bold{I}) + \frac{{{\bar{I}}_1}^2}{9} {\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1} ]
+\end{split}
+\end{equation}
+Using the fictitious PK2 stress derived in Equation \ref{yfictitious}, we can obtain the second part of the right-hand-side of Equation \ref{Ciso}
+\begin{equation}
+\begin{split}
+\frac{2}{3}Tr(J^{-2/3}\overline{\bold{S}})\tilde{\mathbb{P}} &= \frac{2}{3}J^{-2/3}\overline{\bold{S}} : \bold{C}
+\end{split}
+\end{equation}
 
 
 
