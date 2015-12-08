@@ -1,14 +1,15 @@
 \section{Examples}
-In this section, we will derive the stress and elasticity tensor in detail for two models: Yeoh model and Mooney-Rivlin model, as demonstrations of the procedures described in Section \ref{general}. Both of them are designed to model incompressible rubber. In practice, a volumetric part is added to allow a small compressibility to make them more realistic.  Both models use invariants as variables and have a simple form. Mooney-Rivlin model is linear in both $\bar{I_1}$ and $\bar{I_2}$ while in Yeoh model $\bar{I_2}$ is neglected but higher order terms of $\bar{I_1}$ are added to capture the stiffening effect of rubber in the large strain domain.
+In this section, we will derive the stress and elasticity tensor in detail for two models: Yeoh model and Mooney-Rivlin model, as demonstrations of the procedures described in Section \ref{general}. Both of them are designed to model incompressible rubber. In practice, a volumetric part is added to allow a small compressibility to make them more realistic.  Both models use invariants as variables and have simple forms. Mooney-Rivlin model is linear in both $\bar{I_1}$ and $\bar{I_2}$ while in Yeoh model $\bar{I_2}$ is neglected but higher order terms of $\bar{I_1}$ are added to capture the stiffening effect of rubber in the large strain domain.
 
 %
 \subsection{Mooney-Rivlin Model}
+Mooney-Rivlin is one of the most popular models used in biomechanics, especially in case of large deformation. In case of small deformation, this behavior is close to linear material.
 \subsubsection{The Decoupled Form of Mooney-Rivlin Model}
 The decoupled form of compressible Mooney-Rivlin model is written as
 \begin{equation}
 \Psi = \Psi_{iso} + \Psi_{vol}
 \end{equation}
-\begin{equation} \label{vol}
+\begin{equation} \label{vol1}
 \Psi_{vol} = \frac{\kappa}{2}(J - 1)^2
 \end{equation}
 \begin{equation} \label{iso}
@@ -16,8 +17,8 @@ The decoupled form of compressible Mooney-Rivlin model is written as
 \end{equation}
 where $\mu_1$, $\mu_2$ and $\kappa$ are material constants. For small deformations, the shear modulus and bulk modulus can be approximated by $\mu_1+\mu_2$ and $\kappa$.
 
-In mixed formulation we replace Equation \ref{vol} with
-\begin{equation}
+In mixed formulation we replace Equation \ref{vol1} with
+\begin{equation} \label{vol2}
 \Psi_{vol} = p(J - 1)
 \end{equation}
 where $p$ is a Lagrangian multiplier to enforce the incompressibility condition and can be interpreted as the hydrostatic pressure.  
@@ -64,14 +65,14 @@ Insert our model into the definition of $\tilde{p}$ in Equation \ref{tildep}
 \tilde{p} = p + J\frac{dp}{dJ} + \kappa(J-1) + \kappa{J} = \kappa{(2J - 1)}
 \end{equation}
 Substituting $p$ and $\tilde{p}$ into Equation \ref{Cvol}, we have
-\begin{equation}
+\begin{equation} \label{mCvol1}
 \begin{split}
 \mathbb{C}_{vol} &= J\kappa{(2J-1)} \bold{C}^{-1} \otimes \bold{C}^{-1} - 2J\kappa{(J-1)} \bold{C}^{-1} \odot \bold{C}^{-1}  \\
 &= J^{-1/3}\kappa{(2J-1)} \overline{\bold{C}}^{-1} \otimes \overline{\bold{C}}^{-1} - 2J^{-1/3}\kappa{(J-1)} \overline{\bold{C}}^{-1} \odot \overline{\bold{C}}^{-1}
 \end{split}
 \end{equation}
 In mixed formulation
-\begin{equation} \label{mCvol}
+\begin{equation} \label{mCvol2}
 \begin{split}
 \mathbb{C}_{vol} &= Jp\bold{C}^{-1}\otimes\bold{C}^{-1} - 2Jp\bold{C}^{-1}\odot\bold{C}^{-1} \\
 &= J^{-1/3}p\overline{\bold{C}}^{-1}\otimes\overline{\bold{C}}^{-1} - 2J^{-1/3}p\overline{\bold{C}}^{-1}\odot\overline{\bold{C}}^{-1}
@@ -173,18 +174,14 @@ Combining Equation \ref{part1}, \ref{part2} and \ref{part3}, we have
 \frac{2}{9}J^{-4/3}(\mu_1\bar{I_1} + 4\mu_2\bar{I_2}) {\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1}) + \frac{2}{3}J^{-4/3}(\mu_1\bar{I_1} + 2\mu_2\bar{I_2}){\overline{\bold{C}}}^{-1} \odot {\overline{\bold{C}}}^{-1} 
 \end{split}
 \end{equation} 
-
-%
-\subsubsection{Matrix Form}
+Equation \ref{mCvol1}/\ref{mCvol2} and \ref{mCiso} completes the derivation of elasticity tensor in reference configuration.
 
 %
 \subsection{Yeoh Model}
+Yeoh model is motivated to simulate the mechanical behavior of carbon-black filled rubber vulcanizates with the typical stiffening effect in large strain domain. It's also widely used in mechanical engineering. We use the same volumetric part to account for compressibility as in Equation \ref{vol1} or \ref{vol2}. Consequently the volumetric part of both stress and elasticity tensor are the same as Mooney-Rivlin. Therefore, we will only show the derivation of the isochoric components.
 
 %
-We use the same volumetric part to account for compressibility as Mooney-Rivlin model. The volumetric part of both stress and elasticity tensor are the same as Mooney-Rivlin respectively. Therefore, we will only show the derivation of the isochoric components.
-
-%
-\subsubsection{The Decoupled Form of Yoeh Model}
+\subsubsection{The Decoupled Form of Yeoh Model}
 The isochoric part is written as
 \begin{equation} \label{isopart}
 \Psi_{iso} = c_1(\bar{I_1} - 3) + c_2(\bar{I_2} - 3)^2 + c_3(\bar{I_3} - 3)^3
@@ -211,6 +208,7 @@ Then the isochoric part of the PK2 stress is obtained
 \end{split}
 \end{equation}
 
+%
 \subsubsection{Elasticity Tensor}
 The second order derivative of $\Psi_{iso}$ with respect to $\overline{\bold{C}}$ is
 \begin{equation}
@@ -235,12 +233,45 @@ The first part of the right-hand-side of Equation \ref{Ciso} is
 \end{split}
 \end{equation}
 Using the fictitious PK2 stress derived in Equation \ref{yfictitious}, we can obtain the second part of the right-hand-side of Equation \ref{Ciso}
-\begin{equation}
+\begin{equation} \label{ypart2}
 \begin{split}
-\frac{2}{3}Tr(J^{-2/3}\overline{\bold{S}})\tilde{\mathbb{P}} &= \frac{2}{3}J^{-2/3}\overline{\bold{S}} : \bold{C}
+\frac{2}{3}Tr(J^{-2/3}\overline{\bold{S}})\tilde{\mathbb{P}} &= \frac{2}{3}J^{-2/3}(\overline{\bold{S}} : \bold{C})\tilde{\mathbb{P}} \\ 
+&= \frac{2}{3} (\overline{\bold{S}} : \overline{\bold{C}})\tilde{\mathbb{P}} \\
+&= \frac{2}{3} [2c_1 + 4c_2(\bar{I_1} - 3) + 6c_3(\bar{I_1} - 3)^2] (\bold{I} : \overline{\bold{C}})
+\tilde{\mathbb{P}} \\
+&= [\frac{4}{3}c_1{\bar{I}}_1 + \frac{8}{3}c_2({\bar{I}}_1 - 3){\bar{I}}_1 + 4c_3({\bar{I}}_1 - 3)^2{\bar{I}}_1]({\overline{\bold{C}}}^{-1} \odot {\overline{\bold{C}}}^{-1} - \frac{1}{3}{\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1}) \\
+&= J^{-4/3} \{ [\frac{4}{3}c_1{\bar{I}}_1 + \frac{8}{3}c_2({\bar{I}}_1 - 3){\bar{I}}_1 + 4c_3({\bar{I}}_1 - 3)^2{\bar{I}}_1]{\overline{\bold{C}}}^{-1} \odot {\overline{\bold{C}}}^{-1} \\
+&-  [\frac{4}{9}c_1{\bar{I}}_1 + \frac{8}{9}c_2({\bar{I}}_1 - 3){\bar{I}}_1 + \frac{4}{3}c_3({\bar{I}}_1 - 3)^2{\bar{I}}_1]{\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1} \} 
 \end{split}
 \end{equation}
+The third part of the right-hand-side of Equation \ref{Ciso} is
+\begin{equation} \label{ypart3}
+\begin{split}
+-\frac{2}{3}({\bold{C}}^{-1} \otimes {\bold{S}}_{iso} + {\bold{S}}_{iso} \otimes {{\bold{C}}^{-1}}^{-1}) 
+&= 
+-\frac{2}{3}J^{-4/3}({\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{S}}}_{iso} + {\overline{\bold{S}}}_{iso} \otimes {\overline{{\bold{C}}}^{-1}}) \\
+&=
+-\frac{2}{3}J^{-4/3}[2c_1 + 4c_2({\bar{I}}_1 - 3) + 6c_3({\bar{I}}_1 - 3)^2]
+[{\overline{\bold{C}}}^{-1} \otimes (\bold{I} - \frac{1}{3}{\bar{I}_1}{\overline{\bold{C}}}^{-1}) + 
+(\bold{I} - \frac{1}{3}{\bar{I}_1}{\overline{\bold{C}}}^{-1}) \otimes {\overline{\bold{C}}}^{-1}]\\
+&=
+J^{-4/3} \{ [-\frac{4}{3}c_1 - \frac{8}{3}c_2({\bar{I}}_1 - 3) - 4c_3({\bar{I}}_1 - 3)^2] ({\overline{\bold{C}}}^{-1} \otimes \bold{I} + \bold{I} \otimes {\overline{\bold{C}}}^{-1}) \\
+&+ [\frac{8}{9}c_1{\bar{I}}_1 + \frac{16}{9}c_2({\bar{I}}_1 - 3){\bar{I}}_1 + \frac{8}{3}c_3({\bar{I}}_1 - 3)^2{\bar{I}}_1 ] {\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1}
+\}
+\end{split}
+\end{equation}
+Combining \ref{ypart1}, \ref{ypart2} and \ref{ypart3}, we have the isochoric part of elasticity tensor
+\begin{equation} \label{yCiso}
+\begin{split}
+{\mathbb{C}}_{iso} &= J^{-4/3} \{
+[8c_2+24c_3({\bar{I}}_1 - 3)] \bold{I} \otimes \bold{I} \\
+&- [\frac{4}{3}c_1 + (\frac{16}{3}{\bar{I}}_1 - 3)c_2 + 12({\bar{I}}_1 - 1)({\bar{I}}_1 - 3)c_3]({\overline{\bold{C}}}^{-1} \otimes \bold{I} + \bold{I} \otimes {\overline{\bold{C}}}^{-1})\\
+&+ [\frac{4}{9}{\bar{I}}_1c_1 + (\frac{16}{9}{{\bar{I}}_1}^2 - \frac{8}{3}{\bar{I}}_1)c_2 + 4{\bar{I}}_1({\bar{I}}_1 - 1)({\bar{I}}_1 - 3)c_3] {\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1} \\
+&+ [\frac{4}{3}c_1{\bar{I}}_1 + \frac{8}{3}c_2({\bar{I}}_1 - 3){\bar{I}}_1 + 4c_3({\bar{I}}_1 - 3)^2{\bar{I}}_1]{\overline{\bold{C}}}^{-1} \odot {\overline{\bold{C}}}^{-1}
+\}
+\end{split}
+\end{equation}
+Equation \ref{yCiso} and Equation \ref{mCvol1} or \ref{mCvol2} gives the elasticity tensor in reference configuration.
 
-
-
+In these two examples we show the derivation of stress and elasticity tensor for decoupled hyperelastic models written as functions of invariants. There are many other models written in polynomial form that can be easily implemented. For models expressed in principal stretches, the method is still the same, we only have to find the derivatives of strain energy function with respect to principal stretches.
 
