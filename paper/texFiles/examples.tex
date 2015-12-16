@@ -47,8 +47,8 @@ Multiply with the 4th order projection tensor
 \begin{split}
 \mathbb{P}:\overline{\bold{S}} &= ( \mathbb{I} - \frac{1}{3}\bold{C}^{-1} \otimes \bold{C} ) : \overline{\bold{S}} \\
 &= \overline{\bold{S}} - \frac{1}{3}( \overline{\bold{C}}^{-1} \otimes \overline{\bold{C}} ) : \overline{\bold{S}} \\
-&= \overline{\bold{S}} - \frac{1}{3} \overline{\bold{C}}^{-1} \otimes (\overline{\bold{C}} : \overline{\bold{S}}) \\
-&= \overline{\bold{S}} - \frac{1}{3} \overline{\bold{C}}^{-1} \otimes \left[(\mu_1+\mu_2\bar{I_1})\bar{I_1} - \mu_2(\bar{I_1}^2-2\bar{I_2})\right]\\
+&= \overline{\bold{S}} - \frac{1}{3} \overline{\bold{C}}^{-1}  (\overline{\bold{C}} : \overline{\bold{S}}) \\
+&= \overline{\bold{S}} - \frac{1}{3} \overline{\bold{C}}^{-1}  \left[(\mu_1+\mu_2\bar{I_1})\bar{I_1} - \mu_2(\bar{I_1}^2-2\bar{I_2})\right]\\
 &= \overline{\bold{S}} -  \frac{1}{3}(\mu_1\bar{I_1} + 2\mu_2\bar{I_2}) \overline{\bold{C}}^{-1} 
 \end{split}
 \end{equation}
@@ -202,8 +202,8 @@ Then the isochoric part of the PK2 stress is obtained
 \begin{split}
 {\bold{S}}_{iso} &= J^{-2/3}(\mathbb{I} - \frac{1}{3}\bold{C}^{-1} \otimes \bold{C}) : \overline{\bold{S}}\\
 &= J^{-2/3} [\overline{\bold{S}} - \frac{1}{3}({\overline{\bold{C}}}^{-1} \otimes  {\overline{\bold{C}}}) :  \overline{\bold{S}}] \\
-&= J^{-2/3}[\overline{\bold{S}} - \frac{1}{3} \overline{\bold{C}}^{-1} \otimes (\overline{\bold{C}} : \overline{\bold{S}})] \\
-&= J^{-2/3}\{\overline{\bold{S}} - \frac{1}{3} \overline{\bold{C}}^{-1} \otimes [2c_1 + 4c_2(\bar{I_1} - 3) + 6c_3(\bar{I_1} - 3)^2] \bar{I_1}\}\\
+&= J^{-2/3}[\overline{\bold{S}} - \frac{1}{3} \overline{\bold{C}}^{-1}  (\overline{\bold{C}} : \overline{\bold{S}})] \\
+&= J^{-2/3}\{\overline{\bold{S}} - \frac{1}{3} \overline{\bold{C}}^{-1} [2c_1 + 4c_2(\bar{I_1} - 3) + 6c_3(\bar{I_1} - 3)^2] \bar{I_1}\}\\
 &= J^{-2/3}[2c_1 + 4c_2(\bar{I_1} - 3) + 6c_3(\bar{I_1} - 3)^2] (\bold{I} - \frac{1}{3}\bar{I_1}{\overline{\bold{C}}}^{-1})
 \end{split}
 \end{equation}
@@ -273,5 +273,14 @@ Combining \ref{ypart1}, \ref{ypart2} and \ref{ypart3}, we have the isochoric par
 \end{equation}
 Equation \ref{yCiso} and Equation \ref{mCvol1} or \ref{mCvol2} gives the elasticity tensor in reference configuration.
 
-In these two examples we show the derivation of stress and elasticity tensor for decoupled hyperelastic models written as functions of invariants. There are many other models written in polynomial form that can be easily implemented. For models expressed in principal stretches, the method is still the same, we only have to find the derivatives of strain energy function with respect to principal stretches.
+In these two examples we show the derivation of stress and elasticity tensor for isotropic hyperelastic models written as functions of invariants. Both potential functions are polynomials. Some other isotropic models are exponential functions and some are combination of both forms. The procedures can be easily applied to these models. For models expressed in principal stretches, the method is still the same, we only have to find the derivatives of strain energy function with respect to principal stretches.
 
+Yet not all biomaterials are isotropic. For example, heart muscle has strong directional properties, therefore it is regarded as anisotropic. Materials like this are modeled as a combination of a ground substance and one or more families of fibers which are continuously arranged in the ground material. In literature, this kind of materials are referred as transversely isotropic materials. In the next subsection, we will derive the stress and elasticity tensor for a composite material with two families of fibers.
+
+%
+\subsection{Holzapfel-Gasser-Ogden Model}
+The Holzapfel-Gasser-Ogden (HGO) model is widely used to model soft biological tissues, for example, arterial tissue. Such materials are usually almost incompressible, so they can modeled in decoupled form to allow a slight compressibility. HGO model uses neo-Hookean model as the isotropic ground material, and the anisotropic part consists two families of fibers whose directions are represented by unit vectors $\bold{a}_{04}$ and $\bold{a}_{06}$ in the reference configuration. As the material deforms, these vectors deform accordingly and are expressed as unit vectors $\bold{a}_4$ and $\bold{a}_6$ in the current configuration. $\bold{a}_{0i}$ and $\bold{a}_{i}$ ($i = 4, 6$) are related by 
+\begin{equation} \label{vector}
+\lambda\bold{a}_i = \bold{F}\bold{a}_{0i}
+\end{equation} 
+where $i = 4, 6$, $\lambda$ is the stretch of the original fiber.
