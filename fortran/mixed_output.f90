@@ -235,7 +235,7 @@ contains
 		real(8), dimension(nen,nsd) :: dNdx, dNdy
 		real(8), dimension(ned,nsd) :: stress
 		real(8), dimension(nen,nsd) :: dNdxi 
-		real(8), dimension(nsd,nsd) :: dxdxi, dxidx, F, C, eye
+		real(8), dimension(nsd,nsd) :: dxdxi, dxidx, F, B, eye
 		real(8), allocatable, dimension(:,:) :: xilist
 		integer :: ele,a,i,npt,j,intpt
 		real(8) :: Ja, pressure, avg_vcr
@@ -305,8 +305,9 @@ contains
 				dNdx = matmul(dNdxi,dxidx)
 				! deformation gradient, F_ij = delta_ij + dU_i/dx_j
 				F = eye + matmul(eledof,dNdx)
-				! right Cauchy-Green tensor, B = F^TF and Ja = det(F)
-				C = matmul(transpose(F),F)
+				! left Cauchy-Green tensor, B = F^TF and Ja = det(F)
+				B = matmul(F,transpose(F))
+				!B = matmul(F,transpose(F))
 				if (nsd == 2) then
 					Ja = F(1,1)*F(2,2) - F(1,2)*F(2,1)
 				else if (nsd == 3) then
@@ -316,7 +317,7 @@ contains
 				end if
 				vcr(ele) = vcr(ele) + Ja
 				! compute the Kirchhoff stress
-				stress = Kirchhoffstress(nsd,ned,C,Ja,pressure,materialprops)
+				stress = Kirchhoffstress(nsd,ned,F,pressure,materialprops)
 				! Cauchy stress
 				stress = stress/Ja
 				! vectorize

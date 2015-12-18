@@ -3,19 +3,19 @@ module mixed_material
 	implicit none
 
 contains
-	function materialstiffness(nsd,ned,B,Ja,pressure,materialprops)
+	function materialstiffness(nsd,ned,F,pressure,materialprops)
 		! Compute the material stiffness tensor
 		implicit none
 	
 		integer, intent(in) :: nsd, ned
-		real(8), intent(in) :: Ja, pressure
-		real(8), dimension(nsd,nsd), intent(in) :: B
+		real(8), intent(in) :: pressure
+		real(8), dimension(nsd,nsd), intent(in) :: F
 		real(8), dimension(5), intent(in) :: materialprops
 		real(8), dimension(ned,nsd,ned,nsd):: materialstiffness
 	
 		integer :: i, j, k, l, p
-		real(8) :: mu1, mu2, K1, I1, I2, c1, c2, c3
-		real(8), dimension(nsd,nsd) :: Bbar, BB, eye
+		real(8) :: mu1, mu2, K1, I1, I2, c1, c2, c3, Ja
+		real(8), dimension(nsd,nsd) :: B, Bbar, BB, eye
 	
 		! square matrix
 		do i=1,nsd
@@ -30,6 +30,14 @@ contains
 		materialstiffness = 0.
 		
 		! Change B to Bbar and compute Bbar squared
+		if (nsd == 2) then
+			Ja = F(1,1)*F(2,2) - F(1,2)*F(2,1)
+		else if (nsd == 3) then
+			Ja = F(1,1)*F(2,2)*F(3,3) - F(1,1)*F(3,2)*F(2,3) &
+				  - F(1,2)*F(2,1)*F(3,3) + F(1,2)*F(2,3)*F(3,1) &
+				  + F(1,3)*F(2,1)*F(3,2) - F(1,3)*F(2,2)*F(3,1)
+		end if
+		B = matmul(F,transpose(F))
 		Bbar = B/Ja**(2/3.)
 		BB = matmul(Bbar,Bbar)
 		! I1 I2 denote I1bar I2bar actually
@@ -49,7 +57,7 @@ contains
 		end if
 		I2 = I2/2.
 		
-		if (dAbs(materialprops(1)-4) < 1d-4) then
+		if (dAbs(materialprops(1)-4) < 1d-4) then ! Yeoh
 			c1 = materialprops(2)
 			c2 = materialprops(3)
 			c3 = materialprops(5)
@@ -65,8 +73,23 @@ contains
 						end do
 					end do
 				end do
-			end do	
-		else
+			end do
+		else if (dAbs(materialprops(1)-5) < 1d-4) then ! HGO
+			mu1 = materialprops(2)
+			K1 = materialprops(4)
+			do i=1,ned
+				do j=1,nsd
+					do k=1,ned
+						do l=1,nsd
+							materialstiffness(i,j,k,l) = - 2/3.*(mu1)*(Bbar(k,l)*eye(i,j)+Bbar(i,j)*eye(k,l)) &
+										 				 + 2/9.*(mu1*I1)*eye(i,j)*eye(k,l) &
+										 				 + 1/3.*(mu1*I1)*(eye(i,k)*eye(j,l)+eye(i,l)*eye(j,k)) &
+										 				 + (eye(i,j)*eye(k,l) - (eye(i,k)*eye(j,l)+eye(i,l)*eye(j,k)))*Ja*pressure
+						end do
+					end do
+				end do
+			end do
+		else !neo-Hookean and Mooney-Rivlin
 			mu1 = materialprops(2)
 			mu2 = materialprops(3)
 			K1 = materialprops(4)
@@ -90,18 +113,18 @@ contains
 		
 	end function materialstiffness
 	
-	function Kirchhoffstress(nsd,ned,B,Ja,pressure,materialprops)
+	function Kirchhoffstress(nsd,ned,F,pressure,materialprops)
 		! Compute the Kirchhoff stress
 		implicit none
 		
 		integer, intent(in) :: nsd, ned
-		real(8), intent(in) :: Ja, pressure
-		real(8), dimension(nsd,nsd), intent(in) :: B
+		real(8), intent(in) :: pressure
+		real(8), dimension(nsd,nsd), intent(in) :: F
 		real(8), dimension(5), intent(in) :: materialprops
 		real(8), dimension(ned,nsd) :: Kirchhoffstress
-		real(8), dimension(nsd,nsd) :: Bbar, BB, eye
+		real(8), dimension(nsd,nsd) :: B, Bbar, BB, eye
 		integer :: i, j, k
-		real(8) :: mu1, mu2, K1, I1, I2, c1, c2, c3
+		real(8) :: mu1, mu2, K1, I1, I2, c1, c2, c3, Ja
 		
 		! square matrix
 		do i=1,nsd
@@ -114,6 +137,14 @@ contains
 			end do
 		end do
 		! Change B to Bbar and compute Bbar squared
+		if (nsd == 2) then
+			Ja = F(1,1)*F(2,2) - F(1,2)*F(2,1)
+		else if (nsd == 3) then
+			Ja = F(1,1)*F(2,2)*F(3,3) - F(1,1)*F(3,2)*F(2,3) &
+				  - F(1,2)*F(2,1)*F(3,3) + F(1,2)*F(2,3)*F(3,1) &
+				  + F(1,3)*F(2,1)*F(3,2) - F(1,3)*F(2,2)*F(3,1)
+		end if
+		B = matmul(F,transpose(F))
 		Bbar = B/Ja**(2/3.)
 		BB = matmul(Bbar,Bbar)
 		! I1 I2 denote I1bar I2bar actually
@@ -134,7 +165,7 @@ contains
 		I2 = I2/2.
 		Kirchhoffstress = 0.
 		
-		if (dAbs(materialprops(1)-4) < 1d-4) then
+		if (dAbs(materialprops(1)-4) < 1d-4) then ! Yeoh
 			c1 = materialprops(2)
 			c2 = materialprops(3)
 			c3 = materialprops(5)
@@ -143,7 +174,15 @@ contains
 					Kirchhoffstress(i,j) = (2*c1 + 4*c2*(I1 - 3) + 6*c3*(I1-3)**2)*(Bbar(i,j) - 1/3.*I1*eye(i,j)) + Ja*pressure*eye(i,j)
 				end do
 			end do
-		else
+		else if (dAbs(materialprops(1)-5) < 1d-4) then ! HGO
+			mu1 = materialprops(2)
+			K1 = materialprops(4)
+			do i=1,ned
+				do j=1,nsd
+					Kirchhoffstress(i,j) = -1/3.*mu1*I1*eye(i,j) + mu1*Bbar(i,j) + Ja*pressure*eye(i,j);
+				end do
+			end do
+		else !neo-Hookean and Mooney-Rivlin
 			mu1 = materialprops(2)
 			mu2 = materialprops(3)
 			K1 = materialprops(4)

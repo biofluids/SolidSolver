@@ -14,11 +14,11 @@ print interval:	10
 damping:	0.0
 
 =====================Material=====================
-Material type(neo-Hookean~2/Mooney-Rivlin~3):	4
+Material type(neo-Hookean~2/Mooney-Rivlin~3):	5
 
 Material coefficients
-mu1:	0.1595d6
-mu2:	-6.22d3
+mu1:	16d7
+mu2:	4d7
 K1:	1d12
 rho:	0.403d3
 
@@ -28,4 +28,4 @@ z_gravity:	0.
 
 ======================Control=====================
 isbinary:	1
-penalty:	1d12
+penalty:	1d14
