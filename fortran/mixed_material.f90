@@ -14,8 +14,9 @@ contains
 		real(8), dimension(ned,nsd,ned,nsd):: materialstiffness
 	
 		integer :: i, j, k, l, p
-		real(8) :: mu1, mu2, K1, I1, I2, c1, c2, c3, Ja
-		real(8), dimension(nsd,nsd) :: B, Bbar, BB, eye
+		real(8) :: mu1, mu2, K1, I1, I2, c1, c2, c3, Ja, I4, I6, lambda, kk1, kk2, der14, der24, der16, der26
+		real(8), dimension(nsd,nsd) :: B, Bbar, BB, eye, C
+		real(8), dimension(nsd) :: a0, g0, a, g
 	
 		! square matrix
 		do i=1,nsd
@@ -75,6 +76,27 @@ contains
 				end do
 			end do
 		else if (dAbs(materialprops(1)-5) < 1d-4) then ! HGO
+			! Material parameters are hard-coded
+			a0 = [0.,0.,1.]
+			g0 = [0.,0.,1.]
+			kk1 = 1d6 ! mu = 0.05d6
+			kk2 = 1d6
+			
+			C = matmul(transpose(F),F)
+			I4 = dot_product(a0,matmul(C,a0))
+			lambda = sqrt(I4)
+			a = matmul(F,a0)/lambda
+			I4 = I4/Ja**(2/3.)
+			I6 = dot_product(g0,matmul(C,g0))
+			lambda = sqrt(I6)
+			g = matmul(F,g0)/lambda
+			I6 = I6/Ja**(2/3.)
+			! 1st order derivative of psi w.r.t. I4/I6
+			der14 = kk1*(I4-1.)*exp(kk2*(I4-1.)**2)
+			der16 = kk1*(I6-1.)*exp(kk2*(I6-1.)**2)
+			! 2nd order derivative of psi w.r.t. I4/I6
+			der24 = kk1*(1+2*kk2*(I4-1.)**2)*exp(kk2*(I4-1.)**2)
+			der26 = kk1*(1+2*kk2*(I6-1.)**2)*exp(kk2*(I6-1.)**2)
 			mu1 = materialprops(2)
 			K1 = materialprops(4)
 			do i=1,ned
@@ -85,6 +107,16 @@ contains
 										 				 + 2/9.*(mu1*I1)*eye(i,j)*eye(k,l) &
 										 				 + 1/3.*(mu1*I1)*(eye(i,k)*eye(j,l)+eye(i,l)*eye(j,k)) &
 										 				 + (eye(i,j)*eye(k,l) - (eye(i,k)*eye(j,l)+eye(i,l)*eye(j,k)))*Ja*pressure
+							! anisotropic part 1
+							materialstiffness(i,j,k,l) = materialstiffness(i,j,k,l) + 4*Ja**(-4/3.)*I4**2*der24*a(i)*a(j)*a(k)*a(l) &
+													   - 4/3.*(I4*der24+der14)*Ja**(-2/3.)*I4*(a(i)*a(j)*eye(k,l) + eye(i,j)*a(k)*a(l)) &
+													   + (4/9.*I4**2*der24 - 4/9.*I4*der14)*eye(i,j)*eye(k,l) &
+													   + 2/3.*I4*der14*(eye(i,k)*eye(j,l)+eye(i,l)*eye(j,k))
+							! anisotropic part 2
+							materialstiffness(i,j,k,l) = materialstiffness(i,j,k,l) + 4*Ja**(-4/3.)*I6**2*der26*g(i)*g(j)*g(k)*g(l) &
+													   - 4/3.*(I6*der26+der16)*Ja**(-2/3.)*I6*(g(i)*g(j)*eye(k,l) + eye(i,j)*g(k)*g(l)) &
+													   + (4/9.*I6**2*der26 - 4/9.*I6*der16)*eye(i,j)*eye(k,l) &
+													   + 2/3.*I6*der16*(eye(i,k)*eye(j,l)+eye(i,l)*eye(j,k))
 						end do
 					end do
 				end do
@@ -122,9 +154,10 @@ contains
 		real(8), dimension(nsd,nsd), intent(in) :: F
 		real(8), dimension(5), intent(in) :: materialprops
 		real(8), dimension(ned,nsd) :: Kirchhoffstress
-		real(8), dimension(nsd,nsd) :: B, Bbar, BB, eye
+		real(8), dimension(nsd,nsd) :: B, Bbar, BB, eye, C
 		integer :: i, j, k
-		real(8) :: mu1, mu2, K1, I1, I2, c1, c2, c3, Ja
+		real(8) :: mu1, mu2, K1, I1, I2, c1, c2, c3, Ja, I4, I6, lambda, kk1, kk2
+		real(8), dimension(nsd) :: a0, g0, a, g
 		
 		! square matrix
 		do i=1,nsd
@@ -175,11 +208,30 @@ contains
 				end do
 			end do
 		else if (dAbs(materialprops(1)-5) < 1d-4) then ! HGO
+			! Material parameters are hard-coded
+			a0 = [0.,0.,1.]
+			g0 = [0.,0.,1.]
+			kk1 = 1d6 ! mu = 0.05d6
+			kk2 = 1d6
+			
+			C = matmul(transpose(F),F)
+			I4 = dot_product(a0,matmul(C,a0))
+			lambda = sqrt(I4)
+			a = matmul(F,a0)/lambda
+			I4 = I4/Ja**(2/3.)
+			I6 = dot_product(g0,matmul(C,g0))
+			lambda = sqrt(I6)
+			g = matmul(F,g0)/lambda
+			I6 = I6/Ja**(2/3.)
+			
 			mu1 = materialprops(2)
 			K1 = materialprops(4)
 			do i=1,ned
 				do j=1,nsd
 					Kirchhoffstress(i,j) = -1/3.*mu1*I1*eye(i,j) + mu1*Bbar(i,j) + Ja*pressure*eye(i,j);
+					! anisotropic part
+					Kirchhoffstress(i,j) = Kirchhoffstress(i,j) + 2/Ja*kk1*( (I4-1)*exp(kk2*(I4-1)**2)*(a(i)*a(j) - 1/3.*I4*eye(i,j)) ) &
+					                     + 2/Ja*kk1*( (I6-1)*exp(kk2*(I6-1)**2)*(g(i)*g(j) - 1/3.*I6*eye(i,j)) )
 				end do
 			end do
 		else !neo-Hookean and Mooney-Rivlin

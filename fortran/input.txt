@@ -17,9 +17,9 @@ damping:	0.0
 Material type(neo-Hookean~2/Mooney-Rivlin~3):	5
 
 Material coefficients
-mu1:	16d7
+mu1:	0.05d6
 mu2:	4d7
-K1:	1d12
+K1:	1d11
 rho:	0.403d3
 
 x_gravity:	0.
