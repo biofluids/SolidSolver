@@ -3,9 +3,7 @@ In this section, we will derive the stress and elasticity tensor in detail for t
 
 %
 \subsection{Mooney-Rivlin Model}
-Mooney-Rivlin is one of the most popular models used in biomechanics, especially in case of large deformation. In case of small deformation, this behavior is close to linear material.
-\subsubsection{The Decoupled Form of Mooney-Rivlin Model}
-The decoupled form of compressible Mooney-Rivlin model is written as
+Mooney-Rivlin is one of the most popular models used in biomechanics, especially in case of large deformation. In case of small deformation, this behavior is close to linear material. The decoupled form of compressible Mooney-Rivlin model is written as
 \begin{equation}
 \Psi = \Psi_{iso} + \Psi_{vol}
 \end{equation}
@@ -24,8 +22,7 @@ In mixed formulation we replace Equation \ref{vol1} with
 where $p$ is a Lagrangian multiplier to enforce the incompressibility condition and can be interpreted as the hydrostatic pressure.  
 
 %
-\subsubsection{Stress}
-Substitute Equation \ref{vol} into Equation \ref{Svol}, and recall the definition in Equation \ref{pressure}, we can derive the expression for the PK2 stress.
+Substitute Equation \ref{vol1} into Equation \ref{Svol}, and recall the definition in Equation \ref{pressure}, we can derive the expression for the PK2 stress.
 \begin{equation} \label{mSvol}
 \bold{S}_{vol} = Jp\bold{C}^{-1} = \kappa{J(J-1)}\bold{C}^{-1} = \kappa{J^{1/3}(J-1)}\bold{\overline{C}}^{-1}
 \end{equation}
@@ -59,7 +56,6 @@ Therefore the isochoric part of the PK2 stress is
 Equation \ref{mSvol} and \ref{mSiso} are the expression we need in the displacement-based formulation. In the mixed formulation, use \ref{mSvol1} instead of \ref{mSvol}.
 
 %
-\subsubsection{Elasticity Tensor}
 Insert our model into the definition of $\tilde{p}$ in Equation \ref{tildep}
 \begin{equation}
 \tilde{p} = p + J\frac{dp}{dJ} + \kappa(J-1) + \kappa{J} = \kappa{(2J - 1)}
@@ -181,7 +177,6 @@ Equation \ref{mCvol1}/\ref{mCvol2} and \ref{mCiso} completes the derivation of e
 Yeoh model is motivated to simulate the mechanical behavior of carbon-black filled rubber vulcanizates with the typical stiffening effect in large strain domain. It's also widely used in mechanical engineering. We use the same volumetric part to account for compressibility as in Equation \ref{vol1} or \ref{vol2}. Consequently the volumetric part of both stress and elasticity tensor are the same as Mooney-Rivlin. Therefore, we will only show the derivation of the isochoric components.
 
 %
-\subsubsection{The Decoupled Form of Yeoh Model}
 The isochoric part is written as
 \begin{equation} \label{isopart}
 \Psi_{iso} = c_1(\bar{I_1} - 3) + c_2(\bar{I_2} - 3)^2 + c_3(\bar{I_3} - 3)^3
@@ -189,7 +184,6 @@ The isochoric part is written as
 where $c_1$, $c_2$, $c_3$ are material constants. The shear modules is approximated by $\mu = 2c_1 + 4c_2(\bar{I_1} - 3) + 6c_3(\bar{I_1} - 3)^2$.
 
 %
-\subsubsection{Stress}
 Following the same way, first derive the fictitious stress
 \begin{equation} \label{yfictitious}
 \begin{split}
@@ -209,7 +203,6 @@ Then the isochoric part of the PK2 stress is obtained
 \end{equation}
 
 %
-\subsubsection{Elasticity Tensor}
 The second order derivative of $\Psi_{iso}$ with respect to $\overline{\bold{C}}$ is
 \begin{equation}
 \begin{split}
@@ -279,8 +272,193 @@ Yet not all biomaterials are isotropic. For example, heart muscle has strong dir
 
 %
 \subsection{Holzapfel-Gasser-Ogden Model}
-The Holzapfel-Gasser-Ogden (HGO) model is widely used to model soft biological tissues, for example, arterial tissue. Such materials are usually almost incompressible, so they can modeled in decoupled form to allow a slight compressibility. HGO model uses neo-Hookean model as the isotropic ground material, and the anisotropic part consists two families of fibers whose directions are represented by unit vectors $\bold{a}_{04}$ and $\bold{a}_{06}$ in the reference configuration. As the material deforms, these vectors deform accordingly and are expressed as unit vectors $\bold{a}_4$ and $\bold{a}_6$ in the current configuration. $\bold{a}_{0i}$ and $\bold{a}_{i}$ ($i = 4, 6$) are related by 
+The Holzapfel-Gasser-Ogden (HGO) model is widely used to model soft biological tissues, for example, arterial tissue. Such materials are usually almost incompressible, so they can be modeled in decoupled form to allow a slight compressibility. HGO model uses neo-Hookean model as the isotropic ground material, and the anisotropic part consists two families of fibers whose directions are represented by unit vectors $\bold{a}_{04}$ and $\bold{a}_{06}$ in the reference configuration. As the material deforms, these vectors deform accordingly and are expressed as unit vectors $\bold{a}_4$ and $\bold{a}_6$ in the current configuration. $\bold{a}_{0i}$ and $\bold{a}_{i}$ ($i = 4, 6$) are related by 
 \begin{equation} \label{vector}
-\lambda\bold{a}_i = \bold{F}\bold{a}_{0i}
+\lambda_i\bold{a}_i = \bold{F}\bold{a}_{0i}
 \end{equation} 
-where $i = 4, 6$, $\lambda$ is the stretch of the original fiber.
+where $i = 4, 6$, $\lambda_i$ is the stretch of the original fiber and no summation is applied on $i$.
+
+Since $|\bold{a}_i| = 1$, we find the value of stretch $\lambda_i$ through
+\begin{equation}
+{\lambda_i}^2 = \bold{a}_{0i} \cdot \bold{F}^T\bold{F}\bold{a}_{0i} = \bold{a}_{0i} \cdot \bold{C}\bold{a}_{0i}, \quad i = 4, 6
+\end{equation}
+
+To express the anisotropic term, two pseudo-invariants are defined
+\begin{equation} \label{pseudo-invariants}
+I_i(\bold{C}, \bold{a}_{0i}) = \bold{a}_{0i} \cdot \bold{C}\bold{a}_{0i} = {\lambda_i}^2, \quad i = 4, 6
+\end{equation}
+Similarly, the modified invariants are defined as
+\begin{equation}
+\bar{I_i} = J^{-2/3}I_i, \quad i = 4, 6
+\end{equation}
+For the convenience of derivation, define two second order tensors to express the dyadic product of $\bold{a}_{0i}$
+\begin{equation} \label{A0i}
+\bold{A}_{0i} = \bold{a}_{0i} \otimes \bold{a}_{0i}, \quad i = 4, 6
+\end{equation}
+The derivative of invariants are easy to find
+\begin{equation}
+\frac{\partial\bar I_i}{\partial \overline{\bold{C}}} = \bold{a}_{0i} \otimes \bold{a}_{0i}, \quad i = 4, 6
+\end{equation}
+The HGO model is written as
+\begin{equation} \label{HGO}
+\Psi(\bold{C}, \bold{a}_{04}, \bold{a}_{06}) = \Psi_{vol}(J) + \Psi_{iso}(\overline{\bold{C}}) + \Psi_{aniso}(\overline{\bold{C}}, \bold{a}_{04}, \bold{a}_{06})
+\end{equation}
+where $\Psi_{iso}$ and $\Psi_{aniso}$ are isotropic and anisotropic part of the strain-energy function. In particular
+\begin{equation} \label{neohookean}
+\Psi_{iso} = \frac{\mu_1}{2}(\bar{I}_1 - 3)
+\end{equation}
+\begin{equation} \label{anisotropic}
+\Psi_{aniso}(\overline{\bold{C}}, \bold{a}_{04}, \bold{a}_{06}) = \frac{k_1}{2k_2}\{exp[k_2(\bar{I_4} - 1)^2] - 1\} + \frac{k_1}{2k_2}\{exp[k_2(\bar{I_6} - 1)^2] - 1\}
+\end{equation}
+where $k_1$ and $k_2$ are material constants.
+
+Based on the definition of these pseudo-invariants and the symmetric structure of the HGO model itself, it is obvious to see that $\bar{I_4}$ and $\bar{I_6}$ should be symmetric in all the related expressions. Next, we derive the stress and elasticity tensor for the anisotropic part of HGO model in a similar approach as section \ref{general_stress} and \ref{general_elasticity}. Later these will be combined with the isotropic parts to form the complete stress and elasticity tensor of HGO model.
+
+Substitute Equation \ref{anisotropic} into Equation \ref{fictitious} to get the anisotropic part of the fictitious PK2 stress
+\begin{equation} \label{HGOfictitious}
+\overline{\bold{S}}_{aniso} = 2k_1{(\bar{I}_4-1)}exp[k_2(\bar{I}_4 - 1)^2]\bold{A}_{04} + 2k_1{(\bar{I}_6-1)}exp[k_2(\bar{I}_6 - 1)^2]\bold{A}_{06}
+\end{equation}
+Recall the definitions in Equation \ref{vector} to \ref{A0i}, we can prove that
+\begin{equation}
+\overline{\bold{C}} : \bold{A}_{0i} = \overline{\bold{C}} : (\bold{a}_{0i} \otimes \bold{a}_{0i}) = \bold{a}_{0i} \cdot (\overline{\bold{C}} \bold{a}_{0i}) = \bar{I}_i, \quad i = 4, 6
+\end{equation}
+Consequently, 
+\begin{equation} \label{product}
+\overline{\bold{C}} : \overline{\bold{S}}_{aniso} = 2k_1{(\bar{I}_4-1)}exp[k_2(\bar{I}_4 - 1)^2]\bar{I}_4 + 2k_1{(\bar{I}_6-1)}exp[k_2(\bar{I}_6 - 1)^2]\bar{I}_6
+\end{equation}
+With the help of Equation \ref{product}, the anisotropic contribution to the isochoric PK2 stress is obtained through Equation \ref{Siso}
+\begin{equation} \label{HGOaniso}
+\begin{split}
+\bold{S}_{aniso} &= J^{-2/3}(\mathbb{I} - \frac{1}{3}{\overline{\bold{C}}}^{-1} \otimes \overline{\bold{C}}) : \overline{\bold{S}}_{aniso} \\
+&= J^{-2/3}[\overline{\bold{S}}_{aniso} - \frac{1}{3}\overline{\bold{C}}^{-1}(\overline{\bold{C}} : \overline{\bold{S}}_{aniso})] \\
+&= 2J^{-2/3} \{k_1{(\bar{I}_4-1)}exp[k_2(\bar{I}_4 - 1)^2]\bold{A}_{04} - \frac{1}{3}k_1{(\bar{I}_4-1)}exp[k_2(\bar{I}_4 - 1)^2]\bar{I}_4\overline{\bold{C}}^{-1} \\
+&+ 
+k_1{(\bar{I}_6-1)}exp[k_2(\bar{I}_6 - 1)^2]\bold{A}_{06} - \frac{1}{3}k_1{(\bar{I}_6-1)}exp[k_2(\bar{I}_6 - 1)^2]\bar{I}_6\overline{\bold{C}}^{-1}\}
+\end{split}
+\end{equation}
+
+By setting $\mu_2$ to $0$ in Equation \ref{mSiso} we have the isotropic contribution to the isochoric PK2 stress
+\begin{equation} \label{HGOiso}
+\bold{S}_{isotropic} = J^{-2/3}(-\frac{1}{3}\mu_1\bar{I}_1\overline{\bold{C}}^{-1} + \mu_1\bold{I})
+\end{equation}
+Combine Equation \ref{HGOaniso} and \ref{HGOiso} we have the isochoric PK2 stress for HGO model
+\begin{equation} \label{HGOSiso}
+\begin{split}
+\bold{S}_{iso} &= J^{-2/3} \{2k_1{(\bar{I}_4-1)}exp[k_2(\bar{I}_4 - 1)^2]\bold{A}_{04} - \frac{2}{3}k_1{(\bar{I}_4-1)}exp[k_2(\bar{I}_4 - 1)^2]\bar{I}_4\overline{\bold{C}}^{-1} \\
+&+ 
+2k_1{(\bar{I}_6-1)}exp[k_2(\bar{I}_6 - 1)^2]\bold{A}_{06} - \frac{2}{3}k_1{(\bar{I}_6-1)}exp[k_2(\bar{I}_6 - 1)^2]\bar{I}_6\overline{\bold{C}}^{-1} \\
+&-
+\frac{1}{3}\mu_1\bar{I}_1\overline{\bold{C}}^{-1} + \mu_1\bold{I} \}
+\end{split}
+\end{equation}
+The volumetric part of PK2 stress is still the same as in Equation \ref{mSvol}.
+
+Next we derive the elasticity tensor of HGO model. For the convenience, we do not explicitly write out ${\partial\Psi_{aniso}}/{\partial{\bar{I}_i}}$ and $\partial^2{\Psi_{aniso}}/\partial{\bar{I}_i}^2$ where $i = 4, 6$. The derivatives of $\Psi_{aniso}$ with respect to $\overline{\bold{C}}$ can be easily converted to that with respect to $\bar{I}_{i}$ ($i = 4, 6$) as follows.
+\begin{equation} \label{convert1}
+\frac{\partial\Psi_{aniso}}{\partial\overline{\bold{C}}} = \frac{\partial\Psi_{aniso}}{\partial\bar{I}_4}\bold{A}_{04} + \frac{\partial\Psi_{aniso}}{\partial\bar{I}_6}\bold{A}_{06} 
+\end{equation}
+\begin{equation} \label{convert2}
+\frac{\partial^2\Psi_{aniso}}{\partial{\overline{\bold{C}}}\partial{\overline{\bold{C}}}} = \frac{\partial^2\Psi_{aniso}}{\partial{\bar{I}_4}^2}\bold{A}_{04} \otimes \bold{A}_{04} +
+\frac{\partial^2\Psi_{aniso}}{\partial{\bar{I}_6}^2}\bold{A}_{06} \otimes \bold{A}_{06} 
+\end{equation}
+
+Substituting Equation \ref{convert2} into Equation \ref{barcc}, the anisotropic contribution to the fictitious elasticity tensor is
+\begin{equation} \label{anisobarcc}
+\overline{\mathbb{C}}_{aniso} = 4J^{-4/3}\frac{\partial^2\Psi_{aniso}}{\partial\overline{\bold{C}}\partial\overline{\bold{C}}} = 4J^{-4/3}\frac{\partial^2\Psi_{aniso}}{\partial{\bar{I}_4}^2}\bold{A}_{04} \otimes \bold{A}_{04} +
+4J^{-4/3}\frac{\partial^2\Psi_{aniso}}{\partial{\bar{I}_6}^2}\bold{A}_{06} \otimes \bold{A}_{06}
+\end{equation}
+Therefore, the first part of Equation \ref{Ciso} is 
+\begin{equation} \label{HGOpart1}
+\begin{split}
+\mathbb{P} : \overline{\mathbb{C}}_{aniso} : \mathbb{P}^T &= \sum_{i = 4, 6}J^{-4/3}\frac{\partial^2\Psi_{aniso}}{\partial{\bar{I}_i}^2} (\mathbb{I} - \frac{1}{3}\overline{\bold{C}}^{-1} \otimes \overline{\bold{C}}):(\bold{A}_{0i} \otimes \bold{A}_{0i}):(\mathbb{I} - \frac{1}{3}\overline{\bold{C}} \otimes \overline{\bold{C}}^{-1}) \\
+&= \sum_{i = 4, 6} 4J^{-4/3}\frac{\partial^2\Psi_{aniso}}{\partial{\bar{I}_i}^2}
+[\bold{A}_{0i} - \frac{1}{3}(\overline{\bold{C}} : \bold{A}_{0i})\overline{\bold{C}}^{-1}] \otimes
+[\bold{A}_{0i} - \frac{1}{3}(\overline{\bold{C}} : \bold{A}_{0i})\overline{\bold{C}}^{-1}] \\
+&= \sum_{i = 4, 6} 4J^{-4/3}\frac{\partial^2\Psi_{aniso}}{\partial{\bar{I}_i}^2}
+[\bold{A}_{0i} \otimes \bold{A}_{0i} - \frac{1}{3}\bar{I}_i
+(\overline{\bold{C}}^{-1} \otimes \bold{A}_{0i} + \bold{A}_{0i} \otimes \overline{\bold{C}}^{-1}) 
++ \frac{1}{9}\bar{I}_i^2 \overline{\bold{C}}^{-1} \otimes \overline{\bold{C}}^{-1}]
+\end{split}
+\end{equation}
+The second part of Equation \ref{Ciso} is
+\begin{equation} \label{HGOpart2}
+\begin{split}
+\frac{2}{3}Tr(J^{-2/3}\overline{\bold{S}}_{aniso})\tilde{\mathbb{P}} &= \frac{2}{3}(\overline{\bold{S}}_{aniso} : \overline{\bold{C}}) \tilde{\mathbb{P}} \\
+&= \sum_{i = 4, 6}\frac{4}{3}J^{-3/4}\bar{I}_i\frac{\partial{\Psi_{aniso}}}{\partial\bar{I}_i}
+(\overline{\bold{C}}^{-1} \odot \overline{\bold{C}}^{-1} - \frac{1}{3}\overline{\bold{C}}^{-1}\otimes\overline{\bold{C}}^{-1}) \\
+\end{split}
+\end{equation}
+Rewrite Equation \ref{HGOaniso}
+\begin{equation} \label{HGOaniso2}
+\begin{split}
+\bold{S}_{aniso} &= J^{-2/3}(\mathbb{I} - \frac{1}{3}\overline{\bold{C}}^{-1} \otimes \overline{\bold{C}}^{-1}) : \overline{\bold{S}}_{aniso} \\
+&= J^{-2/3}[\overline{\bold{S}}_{aniso} - \frac{1}{3}(\overline{\bold{C}} : \overline{\bold{S}}_{aniso})\overline{\bold{C}}^{-1}] \\
+&= \sum_{i = 4, 6}2J^{-2/3}\frac{\partial\Psi_{aniso}}{\partial\bar{I}_i}(\bold{A}_{0i} - \frac{1}{3}\bar{I}_i \overline{\bold{C}}^{-1})
+\end{split}
+\end{equation}
+Thus, the third part of Equation \ref{Ciso} is
+\begin{equation} \label{HGOpart3}
+\begin{split}
+-\frac{2}{3}(\bold{C}^{-1} \otimes \bold{S}_{aniso} + \bold{S}_{aniso} \otimes \bold{C}^{-1}) &=
+\sum_{i = 4, 6} -\frac{4}{3}J^{-4/3}\frac{\partial\Psi_{aniso}}{\partial\bar{I}_i}
+[\overline{\bold{C}}^{-1} \otimes (\bold{A}_{0i} - \frac{1}{3}\bar{I}_i \overline{\bold{C}}^{-1})
++ (\bold{A}_{0i} - \frac{1}{3}\bar{I}_i \overline{\bold{C}}^{-1}) \otimes \overline{\bold{C}}^{-1}] \\
+&= \sum_{i = 4, 6} -\frac{4}{3}J^{-4/3}\frac{\partial\Psi_{aniso}}{\partial\bar{I}_i}
+(\overline{\bold{C}}^{-1} \otimes \bold{A}_{0i} + \bold{A}_{0i} \otimes \overline{\bold{C}}^{-1} 
+- \frac{2}{3} \bar{I}_i \overline{\bold{C}}^{-1} \otimes \overline{\bold{C}}^{-1}) \\
+\end{split}
+\end{equation}
+Add up Equation \ref{HGOpart1}, \ref{HGOpart2} and \ref{HGOpart3} we have the anisotropic part of  elasticity tensor for the HGO model.
+\begin{equation} \label{HGOelasticity1}
+\begin{split}
+\mathbb{C}_{aniso} &= 
+\sum_{i = 4, 6} J^{-4/3}[4\frac{\partial^2\Psi_{aniso}}{\partial{\bar{I}_i}^2} \bold{A}_{0i} \otimes \bold{A}_{0i} - \frac{4}{3}(\bar{I}_i\frac{\partial^2\Psi_{aniso}}{\partial{\bar{I}_i}^2} + \frac{\partial\Psi_{aniso}}{\partial{\bar{I}_i}})(\overline{\bold{C}}^{-1} \otimes \bold{A}_{0i} + \bold{A}_{0i} \otimes \overline{\bold{C}}^{-1}) \\
+&+ \frac{4}{9}({\bar{I}_i}^2\frac{\partial^2\Psi_{aniso}}{\partial{\bar{I}_i}^2} - \bar{I}_i\frac{\partial\Psi_{aniso}}{\partial{\bar{I}_i}})(\overline{\bold{C}}^{-1} \otimes \overline{\bold{C}}^{-1}) 
++ \frac{4}{3}\bar{I}_i \frac{\partial\Psi_{aniso}}{\partial{\bar{I}_i}} \overline{\bold{C}}^{-1} \odot \overline{\bold{C}}^{-1}]
+\end{split}
+\end{equation}
+where the $\partial\Psi_{aniso}/\partial{\bar{I}_i}$ and $\partial^2\Psi_{aniso}/{\partial{\bar{I}_i}^2}$ ($i = 4, 6$) are
+\begin{equation} \label{HGOderivative1}
+\frac{\partial\Psi_{aniso}}{\partial{\bar{I}_i}} = k_1(\bar{I}_i - 1)e^{k_2(\bar{I}_i - 1)^2}
+\end{equation}
+\begin{equation} \label{HGOderivative2}
+\frac{\partial^2\Psi_{aniso}}{\partial{\bar{I}_i}^2} = k_1[1+2k_2(\bar{I}_i - 1)^2]e^{k_2(\bar{I}_i - 1)^2}
+\end{equation}
+
+Similarly, by setting $\mu_2$ to $0$ in Mooney-Rivlin model, we could easily get the elasticity tensor of the ground material. From Equation \ref{mCiso}
+\begin{equation} \label{HGOelasticity2}
+\begin{split}
+\mathbb{C}_{isotropic} &=
+- \frac{2}{3}J^{-4/3}\mu_1({\overline{\bold{C}}}^{-1} \otimes \bold{I} + \bold{I} \otimes {\overline{\bold{C}}}^{-1})  \\
+&+
+\frac{2}{9}J^{-4/3}\mu_1\bar{I_1}  {\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1} + \frac{2}{3}J^{-4/3} \mu_1\bar{I_1} {\overline{\bold{C}}}^{-1} \odot {\overline{\bold{C}}}^{-1} 
+\end{split}
+\end{equation}
+Combine Equation \ref{HGOelasticity1} with Equation \ref{HGOelasticity2} we have the complete the isochoric part of the elasticity tensor of HGO model
+\begin{equation} \label{HGOelasticity}
+\begin{split}
+\mathbb{C}_{iso} &= 
+\sum_{i = 4, 6} J^{-4/3}[4\frac{\partial^2\Psi_{aniso}}{\partial{\bar{I}_i}^2} \bold{A}_{0i} \otimes \bold{A}_{0i} - \frac{4}{3}(\bar{I}_i\frac{\partial^2\Psi_{aniso}}{\partial{\bar{I}_i}^2} + \frac{\partial\Psi_{aniso}}{\partial{\bar{I}_i}})(\overline{\bold{C}}^{-1} \otimes \bold{A}_{0i} + \bold{A}_{0i} \otimes \overline{\bold{C}}^{-1}) \\
+&+ \frac{4}{9}({\bar{I}_i}^2\frac{\partial^2\Psi_{aniso}}{\partial{\bar{I}_i}^2} - \bar{I}_i\frac{\partial\Psi_{aniso}}{\partial{\bar{I}_i}})(\overline{\bold{C}}^{-1} \otimes \overline{\bold{C}}^{-1}) 
++ \frac{4}{3}\bar{I}_i \frac{\partial\Psi_{aniso}}{\partial{\bar{I}_i}} \overline{\bold{C}}^{-1} \odot \overline{\bold{C}}^{-1}] \\
+&- \frac{2}{3}J^{-4/3}\mu_1({\overline{\bold{C}}}^{-1} \otimes \bold{I} + \bold{I} \otimes {\overline{\bold{C}}}^{-1})  +
+\frac{2}{9}J^{-4/3}\mu_1\bar{I_1}  {\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1} + \frac{2}{3}J^{-4/3} \mu_1\bar{I_1} {\overline{\bold{C}}}^{-1} \odot {\overline{\bold{C}}}^{-1} 
+\end{split}
+\end{equation}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

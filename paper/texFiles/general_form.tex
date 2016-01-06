@@ -35,7 +35,7 @@ G(J) = \frac{1}{2}(J(\bold{u}) - 1 )^2
 \end{equation}
 
 %
-\subsection{Stress Evaluation}
+\subsection{Stress Evaluation} \label{general_stress}
 Based on the postulation of strain-energy function, it follows that the work done on hyperelastic materials in a dynamical process within a time interval $[t_1, t_2]$ is the difference between the strain-energy in two states. It can also be proved that the work can be written as the integration of the tensor product of conjugate stress-strain rate pairs.
 \begin{equation}
 \Psi({\bold{F_2}}) - \Psi({\bold{F_1}}) = \delta{W_{int}} = \int_{t_1}^{t_2}\bold{P}:\dot{\bold{F}}dt = \int_{t_1}^{t_2}\bold{S}:\dot{\bold{E}}dt = 
@@ -79,7 +79,7 @@ p = \frac{d\Psi_{vol}(J)}{dJ}
 If we leave $p$ as an unknown and implement Equation \ref{pressure} as additional constraint, we will have a displacement/pressure mixed formulation. If we replace $p$ with $\bold{u}$ using Equation \ref{pressure}, we end up with a displacement-base formulation.
 
 %
-\subsection{Elasticity Tensor}
+\subsection{Elasticity Tensor} \label{general_elasticity}
 The solutions in nonlinear finite element methods are often obtained incrementally with Newton's method. The elasticity tensors is crucial in the implementation of Newton's method.
 In the material description (reference configuration), the elasticity tensor is defined as the gradient of the PK2 stress to its work conjugate strain, which is Green-Lagrange strain.
 \begin{equation}
