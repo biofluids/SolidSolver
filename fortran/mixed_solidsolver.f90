@@ -14,7 +14,7 @@ program solidsolver
 	integer :: ct, ct_rate, ct_max, ct1
 	real(8) :: time_elapsed  
 	call timestamp()
-	filepath = '/Users/Jie/Documents/SolidResults/'
+	filepath = '/Users/jiecheng/Documents/SolidResults/'
 	call system_clock(ct,ct_rate,ct_max)
 	call read_input(10, 'input.txt', mode, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, &
 					materialprops, gravity, isbinary, penalty)
@@ -86,6 +86,8 @@ subroutine statics(filepath)
 		call force_traction(Fext)
 	end if
 	
+	open(22,file = 'biaxial_hgo.txt')
+	
 	do while (loadfactor < 1.)
 		step = step + 1
 		if (loadfactor + increment > 1.) then
@@ -136,6 +138,9 @@ subroutine statics(filepath)
 			err2 = sqrt(dot_product(R,R))/(ned*nn+nel)
 			write(*,'("Iteration number:",i8,5x,"Err1:",E12.4,5x,"Err2:",E12.4,5x,"Tolerance:",E12.4)') nit,err1,err2,tol
 		end do
+		
+		write(22,'(e12.5,5x,e12.5)') loadfactor,w(1)
+		
 		if (nit == maxit) then
 			w = w1
 			loadfactor = loadfactor - increment

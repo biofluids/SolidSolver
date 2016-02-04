@@ -5,7 +5,7 @@ maximum number of newton iteration:	200
 
 Static parameters
 first increment:	1d-2
-adjust factor:	0.0
+adjust factor:	0.1
 
 Dynamic parameters
 number of simulation steps:	1000
@@ -14,13 +14,13 @@ print interval:	10
 damping:	0.0
 
 =====================Material=====================
-Material type(neo-Hookean~2/Mooney-Rivlin~3):	6
+Material type(neo-Hookean~2/Mooney-Rivlin~3):	5
 
 Material coefficients
-mu1:	0.05d6
-mu2:	0d0
+mu1:	0.6548d6
+mu2:	0
 K1:	1d11
-rho:	0.403d3
+rho:	0
 
 x_gravity:	0.
 y_gravity:	0.

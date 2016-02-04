@@ -77,9 +77,9 @@ contains
 			end do
 		else if (dAbs(materialprops(1)-5) < 1d-4) then ! HGO
 			! Material parameters are hard-coded
-			a0 = [0.,0.,1.]
-			g0 = [0.,0.,1.]
-			kk1 = 1d6 ! mu = 0.05d6
+			a0 = [1.,0.,0.]
+			g0 = [1.,0.,0.]
+			kk1 = 1d6 ! mu = 0.6548d6
 			kk2 = 1d6
 			
 			C = matmul(transpose(F),F)
@@ -209,8 +209,8 @@ contains
 			end do
 		else if (dAbs(materialprops(1)-5) < 1d-4) then ! HGO
 			! Material parameters are hard-coded
-			a0 = [0.,0.,1.]
-			g0 = [0.,0.,1.]
+			a0 = [1.,0.,0.]
+			g0 = [1.,0.,0.]
 			kk1 = 1d6 ! mu = 0.05d6
 			kk2 = 1d6
 			
