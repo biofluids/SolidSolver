@@ -79,8 +79,8 @@ contains
 			! Material parameters are hard-coded
 			a0 = [1.,0.,0.]
 			g0 = [1.,0.,0.]
-			kk1 = 1d6 ! mu = 0.6548d6
-			kk2 = 1d6
+			kk1 = 236.32 ! mu = 3000
+			kk2 = 0.8393
 			
 			C = matmul(transpose(F),F)
 			I4 = dot_product(a0,matmul(C,a0))
@@ -108,14 +108,14 @@ contains
 										 				 + 1/3.*(mu1*I1)*(eye(i,k)*eye(j,l)+eye(i,l)*eye(j,k)) &
 										 				 + (eye(i,j)*eye(k,l) - (eye(i,k)*eye(j,l)+eye(i,l)*eye(j,k)))*Ja*pressure
 							! anisotropic part 1
-							materialstiffness(i,j,k,l) = materialstiffness(i,j,k,l) + 4*Ja**(-4/3.)*I4**2*der24*a(i)*a(j)*a(k)*a(l) &
-													   - 4/3.*(I4*der24+der14)*Ja**(-2/3.)*I4*(a(i)*a(j)*eye(k,l) + eye(i,j)*a(k)*a(l)) &
-													   + (4/9.*I4**2*der24 - 4/9.*I4*der14)*eye(i,j)*eye(k,l) &
+							materialstiffness(i,j,k,l) = materialstiffness(i,j,k,l) + 4*I4**2*der24*a(i)*a(j)*a(k)*a(l) &
+													   - 4/3.*(I4*der24+der14)*I4*(a(i)*a(j)*eye(k,l) + eye(i,j)*a(k)*a(l)) &
+													   + (4/9.*I4**2*der24 + 4/9.*I4*der14)*eye(i,j)*eye(k,l) &
 													   + 2/3.*I4*der14*(eye(i,k)*eye(j,l)+eye(i,l)*eye(j,k))
 							! anisotropic part 2
-							materialstiffness(i,j,k,l) = materialstiffness(i,j,k,l) + 4*Ja**(-4/3.)*I6**2*der26*g(i)*g(j)*g(k)*g(l) &
-													   - 4/3.*(I6*der26+der16)*Ja**(-2/3.)*I6*(g(i)*g(j)*eye(k,l) + eye(i,j)*g(k)*g(l)) &
-													   + (4/9.*I6**2*der26 - 4/9.*I6*der16)*eye(i,j)*eye(k,l) &
+							materialstiffness(i,j,k,l) = materialstiffness(i,j,k,l) + 4*I6**2*der26*g(i)*g(j)*g(k)*g(l) &
+													   - 4/3.*(I6*der26+der16)*I6*(g(i)*g(j)*eye(k,l) + eye(i,j)*g(k)*g(l)) &
+													   + (4/9.*I6**2*der26 + 4/9.*I6*der16)*eye(i,j)*eye(k,l) &
 													   + 2/3.*I6*der16*(eye(i,k)*eye(j,l)+eye(i,l)*eye(j,k))
 						end do
 					end do
@@ -211,8 +211,8 @@ contains
 			! Material parameters are hard-coded
 			a0 = [1.,0.,0.]
 			g0 = [1.,0.,0.]
-			kk1 = 1d6 ! mu = 0.05d6
-			kk2 = 1d6
+			kk1 = 236.32 ! mu = 3000
+			kk2 = 0.8393
 			
 			C = matmul(transpose(F),F)
 			I4 = dot_product(a0,matmul(C,a0))
@@ -230,8 +230,8 @@ contains
 				do j=1,nsd
 					Kirchhoffstress(i,j) = -1/3.*mu1*I1*eye(i,j) + mu1*Bbar(i,j) + Ja*pressure*eye(i,j);
 					! anisotropic part
-					Kirchhoffstress(i,j) = Kirchhoffstress(i,j) + 2/Ja*kk1*( (I4-1)*exp(kk2*(I4-1)**2)*(a(i)*a(j) - 1/3.*I4*eye(i,j)) ) &
-					                     + 2/Ja*kk1*( (I6-1)*exp(kk2*(I6-1)**2)*(g(i)*g(j) - 1/3.*I6*eye(i,j)) )
+					Kirchhoffstress(i,j) = Kirchhoffstress(i,j) + 2*kk1*( (I4-1)*exp(kk2*(I4-1)**2)*(a(i)*a(j)*Ja**(-2./3) - 1/3.*eye(i,j))*I4 ) &
+					                     + 2*kk1*( (I6-1)*exp(kk2*(I6-1)**2)*(g(i)*g(j)*Ja**(-2./3) - 1/3.*eye(i,j))*I6 )
 				end do
 			end do
 		else !neo-Hookean and Mooney-Rivlin

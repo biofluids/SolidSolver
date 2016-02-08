@@ -139,7 +139,7 @@ subroutine statics(filepath)
 			write(*,'("Iteration number:",i8,5x,"Err1:",E12.4,5x,"Err2:",E12.4,5x,"Tolerance:",E12.4)') nit,err1,err2,tol
 		end do
 		
-		write(22,'(e12.5,5x,e12.5)') loadfactor,w(1)
+		write(22,'(e12.5,5x,e12.5,e12.5)') loadfactor,w(1),w(2)
 		
 		if (nit == maxit) then
 			w = w1
