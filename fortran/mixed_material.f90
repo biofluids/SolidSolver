@@ -77,8 +77,8 @@ contains
 			end do
 		else if (dAbs(materialprops(1)-5) < 1d-4) then ! HGO
 			! Material parameters are hard-coded
-			a0 = [1.,0.,0.]
-			g0 = [1.,0.,0.]
+			a0 = [0.,1.,0.]
+			g0 = [0.,1.,0.]
 			kk1 = 236.32 ! mu = 3000
 			kk2 = 0.8393
 			
@@ -209,8 +209,8 @@ contains
 			end do
 		else if (dAbs(materialprops(1)-5) < 1d-4) then ! HGO
 			! Material parameters are hard-coded
-			a0 = [1.,0.,0.]
-			g0 = [1.,0.,0.]
+			a0 = [0.,1.,0.]
+			g0 = [0.,1.,0.]
 			kk1 = 236.32 ! mu = 3000
 			kk2 = 0.8393
 			

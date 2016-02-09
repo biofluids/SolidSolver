@@ -298,7 +298,7 @@ The isochoric part includes higher order terms, is written as
 \begin{equation} \label{iso2}
 \Psi_{iso} = c_1(\bar{I_1} - 3) + c_2(\bar{I_2} - 3)^2 + c_3(\bar{I_3} - 3)^3
 \end{equation}
-where $c_1$, $c_2$, $c_3$ are material constants. The initial shear modulus is approximated by $\mu = 2c_1$.
+where $c_1$, $c_2$, $c_3$ are material constants with constraints $c_2 < 0$ and $c1 > 0$, $c_3 > 0$. The initial shear modulus is approximated by $\mu = 2c_1$.
 
 Following the same way, first derive the fictitious stress
 \begin{equation} \label{Sbar2}
@@ -409,7 +409,7 @@ Equation \ref{Cvol1} and Equation \ref{Ciso2} gives the elasticity tensor in ref
 
 %
 \subsection{Example III: Holzapfel-Gasser-Ogden Model}
-The Holzapfel-Gasser-Ogden (HGO) model is introduced in 2000 [ ] to model arterial tissue. Now it is used extensively for a variety of soft biological tissues. HGO model uses Neo-Hookean model as the isotropic ground material, and the anisotropic part consists two families of fibers represented by two pseudo-invariants $\bar{I}_4$ and $\bar{I}_6$. The directions of these fibers are represented by unit vectors $\bold{a}_{04}$ and $\bold{a}_{06}$ in the reference configuration. Specifically, the HGO model is written as
+The Holzapfel-Gasser-Ogden (HGO) model is introduced in 2000 [ ] to model the layering structure of arterial tissue. The idea is to formulate a constitutive model which incorporates some histological structure of arterial walls (i.e. fiber direction). What distinguishes HGO model from the phenomenological models is that it accounts for both the non-collagenous matrix material which is active at low pressures (modeled as isotropic) and the collagenous fibers which becomes active at high pressure (modeled as anisotropic). HGO model uses Neo-Hookean model as the isotropic ground material, and the anisotropic part consists two families of fibers represented by two pseudo-invariants $\bar{I}_4$ and $\bar{I}_6$. The directions of these fibers are represented by unit vectors $\bold{a}_{04}$ and $\bold{a}_{06}$ in the reference configuration. Specifically, the HGO model is written as
 
 \begin{subequations} \label{HGO}
 \begin{align}
@@ -420,7 +420,7 @@ where $\Psi_{iso}$ and $\Psi_{aniso}$ are isochoric isotropic part and isochoric
 \Psi_{isotropic} &= \frac{\mu_1}{2}(\bar{I}_1 - 3)  \label{isotropic} \\
 \Psi_{aniso}(\overline{\bold{C}}, \bold{a}_{04}, \bold{a}_{06}) &= \frac{k_1}{2k_2} \sum_{i = 4, 6} \{exp[k_2(\bar{I_i} - 1)^2] - 1\} \label{anisotropic} 
 \end{align}
-where $k_1$ and $k_2$ are material constants.
+where $k_1 > 0$ is a stress-like material parameter and $k_2 > 0$ is a dimensionless parameter.
 \end{subequations}
 
 As the material deforms, these vectors deform accordingly and are expressed as unit vectors $\bold{a}_4$ and $\bold{a}_6$ in the current configuration. $\bold{a}_{0i}$ and $\bold{a}_{i}$ ($i = 4, 6$) are related by 
