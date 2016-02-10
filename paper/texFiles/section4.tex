@@ -39,8 +39,11 @@ Figure \ref{fig:biaxial1} shows the results of the theoretical calculation and n
 
 To demonstrate the anisotropy of HGO model, we compare the stretches in two directions in the biaxial tension test. We use the material parameters calibrated from the media layer of artery in [ ] but only one direction is strengthened. That is, both two families of fibers are arranged in the same direction. The material parameters are $\mu_0 = 3$ KPa, $k_1 = 2.3632$ KPa and $k_2 = 0.8393$. We change the direction of the fibers which measured by the angle from the $x$ direction denoted as $\alpha$. 
 
-The stretch ratio $\lambda$ in Figure \ref{fig:biaxial2} is defined as
+We define the stretch ratio $\lambda$ in Equation \ref{stretchratio}, and plot the stretch ratio against the nominal stress in Figure \ref{fig:biaxial2}. Just as what we expect, the stretch ratio at $\alpha = 0^\circ$ is the same as $\alpha = 90^\circ$, and similarly for $\alpha = 30^\circ$ and $\alpha = 60^\circ$. 
+$\lambda_y$ is greater than $\lambda_x$ when $0^\circ < \alpha < 45^\circ$ since the $x$ direction is strengthened more. As the angle gets larger, $\lambda_x$ becomes greater too. While $\alpha = 45^\circ$ two directions become symmetric again.
+
 \begin{equation}
+\label{stretchratio}
 \lambda = 
 \begin{cases}
 	\lambda_y/\lambda_x, & \text{$\alpha = 0^\circ$, $30^\circ$ or $45^\circ$} \\
@@ -56,3 +59,18 @@ The stretch ratio $\lambda$ in Figure \ref{fig:biaxial2} is defined as
 \end{figure}
 
 \subsection{Cylindrical Pressure Vessel}
+As a typical application, we consider an artery under lumen pressure. The vessel has an internal radius of $R_i = 0.6$ mm and an external radius of $R_o = 0.9$ mm. Only a quarter of vessel is considered with plain strain assumption. First we model the vessel in Mooney-Rivlin model. The material parameters used are $\mu_1 = 160$ MPa and $\mu_2 = 40$ MPa. $\kappa$ is set to $1 \times 10^5$ MPa to make the material nearly incompressible. We compare the radial displacement, hoop stress, radial stress, and axial stress with the analytical solutions under the pressure of $p_i = 50$ MPa. The analytical solutions are found in [] as follows 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
