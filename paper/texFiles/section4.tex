@@ -2,6 +2,7 @@
 In this section, we present two sets of test cases to validate the results we obtained with the formulations we derived. The first case is the biaxial tension test which is used to calibrate material constants. For isotropic materials, the analytical solution is easy to find. The second case is the expansion of a vessel, which is a very representative application in the field of biomechanics.  
 
 \subsection{Biaxial Tension Test}
+\label{biaxial_tension_test}
 A long bar loaded equally in two directions with fixed tractions is considered. The section is a $1$ $m^2$ square. Define the stretch $\lambda$ as the ratio between the deformed length to the original length, then for isotropic incompressible material, the stress is easy to find.
 \begin{equation}
 S_{11} = S_{22} = 2(1 - {\lambda}^{-6})(\frac{\partial\Psi_{iso}}{\partial\bar{I}_1} + {\lambda}^2\frac{\partial\Psi_{iso}}{\partial\bar{I}_2}), \quad S_{33} = 0
@@ -59,7 +60,117 @@ $\lambda_y$ is greater than $\lambda_x$ when $0^\circ < \alpha < 45^\circ$ since
 \end{figure}
 
 \subsection{Cylindrical Pressure Vessel}
-As a typical application, we consider an artery under lumen pressure. The vessel has an internal radius of $R_i = 0.6$ mm and an external radius of $R_o = 0.9$ mm. Only a quarter of vessel is considered with plain strain assumption. First we model the vessel in Mooney-Rivlin model. The material parameters used are $\mu_1 = 160$ MPa and $\mu_2 = 40$ MPa. $\kappa$ is set to $1 \times 10^5$ MPa to make the material nearly incompressible. We compare the radial displacement, hoop stress, radial stress, and axial stress with the analytical solutions under the pressure of $p_i = 50$ MPa. The analytical solutions are found in [] as follows 
+\label{pressure_vessel}
+As a typical application, we consider an artery under lumen pressure. The vessel has an internal radius of $R_i = 0.6$ mm and an external radius of $R_o = 0.9$ mm. Only a quarter of vessel is considered with plain strain assumption. First we model the vessel in Mooney-Rivlin model. The material parameters used are $\mu_1 = 160$ MPa and $\mu_2 = 40$ MPa. $\kappa$ is set to $1 \times 10^5$ MPa to make the material nearly incompressible. We compare the radial displacement, hoop stress, radial stress, and axial stress with the analytical solutions of incompressible Mooney-Rivlin model under an internal pressure of $p_i = 50$ MPa. The analytical solutions are found in [] as follows 
+\begin{subequations}
+\begin{align}
+p_i &= 2(\mu_1 + \mu_2)(log\frac{{R_i}^2 + b}{{R_o}^2 + b} - 2log\frac{R_i}{R_o} +
+b\frac{{R_o}^2 - {R_i}^2}{({R_o}^2+b)({R_i}^2+b)}) \\
+u_r &= -R + \sqrt{R^2 + b} \\
+p &= - p_i - \mu_2 - (\mu_1 + \mu_2)(log\frac{r}{R_i} + \frac{b}{2}(r^2 - {R_i}^2) - log\frac{R}{R_i} + {(\frac{R_i}{r})}^2) ) \\
+\sigma_{\theta} &= p + \mu_2 + (\mu_1 + \mu_2)(\frac{r}{R})^2 + C \\
+\sigma_r &= p + \mu_2 + (\mu_1 + \mu_2)(\frac{R}{r})^2 + C \\
+\sigma_z &= p +  \mu_1 + \mu_2[(\frac{R}{r})^2 + (\frac{r}{R})^2] + C
+\end{align}
+\end{subequations}
+where $R$ and $r$ are the radial coordinate before and after deformation, $p$ is the hydrostatic pressure, $u_r$ is the radial displacement, and $\sigma_{\theta}$, $\sigma_r$ and $\sigma_z$ are the hoop, radial and axial stresses respectively. $b$ is a constant determined by the internal pressure $p_i$, and $C$ is an arbitrary constant since the material is incompressible. 
+
+Fig \ref{fig:mooney-rivlin1} is the stress and displacement components along radius direction. Good agreement is achieved on all the components. Notice the axial stress is usually hard to predict but our result is satisfactory. The discrepancy between numerical computation and analytical solution is due to the slight compressibility used in computation. Furthermore, we pick the node at the midpoint along a radius ($R = 12.8125$ m) and study its deformation at different internal pressures. As shown in Fig \ref{fig:mooney-rivlin2}, the computational result and analytical solution agree well with each other in most cases except that there are significant discrepancy in hoop stress and radial stress in high pressure. This is because with such great bulk modulus, a small discrepancy in radial displacement will be amplified in stresses. 
+
+\begin{figure}[t!p]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{./figures/ur_50.png}
+		\caption{Radial Displacement}
+		\label{ur_50}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.5\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{./figures/hoop_stress_50.png}
+		\caption{Hoop Stress}
+		\label{hoop_50}
+	\end{subfigure}
+	
+	\begin{subfigure}[b]{0.5\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{./figures/radial_stress_50.png}
+		\caption{Radial Stress}
+		\label{radial_50}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.5\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{./figures/axial_stress_50.png}
+		\caption{Axial Stress}
+		\label{axial_50}
+	\end{subfigure}
+	\caption{Vessel Expansion Under $p_i = 50$ MPa with Mooney-Rivlin Model}
+	\label{fig:mooney-rivlin1}
+\end{figure}
+
+\begin{figure}[t!p]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{./figures/ur.png}
+		\caption{Radial Displacement}
+		\label{ur}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.5\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{./figures/hoop.png}
+		\caption{Hoop Stress}
+		\label{hoop}
+	\end{subfigure}
+	
+	\begin{subfigure}[b]{0.5\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{./figures/radial.png}
+		\caption{Radial Stress}
+		\label{radial}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.5\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{./figures/axial.png}
+		\caption{Axial Stress}
+		\label{axial}
+	\end{subfigure}
+	\caption{Vessel Expansion Under Different Pressure with Mooney-Rivlin Model}
+	\label{fig:mooney-rivlin2}
+\end{figure}
+
+We use Neo-Hookean and Yeoh model to characterize the same material and repeat the vessel expansion test. The material constants are the same as in Section \ref{biaxial_tension_test}.
+
+\begin{figure}[t!p]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{./figures/ur_nh_yeoh.png}
+		\caption{Radial Displacement}
+		\label{ur_nh_yeoh}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.5\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{./figures/hoop_nh_yeoh.png}
+		\caption{Hoop Stress}
+		\label{hoop_nh_yeoh}
+	\end{subfigure}
+	
+	\begin{subfigure}[b]{0.5\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{./figures/radial_nh_yeoh.png}
+		\caption{Radial Stress}
+		\label{radial_nh_yeoh}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.5\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{./figures/axial_nh_yeoh.png}
+		\caption{Axial Stress}
+		\label{axial_nh_yeoh}
+	\end{subfigure}
+	\caption{Vessel Expansion with Neo-Hookean and Yeoh Model}
+	\label{fig:nh_yeoh}
+\end{figure}
+
+
+
 
 
 
