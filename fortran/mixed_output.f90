@@ -240,7 +240,7 @@ contains
 		integer :: ele,a,i,npt,j,intpt
 		real(8) :: Ja, pressure, avg_vcr
 		real(8), dimension(nel) :: vcr, abs_vcr ! volume change rate
-		real(8), dimension(nsd) :: xi
+		real(8), dimension(nsd) :: xi, intcoord ! intcoord is the coordinates of the integration points, necessary for anisotropic models
 		real(8), dimension(nsd) :: work ! for lapack inverse
 		integer, dimension(nsd) :: ipiv ! for lapack inverse
 		integer :: info, n1 ! for lapack inverse
@@ -294,6 +294,7 @@ contains
 			! loop over integration points
 			do intpt=1,npt
 				xi = xilist(:,intpt)
+				intcoord = sf(nen,nsd,xi)
 				dNdxi = sfder(nen,nsd,xi)
 				! set up the jacobian matrix
 				dxdxi = matmul(elecoord,dNdxi)
@@ -317,7 +318,7 @@ contains
 				end if
 				vcr(ele) = vcr(ele) + Ja
 				! compute the Kirchhoff stress
-				stress = Kirchhoffstress(nsd,ned,F,pressure,materialprops)
+				stress = Kirchhoffstress(nsd,ned,intcoord,F,pressure,materialprops)
 				! Cauchy stress
 				stress = stress/Ja
 				! vectorize

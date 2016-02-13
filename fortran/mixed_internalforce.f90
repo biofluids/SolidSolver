@@ -14,7 +14,7 @@ contains
 		real(8), dimension(nen,nsd) :: dNdx, dNdy
 		real(8), dimension(ned,nsd) :: stress
 		real(8), dimension(nen*ned+1) :: fele
-		real(8), dimension(nsd) :: xi
+		real(8), dimension(nsd) :: xi, intcoord ! intcoord is the coordinates of the integration points, necessary for anisotropic models
 		real(8), dimension(nen,nsd) :: dNdxi 
 		real(8), dimension(nsd,nsd) :: dxdxi, dxidx, F, Finv, B, eye
 		real(8), allocatable, dimension(:,:) :: xilist
@@ -70,6 +70,7 @@ contains
 			! loop over integration points
 			do intpt=1,npt
 				xi = xilist(:,intpt)
+				intcoord = sf(nen,nsd,xi)
 				dNdxi = sfder(nen,nsd,xi)
 				! set up the jacobian matrix
 				dxdxi = matmul(elecoord,dNdxi)
@@ -104,7 +105,7 @@ contains
 				call DGETRI(n1,Finv,n1,ipiv,work,n1,info)	
 				dNdy = matmul(dNdx,Finv)
 				! compute the Kirchhoff stress
-				stress = Kirchhoffstress(nsd,ned,F,pressure,materialprops)
+				stress = Kirchhoffstress(nsd,ned,intcoord,F,pressure,materialprops)
 				! compute the element internal force
 				do a=1,nen
 					do i=1,nsd
