@@ -79,7 +79,7 @@ contains
 			! Material parameters are hard-coded
 			a0 = [0.,1.,0.]
 			g0 = [0.,1.,0.]
-			kk1 = 236.32 ! mu = 3000
+			kk1 = 2.3632d3 ! mu = 3000
 			kk2 = 0.8393
 			
 			C = matmul(transpose(F),F)
@@ -211,7 +211,7 @@ contains
 			! Material parameters are hard-coded
 			a0 = [0.,1.,0.]
 			g0 = [0.,1.,0.]
-			kk1 = 236.32 ! mu = 3000
+			kk1 = 2.3632d3 ! mu = 3000
 			kk2 = 0.8393
 			
 			C = matmul(transpose(F),F)
