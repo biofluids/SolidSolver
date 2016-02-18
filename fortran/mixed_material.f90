@@ -78,12 +78,14 @@ contains
 			end do
 		else if (dAbs(materialprops(1)-5) < 1d-4) then ! HGO
 			! Material parameters are hard-coded
-			beta = 50*180/3.14159
+			beta = 50*3.14159/180
 			R = sqrt((1+(tan(beta))**2)*((intcoord(1))**2 + (intcoord(2))**2))
-			a0 = [-intcoord(2)/R,intcoord(1)/R,tan(beta)/sqrt(1+(tan(beta))**2)]
-			g0 = [-intcoord(2)/R,intcoord(1)/R,-tan(beta)/sqrt(1+(tan(beta))**2)]
-			kk1 = 2.3632d3 ! mu = 3000
-			kk2 = 0.8393
+			a0 = [1,0,0]
+			g0 = [1,0,0]
+			!a0 = [-intcoord(2)/R,intcoord(1)/R,tan(beta)/sqrt(1+(tan(beta))**2)]
+			!g0 = [-intcoord(2)/R,intcoord(1)/R,-tan(beta)/sqrt(1+(tan(beta))**2)]
+			kk1 = 1d6 ! mu = 0.03 MPa
+			kk2 = 2
 			
 			C = matmul(transpose(F),F)
 			I4 = dot_product(a0,matmul(C,a0))
@@ -213,12 +215,14 @@ contains
 			end do
 		else if (dAbs(materialprops(1)-5) < 1d-4) then ! HGO
 			! Material parameters are hard-coded
-			beta = 50*180/3.14159
+			beta = 50*3.14159/180
 			R = sqrt((1+(tan(beta))**2)*((intcoord(1))**2 + (intcoord(2))**2))
-			a0 = [-intcoord(2)/R,intcoord(1)/R,tan(beta)/sqrt(1+(tan(beta))**2)]
-			g0 = [-intcoord(2)/R,intcoord(1)/R,-tan(beta)/sqrt(1+(tan(beta))**2)]
-			kk1 = 2.3632d3 ! mu = 3000
-			kk2 = 0.8393
+			a0 = [1,0,0]
+			g0 = [1,0,0]
+			!a0 = [-intcoord(2)/R,intcoord(1)/R,tan(beta)/sqrt(1+(tan(beta))**2)]
+			!g0 = [-intcoord(2)/R,intcoord(1)/R,-tan(beta)/sqrt(1+(tan(beta))**2)]
+			kk1 = 1d6 ! mu = 0.03 MPa
+			kk2 = 2
 			
 			C = matmul(transpose(F),F)
 			I4 = dot_product(a0,matmul(C,a0))

@@ -294,7 +294,7 @@ contains
 			! loop over integration points
 			do intpt=1,npt
 				xi = xilist(:,intpt)
-				intcoord = sf(nen,nsd,xi)
+				intcoord = matmul(elecoord,sf(nen,nsd,xi))
 				dNdxi = sfder(nen,nsd,xi)
 				! set up the jacobian matrix
 				dxdxi = matmul(elecoord,dNdxi)
