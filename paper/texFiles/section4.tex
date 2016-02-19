@@ -1,9 +1,9 @@
 \section{Tests}
-In this section, we present two sets of test cases to validate the results we obtained with the formulations we derived. The first case is the biaxial tension test which is used to calibrate material constants. For isotropic materials, the analytical solution is easy to find. The second case is the expansion of a vessel, which is a very representative application in the field of biomechanics.  
+In this section, we present two sets of test cases to validate the results we obtained with the formulations we derived. The first case is the biaxial tension test which is used to calibrate material constants. For isotropic materials, the analytical solution is easy to find if we assume the material is incompressible. The second case is the expansion of a vessel, which is a very representative application in the field of biomechanics.  
 
 \subsection{Biaxial Tension Test}
 \label{biaxial_tension_test}
-A long bar loaded equally in two directions with fixed tractions is considered. The section is a $1$ $m^2$ square. Define the stretch $\lambda$ as the ratio between the deformed length to the original length, then for isotropic incompressible material, the stress is easy to find.
+A long bar loaded equally in two directions with fixed tractions is considered. The section is a $1$ $m^2$ square. Define the stretch $\lambda$ as the ratio between the deformed length to the original length, then for isotropic incompressible material, the stress is expressed as:
 \begin{equation}
 S_{11} = S_{22} = 2(1 - {\lambda}^{-6})(\frac{\partial\Psi_{iso}}{\partial\bar{I}_1} + {\lambda}^2\frac{\partial\Psi_{iso}}{\partial\bar{I}_2}), \quad S_{33} = 0
 \end{equation}
@@ -38,7 +38,7 @@ Figure \ref{fig:biaxial1} shows the results of the theoretical calculation and n
 \label{fig:biaxial1}
 \end{figure}
 
-To demonstrate the anisotropy of HGO model, we compare the stretches in two directions in the biaxial tension test. We use the material parameters calibrated from the media layer of artery in [ ] but only one direction is strengthened. That is, both two families of fibers are arranged in the same direction. The material parameters are $\mu_0 = 3$ KPa, $k_1 = 2.3632$ KPa and $k_2 = 0.8393$. We change the direction of the fibers which measured by the angle from the $x$ direction denoted as $\alpha$. 
+To demonstrate the anisotropy of HGO model, we compare the stretches in two directions in the biaxial tension test. We use the material parameters calibrated from the media layer of artery in [ ] but only one direction is strengthened. That is, both two families of fibers are arranged in the same direction. The material parameters are $\mu_1 = 3$ KPa, $k_1 = 2.3632$ KPa and $k_2 = 0.8393$. We change the direction of the fibers which measured by the angle from the $x$ direction denoted as $\alpha$. 
 
 We define the stretch ratio $\lambda$ in Equation \ref{stretchratio}, and plot the stretch ratio against the nominal stress in Figure \ref{fig:biaxial2}. Just as what we expect, the stretch ratio at $\alpha = 0^\circ$ is the same as $\alpha = 90^\circ$, and similarly for $\alpha = 30^\circ$ and $\alpha = 60^\circ$. 
 $\lambda_y$ is greater than $\lambda_x$ when $0^\circ < \alpha < 45^\circ$ since the $x$ direction is strengthened more. As the angle gets larger, $\lambda_x$ becomes greater too. While $\alpha = 45^\circ$ two directions become symmetric again.
@@ -61,7 +61,7 @@ $\lambda_y$ is greater than $\lambda_x$ when $0^\circ < \alpha < 45^\circ$ since
 
 \subsection{Cylindrical Pressure Vessel}
 \label{pressure_vessel}
-As a typical application, we consider an artery under lumen pressure. The vessel has an internal radius of $R_i = 0.6$ mm and an external radius of $R_o = 0.9$ mm. Only a quarter of vessel is considered with plain strain assumption. First we model the vessel in Mooney-Rivlin model. The material parameters used are $\mu_1 = 160$ MPa and $\mu_2 = 40$ MPa. $\kappa$ is set to $1 \times 10^5$ MPa to make the material nearly incompressible. We compare the radial displacement, hoop stress, radial stress, and axial stress with the analytical solutions of incompressible Mooney-Rivlin model under an internal pressure of $p_i = 50$ MPa. The analytical solutions are found in [] as follows 
+As a typical application, we consider a vessel under lumen pressure. The vessel has an internal radius of $R_i = 7$ m and an external radius of $R_o = 18.625$ m. Only a quarter of vessel is considered with plain strain assumption. First we model the vessel with Mooney-Rivlin model. The material parameters used are $\mu_1 = 160$ MPa and $\mu_2 = 40$ MPa. $\kappa$ is set to $1 \times 10^5$ MPa to make the material nearly incompressible. We compare the radial displacement, hoop stress, radial stress, and axial stress with the analytical solutions of incompressible Mooney-Rivlin model under an internal pressure of $p_i = 50$ MPa. The analytical solutions are found in [] as follows 
 \begin{subequations}
 \begin{align}
 p_i &= 2(\mu_1 + \mu_2)(log\frac{{R_i}^2 + b}{{R_o}^2 + b} - 2log\frac{R_i}{R_o} +

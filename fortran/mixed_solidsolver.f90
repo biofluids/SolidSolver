@@ -100,7 +100,6 @@ subroutine statics(filepath)
 		do while (((err1 > tol) .or. (err2 > tol)) .and. (nit < maxit))
 			nit = nit + 1
 			Fint = force_internal(w)
-			!write(*,*) '1111222223333333'
 			! If the external load is pressure, update the external force
 			if (size(bc2, 1) == 3) then
 				Fext = force_pressure(w)

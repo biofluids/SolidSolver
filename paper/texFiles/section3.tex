@@ -11,9 +11,9 @@ The variational approach is the cornerstone for finite element methods. The most
 \delta W_{int}(\bold{u}, \delta\bold{u}) &= \int_\Omega \boldsymbol\sigma : \delta\bold{e}dV = \int_{\Omega_{0}}\bold{S} : \delta\bold{E}dV \label{Wint} \\
 \delta W_{ext}(\bold{u}, \delta\bold{u}) &= \int_\Omega\bold{b}\cdot\delta\bold{u}dV +  \int_{\partial\Omega}\overline{\bold{t}}\cdot\delta{\bold{u}}dS = \int_\Omega\bold{B}\cdot\delta\bold{u}dV +  \int_{\partial{\Omega_0}}\overline{\bold{T}}\cdot\delta{\bold{u}}dS \label{Wext1}
 \end{align}
-The internal work is done by Cauchy stress $\boldsymbol\sigma$ along the virtual Euler-Almansi strain $\delta\bold{e}$ about region $\Omega$ and the external work is done by the body force $\bold{b}$ and the surface traction $\overline{\bold{t}}$, along the virtual displacement $\delta{u}$ about region $\Omega$ and its boundary surface $\partial\Omega$ respectively. They are assumed be mapped to the reference configuration. 
+The internal work is done by Cauchy stress $\boldsymbol\sigma$ along the virtual Euler-Almansi strain $\delta\bold{e}$ about region $\Omega$ and the external work is done by the body force $\bold{b}$ and the surface traction $\overline{\bold{t}}$, along the virtual displacement $\delta{\bold{u}}$ about region $\Omega$ and its boundary surface $\partial\Omega$ respectively. They are assumed be mapped to the reference configuration. 
 
-If the external loading is given as fixed traction in reference configuration, the virtual external work is constant. Example for this type of loading is tension test where the external force with respect to reference configuration is given as a constant. Another type of loading, which is more frequently encountered in biomechanics is the fixed pressure loading.
+If the external loading is given as fixed traction in reference configuration, the virtual external work is constant. An example for this type of loading is a tension test where the external force with respect to reference configuration is given as a constant. Another type of loading, which is more frequently encountered in biomechanics is the fixed pressure loading.
 In this case, the pressure on the current boundary surface is constant, i.e. $\overline{\bold{t}} = \boldsymbol{\sigma{n}} = p\bold{n}$ where $p$ is a given constant, $\bold{n}$ is the unit normal vector of the current surface. The external virtual work done by the constant pressure $p$ along the virtual displacement $\delta{\bold{u}}$ is defined by
 \begin{align} 
 \delta{W_{ext}}(\bold{u}, \delta{\bold{u}}) &= p\int_{\partial\Omega} \bold{n}\cdot\delta{\bold{u}}dS \label{Wext2}
@@ -44,7 +44,7 @@ In other words, we require the first variation of the total energy potential $\d
 \begin{equation} \label{potential}
 \delta\Pi(\bold{u}, \delta\bold{u}) =\delta\Pi_{int}(\bold{u}) + \delta\Pi_{ext}(\bold{u}) = 0
 \end{equation}
-Here we adopt the convention in Holzapfel using $D_{\Delta{x}}f(x, y, \textit{etc.})$ to represent the directional derivative of $f$ as a function of $(x, y, \textit{etc.})$ along the direction of $\Delta{x}$ where $x$, $y$, \textit{etc.} can be scalar or tensor of any other order. The directional derivative $D_{\Delta{x}}f(x, y, \textit{etc.})$ is equivalent to the first variation of functional $f$ with respect to $x$.
+Here we adopt the convention in Holzapfel using $D_{\Delta{x}}f(x, y, \textit{etc.})$ to represent the directional derivative of $f$ as a function of $(x, y, \textit{etc.})$ along the direction of $\Delta{x}$ where $x$, $y$, \textit{etc.} can be a scalar or a tensor of any other order. The directional derivative $D_{\Delta{x}}f(x, y, \textit{etc.})$ is equivalent to the first variation of functional $f$ with respect to $x$.
 Equation \ref{equilibrium} or \ref{potential} is the equation we want to solve in the displacement-based formulation. It is easy to prove the equivalence between the principle of directional derivative of the potential energy and the virtual work
 
 \begin{equation}
@@ -66,14 +66,14 @@ In displacement-based formulation, we want to solve Equation \ref{equilibrium}. 
 \begin{equation} \label{Kint}
 D^2_{\delta\bold{u}, \Delta\bold{u}}\Pi_{int}(\bold{u}) = D_{\Delta{\bold{u}}}\delta{W_{int}}(\bold{u}, \delta{\bold{u}}) = \int_{\Omega_0}(\nabla_{\bold{X}}\delta\bold{u} : \nabla_{\bold{X}}\Delta\bold{u}\bold{S} + \bold{F}^T\nabla_{\bold{X}}\delta{\bold{u}} : \mathbb{C} : \bold{F}^T \nabla_{\bold{X}}\Delta\bold{u})dV
 \end{equation}
-The first part of the integration is called the initial stress contribution since the $\bold{S}$ characterizes the initial stress at every increment. The second part is called material contribution because the $\mathbb{C}$ characterize the material response to the displacement.
+The first term in the integration is called the initial stress contribution since the $\bold{S}$ characterizes the initial stress at every increment. The second term is called material contribution because the $\mathbb{C}$ characterize the material response to the displacement.
 
 As discussed in Section \ref{PVW}, for the first type of external loading as in Equation \ref{Wext1}, the external work is independent of the displacement. So the variation vanishes.
 
 \begin{equation} \label{Kext}
 D^2_{\delta\bold{u}, \Delta\bold{u}}\Pi_{ext}(\bold{u}) = - D_{\Delta{\bold{u}}}\delta{W_{ext}}(\bold{u}, \delta{\bold{u}}) = 0
 \end{equation}
-But for the second type of loading as in Equation \ref{Wext2}, the external work is changing with the current configuration due to the change of normal $\bold{n}$ and integration area $ds$. 
+But for the second type of loading as in Equation \ref{Wext2}, the external work is changing with the current configuration due to the change of normal $\bold{n}$ and integration boundary $d\bold{s}$. 
 
 Let $\bold{x}$ be an arbitrary point on the surface of a 3D element, $\xi$ and $\eta$ be the parent coordinates on that surface. $\Omega_{\xi}$ represents the parameter plane characterized by $\xi$ and $\eta$. Then the unit normal vector of that surface $\bold{n}$ as well as the infinite small area $ds$ can be expressed as
 
@@ -112,7 +112,7 @@ D_{\delta\bold{u}, \Delta\bold{u}}^2 \Pi(\bold{u}, p)  && D_{\delta\bold{u}, \De
 D_{\delta\bold{u}}\Pi(\bold{u}, p) \\ D_{\delta{p}}\Pi(\bold{u}, p) 
 \end{bmatrix}
 \end{equation}
-We inspect the righthand side first. For incompressible material, recall Equation \ref{energy_split} and \ref{Lagrange}, the energy potential is expressed as
+We inspect the righthand side first. For incompressible material, recall Equations \ref{energy_split} and \ref{Lagrange}, the energy potential is expressed as
 \begin{equation} \label{split3}
 \Pi_{int}(\bold{u}, p) = \int_{\Omega_0} \left[ p(J(\bold{u}) - 1) + \Psi_{iso}(\overline{\bold{C}}(\bold{u}))\right] dV
 \end{equation}
@@ -149,7 +149,7 @@ D_{\delta{p}, \Delta{p}}^2 \Pi(\bold{u}, p) = 0
 \end{equation}
 Inserting Equation \ref{rhs1} to \ref{lhs4} into Equation \ref{linear} we can obtain a symmetric tangent stiffness matrix. Since $p$ is arbitrary for incompressible material, we need additional reference values for it to solve \ref{equilibrium}.
 
-While for nearly incompressible material, Equation \ref{lhs4} and \ref{rhs2} need to be modified. Recall Equation \ref{penalty} and \ref{pressure}, the incompressibility condition is no longer strictly enforced. Equation \ref{rhs2} is relaxed to
+While for nearly incompressible material, the incompressibility condition is no longer strictly enforced. Recall Equation \ref{penalty} and \ref{pressure}, Equation \ref{rhs2} is relaxed to
 
 \begin{equation} \label{relation}
 D_{\delta{p}}\Pi(\bold{u}, p) = \int_{\Omega_0}\left(  \frac{dG(J(\bold{u}))}{dJ} - \frac{p}{\kappa} \right)\delta{p}dV = 0

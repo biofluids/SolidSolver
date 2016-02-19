@@ -5,7 +5,7 @@ Yet not all biomaterials are isotropic. For example, heart muscle has strong dir
 
 %
 \subsection{Hyperelastic Models}
-Generally in continuum mechanics we use constitutive equations to describe the stress components in terms of other functions such as strain. This functional relationship distinguishes different types of materials. One important type of materials that is widely used in biomechanics is hyperelastic material. For hyperelastic material, we postulate there exists a Helmholtz free-energy function $\Psi$, which is defined per unit reference volume. If $\Psi$ is uniquely determined by deformation tensor $\bold{F}$ or other strain tensor, it is called strain-energy function. If the strain is given, the stress can be uniquely determined from the strain-energy function.  
+Generally in continuum mechanics we use constitutive equations to describe the stress components in terms of other functions such as strain. This functional relationship distinguishes different types of materials. For hyperelastic material, we postulate there exists a Helmholtz free-energy function $\Psi$, which is defined per unit reference volume. If $\Psi$ is uniquely determined by deformation tensor $\bold{F}$ or other strain tensor, it is called strain-energy function. If the strain is given, the stress can be uniquely determined from the strain-energy function.  
 
 Our discussion will be focused on rubber-like materials which are modeled as incompressible or nearly incompressible. In this case, the strain-energy function is postulated to have a unique decoupled form
 
@@ -70,7 +70,7 @@ where  $\overline{\bold{S}}$ is the fictitious PK2 stress defined as
 $\overline{\bold{S}} = 2{\partial\Psi_{iso}({\overline{\bold{C}})}} / {\partial\overline{\bold{C}}}$
 and $\mathbb{P}$ is the projection tensor defined as $\mathbb{P} = \mathbb{I} - \frac{1}{3}\bold{C}^{-1} \otimes \bold{C} $ in which $\otimes$ is the dyadic multiplication symbol and $\mathbb{I}$ is the fourth order identity tensor, i.e.,  $\mathbb{P}_{ijkl} =  \frac{1}{2}(\delta_{ik}\delta_{jl} + \delta_{il}\delta_{jk}) - \frac{1}{3} {{C}^{-1}}_{ij} {C}_{kl}$.
 
-Note that if the material is not completely incompressible, the hydrostatic pressure $p$ can be determined from the displacement even though when it is treated as an independent variable by
+Note that if the material is not completely incompressible, the hydrostatic pressure $p$ can be determined from the displacement even when it is treated as an independent variable by
 
 \begin{equation} \label{pressure}
 p = \frac{d\Psi_{vol}(J)}{dJ}
@@ -111,7 +111,8 @@ $\tilde{\mathbb{P}} = \bold{C}^{-1} \odot \bold{C}^{-1} -  \frac{1}{3}\bold{C}^{
 Therefore, once we have the stress expressions, we can obtain the elasticity tensor by substituting Equation \ref{S} into Equation \ref{C}. Note that for incompressible material, $\tilde{p} = p$ because $p$ is independent of $J$.
 
 %
-\subsection{Example I: Mooney-Rivlin Model}
+\subsection {Examples}
+\subsubsection{Mooney-Rivlin Model}
 Originally derived by Mooney [], Mooney-Rivlin model is a polynomial function of $\bar{I}_1$ and $\bar{I}_2$. The first-order Mooney-Rivlin is the most widely used to model biological tissues because of the simplicity. However it was found that the first-order Mooney-Rivlin model is sufficient to characterize the nonlinear behavior of many tissues. Successful applications include porcine liver, porcine kedney, porcine spleen [] etc. As a linear function of the invariants, it is possible to find analytical solutions for some simple cases. In numerical computation, a volumetric part is added to allow a small compressibility to make it more realistic. The Mooney-Rivlin model is written as
 
 \begin{subequations}
@@ -171,7 +172,7 @@ Once the stress is evaluated, the next step is to define the elasticity tensor $
              &= \kappa{(2J - 1)}
 \end{split}
 \end{equation}
-Substituting $\tilde{p}$ and simply evaluating $p$ from Equation \ref{pressure}, and combining the remaining terms in Equation \ref{Cvol}, $\mathbb{C}_{vol}$ becomes
+Substituting $\tilde{p}$ into Equation \ref{Cvol} and simply evaluating $p$ from Equation \ref{pressure}, $\mathbb{C}_{vol}$ becomes
 
 \begin{subequations} \label{Cvol1}
 \begin{align}
@@ -283,24 +284,24 @@ Combining Equation \ref{part11}, \ref{part21} and \ref{part31}, $\mathbb{C}_{iso
 \frac{2}{9}J^{-4/3}(\mu_1\bar{I_1} + 4\mu_2\bar{I_2}) {\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1}) + \frac{2}{3}J^{-4/3}(\mu_1\bar{I_1} + 2\mu_2\bar{I_2}){\overline{\bold{C}}}^{-1} \odot {\overline{\bold{C}}}^{-1} 
 \end{split}
 \end{equation} 
-Equation \ref{Cvol1} and \ref{Ciso1} completes the derivation of elasticity tensor in reference configuration.
+Equation \ref{Cvol1} and \ref{Ciso1} completes the derivation of elasticity tensor in the reference configuration.
 
 
 
 %
-\subsection{Example II: Yeoh Model}
-First introduced in 1990 and modified in 1993 [], Yeoh model is motivated to simulate the mechanical behavior of carbon-black filled rubber vulcanizates with the typical stiffening effect in large strain domain. Yeoh model is a polynomial of $\bar{I}_1$ only.  To capture the stiffening effect of rubber in the large strain domain, It is usually truncated up to the third-order. Yeoh model is also popular in biomechanical applications. Yeoh model has been be applied to human breast tissue, porcine muscular tissue, rat lung parenchyma [] etc. It is even proven to be the best one in capturing nonlinear behaviors of some specific tissues compared with Neo-Hookean and Mooney-Rivlin model.
+\subsubsection{Yeoh Model}
+First introduced in 1990 and modified in 1993 [], Yeoh model is motivated to simulate the mechanical behavior of carbon-black filled rubber vulcanizates with the typical stiffening effect in large strain domain. Yeoh model is a polynomial of $\bar{I}_1$ only.  To capture the stiffening effect of rubber in the large strain domain, it is usually truncated up to the third-order. Yeoh model is also popular in biomechanical applications. Yeoh model has been be applied to human breast tissue, porcine muscular tissue, rat lung parenchyma [] etc. It is even proven to be the best one in capturing nonlinear behaviors of some specific tissues compared to Neo-Hookean and Mooney-Rivlin models.
 
-We use the same volumetric part to account for compressibility as in Equation \ref{vol11} or \ref{vol12}. Consequently the volumetric part of both stress and elasticity tensors are the same as Mooney-Rivlin. Therefore, we will only show the derivation of the isochoric components.
+We use the same volumetric part to account for compressibility as in Mooney-Rivlin model. Consequently the volumetric part of both stress and elasticity tensors are the same as Equation \ref{Svol1} and \ref{Cvol1}. Therefore, we will only show the derivation of the isochoric component.
 
-The isochoric part includes higher order terms, is written as
+The isochoric part includes higher order terms. It is written as
 
 \begin{equation} \label{iso2}
 \Psi_{iso} = c_1(\bar{I_1} - 3) + c_2(\bar{I_2} - 3)^2 + c_3(\bar{I_3} - 3)^3
 \end{equation}
 where $c_1$, $c_2$, $c_3$ are material constants with constraints $c_2 < 0$ and $c1 > 0$, $c_3 > 0$. The initial shear modulus is approximated by $\mu = 2c_1$.
 
-Following the same way, first derive the fictitious stress
+Following the same way, we first derive the fictitious stress
 \begin{equation} \label{Sbar2}
 \begin{split}
 \overline{\bold{S}} &= 2\frac{\partial\Psi_{iso}({\overline{\bold{C}})}}{\partial\overline{\bold{C}}} \\
@@ -317,8 +318,7 @@ Then the isochoric part of the PK2 stress is obtained
 &= J^{-2/3}[2c_1 + 4c_2(\bar{I_1} - 3) + 6c_3(\bar{I_1} - 3)^2] (\bold{I} - \frac{1}{3}\bar{I_1}{\overline{\bold{C}}}^{-1})
 \end{split}
 \end{equation}
-
-Similarly, to derive the first term in the right-hand side of Equation \ref{Ciso} we must begin with $\partial{\Psi_{iso}}/\partial{\overline{\bold{C}}}$.
+Similarly, to derive the first term on the right-hand side of Equation \ref{Ciso} we must begin with $\partial{\Psi_{iso}}/\partial{\overline{\bold{C}}}$.
 
 \begin{equation}
 \begin{split}
@@ -328,6 +328,7 @@ Similarly, to derive the first term in the right-hand side of Equation \ref{Ciso
 \end{split}
 \end{equation}
 \begin{equation}
+The second order derivative is:
 \begin{split}
 \frac{\partial^2\Psi_{iso}(\overline{\bold{C}})}{\partial\overline{\bold{C}}\partial\overline{\bold{C}}} &= 
 \bold{I} \otimes \frac{\partial[c_1 + 2c_2({\bar{I}}_1-3) + 3c_3({\bar{I}}_1-3)^2 ]}{\partial{\overline{\bold{C}}}} \\
@@ -339,7 +340,7 @@ Therefore the fictitious elasticity tensor is
 \begin{equation}
 \overline{\mathbb{C}} = 4J^{-4/3}\frac{\partial^2\Psi_{iso}(\overline{\bold{C}})}{\partial{\overline{\bold{C}}}{\partial{\overline{\bold{C}}}}} = 8J^{-4/3}[c_2 + 3c_3({\bar{I}}_1 - 3) ]\bold{I} \otimes \bold{I}
 \end{equation}
-The first term in the right-hand side of Equation \ref{Ciso} can be found as
+The first term on the right-hand side of Equation \ref{Ciso} can be found as
 
 \begin{equation} \label{part12}
 \begin{split}
@@ -366,7 +367,7 @@ Tr(J^{-2/3}\overline{\bold{S}}) &= J^{-2/3}\overline{\bold{S}}:\bold{C} \\
 &= 2c_1\bar{I}_1 + 4c_2(\bar{I_1} - 3)\bar{I}_1 + 6c_3(\bar{I}_1 - 3)^2\bar{I}_1
 \end{split}
 \end{equation}
-So that the second term in the right-hand side of Equation \ref{Ciso} is
+So that the second term on the right-hand side of Equation \ref{Ciso} is
 
 \begin{equation} \label{part22}
 \begin{split}
@@ -377,7 +378,7 @@ So that the second term in the right-hand side of Equation \ref{Ciso} is
 &-  J^{-4/3}[\frac{4}{9}c_1{\bar{I}}_1 + \frac{8}{9}c_2({\bar{I}}_1 - 3){\bar{I}}_1 + \frac{4}{3}c_3({\bar{I}}_1 - 3)^2{\bar{I}}_1]{\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1} 
 \end{split}
 \end{equation}
-The third term in the right-hand-side of Equation \ref{Ciso} is obtained by using $\bold{S}_{iso}$ in Equation \ref{Siso2}
+The third term on the right-hand-side of Equation \ref{Ciso} is obtained by using $\bold{S}_{iso}$ in Equation \ref{Siso2}
 
 \begin{equation} \label{part32}
 \begin{split}
@@ -404,11 +405,11 @@ Combining \ref{part12}, \ref{part22} and \ref{part32}, we have the isochoric par
 \}
 \end{split}
 \end{equation}
-Equation \ref{Cvol1} and Equation \ref{Ciso2} gives the elasticity tensor in reference configuration.
+Equation \ref{Cvol1} and Equation \ref{Ciso2} gives the elasticity tensor in the reference configuration for Yeoh model.
 
 
 %
-\subsection{Example III: Holzapfel-Gasser-Ogden Model}
+\subsubsection{Holzapfel-Gasser-Ogden Model}
 The Holzapfel-Gasser-Ogden (HGO) model is introduced in 2000 [ ] to model the layering structure of arterial tissue. The idea is to formulate a constitutive model which incorporates some histological structure of arterial walls (i.e. fiber direction). What distinguishes HGO model from the phenomenological models is that it accounts for both the non-collagenous matrix material which is active at low pressures (modeled as isotropic) and the collagenous fibers which becomes active at high pressure (modeled as anisotropic). HGO model uses Neo-Hookean model as the isotropic ground material, and the anisotropic part consists two families of fibers represented by two pseudo-invariants $\bar{I}_4$ and $\bar{I}_6$. The directions of these fibers are represented by unit vectors $\bold{a}_{04}$ and $\bold{a}_{06}$ in the reference configuration. Specifically, the HGO model is written as
 
 \begin{subequations} \label{HGO}
@@ -487,7 +488,7 @@ in HGO model
 \frac{\partial\Psi_{aniso}}{\partial{\bar{I}_i}} = k_1(\bar{I}_i - 1)e^{k_2(\bar{I}_i - 1)^2}
 \end{equation}
 
-The isotropic part of the HGO model is simply Neo-Hookean model, which is a special case of Mooney-Rivlin model. Therefore, to obtain the isotropic contribution to the isochoric PK2 stress, we only need to set $\mu_2$ to $0$ in Equation \ref{Siso1}.
+The isotropic part of the HGO model is simply the Neo-Hookean model, which is a special case of Mooney-Rivlin model with $\mu_2 = 0$. Therefore, to obtain the isotropic contribution to the isochoric PK2 stress, we only need to set $\mu_2$ to $0$ in Equation \ref{Siso1}:
 
 \begin{equation} \label{Sisotropic}
 \bold{S}_{isotropic} = J^{-2/3}\mu_1(-\frac{1}{3}\bar{I}_1\overline{\bold{C}}^{-1} + \bold{I})
@@ -505,7 +506,7 @@ The volumetric part of PK2 stress is still the same as in Equation \ref{Svol1}.
 
 
 
-Next we derive the elasticity tensor of HGO model. For the convenience, we do not explicitly write out ${\partial\Psi_{aniso}}/{\partial{\bar{I}_i}}$ and $\partial^2{\Psi_{aniso}}/\partial{\bar{I}_i}^2$ where $i = 4, 6$. The derivatives of $\Psi_{aniso}$ with respect to $\overline{\bold{C}}$ can be easily converted to that with respect to $\bar{I}_{i}$ ($i = 4, 6$) as follows.
+Next we derive the elasticity tensor of HGO model. For the convenience, we do not explicitly write out ${\partial\Psi_{aniso}}/{\partial{\bar{I}_i}}$ and $\partial^2{\Psi_{aniso}}/\partial{\bar{I}_i}^2$ where $i = 4, 6$. The derivatives of $\Psi_{aniso}$ with respect to $\overline{\bold{C}}$ can be easily converted to that with respect to $\bar{I}_{i}$ ($i = 4, 6$) as follows,
 
 \begin{subequations} \label{convert}
 \begin{align}
@@ -524,7 +525,7 @@ Using Equation \ref{convert2}, the anisotropic contribution to the fictitious el
 &= 4J^{-4/3}\sum_{i = 4, 6}\frac{\partial^2\Psi_{aniso}}{\partial{\bar{I}_i}^2}\bold{A}_{0i} \otimes \bold{A}_{0i}
 \end{split}
 \end{equation}
-Therefore, the first term in the right-hand side of Equation \ref{Ciso} is
+Therefore, the first term on the right-hand side of Equation \ref{Ciso} is
 
 \begin{equation} \label{part13}
 \begin{split}
@@ -539,7 +540,7 @@ Therefore, the first term in the right-hand side of Equation \ref{Ciso} is
 + \frac{1}{9}\bar{I}_i^2 \overline{\bold{C}}^{-1} \otimes \overline{\bold{C}}^{-1}]
 \end{split}
 \end{equation}
-Recall Equation \ref{helper2}, the second term is
+Recall Equation \ref{helper2}, the second term on the right-hand side of Equation \ref{Ciso} is
 
 \begin{equation} \label{part23}
 \begin{split}
@@ -550,7 +551,7 @@ Recall Equation \ref{helper2}, the second term is
 (\overline{\bold{C}}^{-1} \odot \overline{\bold{C}}^{-1} - \frac{1}{3}\overline{\bold{C}}^{-1}\otimes\overline{\bold{C}}^{-1}) \\
 \end{split}
 \end{equation}
-Substituting Equation \ref{Sanisotropic} into the third term in the right-hand side of Equation \ref{Ciso}
+Substituting Equation \ref{Sanisotropic} into the third term on the right-hand side of Equation \ref{Ciso}
 
 \begin{equation} \label{part33}
 \begin{split}
@@ -575,7 +576,7 @@ Add up Equation \ref{part13}, \ref{part23} and \ref{part33} we have the anisotro
 \end{equation}
 where the $\partial\Psi_{aniso}/\partial{\bar{I}_i}$ iand $\partial^2\Psi_{aniso}/{\partial{\bar{I}_i}^2}$ ($i = 4, 6$) are given in Equation \ref{convert}.
 
-Similarly, by setting $\mu_2$ to $0$ in Mooney-Rivlin model, we could easily get the elasticity tensor of the ground material. From Equation \ref{Ciso1}
+Similarly, by setting $\mu_2$ to $0$ in Mooney-Rivlin model, we could easily get the isochoric part of the isotropic elasticity tensor. From Equation \ref{Ciso1}
 
 \begin{equation} \label{Ciso32}
 \begin{split}
