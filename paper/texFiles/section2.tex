@@ -410,13 +410,13 @@ Equation \ref{Cvol1} and Equation \ref{Ciso2} gives the elasticity tensor in the
 
 %
 \subsubsection{Holzapfel-Gasser-Ogden Model}
-The Holzapfel-Gasser-Ogden (HGO) model is introduced in 2000 [ ] to model the layering structure of arterial tissue. The idea is to formulate a constitutive model which incorporates some histological structure of arterial walls (i.e. fiber direction). What distinguishes HGO model from the phenomenological models is that it accounts for both the non-collagenous matrix material which is active at low pressures (modeled as isotropic) and the collagenous fibers which becomes active at high pressure (modeled as anisotropic). HGO model uses Neo-Hookean model as the isotropic ground material, and the anisotropic part consists two families of fibers represented by two pseudo-invariants $\bar{I}_4$ and $\bar{I}_6$. The directions of these fibers are represented by unit vectors $\bold{a}_{04}$ and $\bold{a}_{06}$ in the reference configuration. Specifically, the HGO model is written as
+The Holzapfel-Gasser-Ogden (HGO) model is introduced in 2000 [ ] to model the layering structure of arterial tissue. The idea is to formulate a constitutive model which incorporates some histological structure of arterial walls (i.e. fiber direction). What distinguishes HGO model from the phenomenological models is that it accounts for both the non-collagenous matrix material which is active at low pressures (modeled as isotropic) and the collagenous fibers which becomes active at high pressure (modeled as anisotropic). HGO model uses Neo-Hookean model as the isotropic ground material, and the anisotropic part consists two families of fibers represented by two pseudo-invariants $\bar{I}_4$ and $\bar{I}_6$. The directions of these fibers are represented by unit vectors $\bold{a}_{04}$ and $\bold{a}_{06}$ in the reference configuration. Specifically, the isochoric part of HGO model is written as
 
 \begin{subequations} \label{HGO}
 \begin{align}
-\Psi(\bold{C}, \bold{a}_{04}, \bold{a}_{06}) &= \Psi_{vol}(J) + \Psi_{isotropic}(\overline{\bold{C}}) + \Psi_{aniso}(\overline{\bold{C}}, \bold{a}_{04}, \bold{a}_{06}) 
+\Psi_{iso}(\bold{C}, \bold{a}_{04}, \bold{a}_{06}) &= \Psi_{isotropic}(\overline{\bold{C}}) + \Psi_{aniso}(\overline{\bold{C}}, \bold{a}_{04}, \bold{a}_{06}) 
 \end{align}
-where $\Psi_{iso}$ and $\Psi_{aniso}$ are isochoric isotropic part and isochoric anisotropic part of the strain-energy function. In particular
+where $\Psi_{isotropic}$ and $\Psi_{aniso}$ are isotropic part and anisotropic part of the isochoric strain-energy function. In particular
 \begin{align}
 \Psi_{isotropic} &= \frac{\mu_1}{2}(\bar{I}_1 - 3)  \label{isotropic} \\
 \Psi_{aniso}(\overline{\bold{C}}, \bold{a}_{04}, \bold{a}_{06}) &= \frac{k_1}{2k_2} \sum_{i = 4, 6} \{exp[k_2(\bar{I_i} - 1)^2] - 1\} \label{anisotropic} 
@@ -424,7 +424,22 @@ where $\Psi_{iso}$ and $\Psi_{aniso}$ are isochoric isotropic part and isochoric
 where $k_1 > 0$ is a stress-like material parameter and $k_2 > 0$ is a dimensionless parameter.
 \end{subequations}
 
-As the material deforms, these vectors deform accordingly and are expressed as unit vectors $\bold{a}_4$ and $\bold{a}_6$ in the current configuration. $\bold{a}_{0i}$ and $\bold{a}_{i}$ ($i = 4, 6$) are related by 
+The isotropic part of the HGO model is simply the Neo-Hookean model, which is a special case of Mooney-Rivlin model with $\mu_2 = 0$. Therefore, to obtain the isotropic contribution to the isochoric PK2 stress, we only need to set $\mu_2$ to $0$ in Equation \ref{Siso1}:
+\begin{equation} \label{Sisotropic}
+\bold{S}_{isotropic} = J^{-2/3}\mu_1(-\frac{1}{3}\bar{I}_1\overline{\bold{C}}^{-1} + \bold{I})
+\end{equation}
+
+Similarly, by setting $\mu_2$ to $0$ in Mooney-Rivlin model, we could easily get the isotropic part of the isochoric elasticity tensor. From Equation \ref{Ciso1}
+\begin{equation} \label{Ciso32}
+\begin{split}
+\mathbb{C}_{isotropic} &=
+- \frac{2}{3}J^{-4/3}\mu_1({\overline{\bold{C}}}^{-1} \otimes \bold{I} + \bold{I} \otimes {\overline{\bold{C}}}^{-1})  \\
+&+
+\frac{2}{9}J^{-4/3}\mu_1\bar{I_1}  {\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1} + \frac{2}{3}J^{-4/3} \mu_1\bar{I_1} {\overline{\bold{C}}}^{-1} \odot {\overline{\bold{C}}}^{-1} 
+\end{split}
+\end{equation}
+
+To derive the anisotropic parts of stress and elasticity tensor, we need to introduce the deformation of the fibers. As the material deforms, the vectors of the fibers deform accordingly and are expressed as unit vectors $\bold{a}_4$ and $\bold{a}_6$ in the current configuration. $\bold{a}_{0i}$ and $\bold{a}_{i}$ ($i = 4, 6$) are related by 
 \begin{equation} \label{vector}
 \lambda_i\bold{a}_i = \bold{F}\bold{a}_{0i}
 \end{equation} 
@@ -488,11 +503,7 @@ in HGO model
 \frac{\partial\Psi_{aniso}}{\partial{\bar{I}_i}} = k_1(\bar{I}_i - 1)e^{k_2(\bar{I}_i - 1)^2}
 \end{equation}
 
-The isotropic part of the HGO model is simply the Neo-Hookean model, which is a special case of Mooney-Rivlin model with $\mu_2 = 0$. Therefore, to obtain the isotropic contribution to the isochoric PK2 stress, we only need to set $\mu_2$ to $0$ in Equation \ref{Siso1}:
 
-\begin{equation} \label{Sisotropic}
-\bold{S}_{isotropic} = J^{-2/3}\mu_1(-\frac{1}{3}\bar{I}_1\overline{\bold{C}}^{-1} + \bold{I})
-\end{equation}
 Combine Equation \ref{Sanisotropic} and \ref{Sisotropic} we have the isochoric PK2 stress for HGO model
 \begin{equation} \label{HGOSiso}
 \begin{split}
@@ -576,16 +587,6 @@ Add up Equation \ref{part13}, \ref{part23} and \ref{part33} we have the anisotro
 \end{equation}
 where the $\partial\Psi_{aniso}/\partial{\bar{I}_i}$ iand $\partial^2\Psi_{aniso}/{\partial{\bar{I}_i}^2}$ ($i = 4, 6$) are given in Equation \ref{convert}.
 
-Similarly, by setting $\mu_2$ to $0$ in Mooney-Rivlin model, we could easily get the isochoric part of the isotropic elasticity tensor. From Equation \ref{Ciso1}
-
-\begin{equation} \label{Ciso32}
-\begin{split}
-\mathbb{C}_{isotropic} &=
-- \frac{2}{3}J^{-4/3}\mu_1({\overline{\bold{C}}}^{-1} \otimes \bold{I} + \bold{I} \otimes {\overline{\bold{C}}}^{-1})  \\
-&+
-\frac{2}{9}J^{-4/3}\mu_1\bar{I_1}  {\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1} + \frac{2}{3}J^{-4/3} \mu_1\bar{I_1} {\overline{\bold{C}}}^{-1} \odot {\overline{\bold{C}}}^{-1} 
-\end{split}
-\end{equation}
 Combine Equation \ref{Ciso31} with Equation \ref{Ciso32} we have the complete isochoric part of the elasticity tensor of HGO model
 
 \begin{equation} \label{Ciso3}

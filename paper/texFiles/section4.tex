@@ -3,7 +3,7 @@ In this section, we present two sets of test cases to validate the results we ob
 
 \subsection{Biaxial Tension Test}
 \label{biaxial_tension_test}
-A long bar loaded equally in two directions with fixed tractions is considered. The section is a $1$ $m^2$ square. Define the stretch $\lambda$ as the ratio between the deformed length to the original length, then for isotropic incompressible material, the stress is expressed as:
+A long bar loaded equally in two directions with fixed tractions is considered. The section of the bar is a $1$ $m^2$ square. As shown in Figure \ref{fig:biaxial_schematic}, the bottom surface is fixed in $z$-direction; the left surface is fixed in $y$-direction and the back surface is fixed in $x$-direction. External tractions are applied to the front and right surfaces. Define the stretch $\lambda$ as the ratio between the deformed length to the original length, then for isotropic incompressible material, the stress is expressed as:
 \begin{equation}
 S_{11} = S_{22} = 2(1 - {\lambda}^{-6})(\frac{\partial\Psi_{iso}}{\partial\bar{I}_1} + {\lambda}^2\frac{\partial\Psi_{iso}}{\partial\bar{I}_2}), \quad S_{33} = 0
 \end{equation}
@@ -26,6 +26,13 @@ Similarly, for Yeoh model
 \begin{equation}
 P = \lambda S = 2(\lambda - {\lambda}^{-5})[c_1 + 2c_2(2{\lambda}^2 + {\lambda}^{-4} - 3) + 3c_3(2{\lambda}^2 + {\lambda}^{-4} - 3)^2]
 \end{equation}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=.3\textwidth]{./figures/biaxial_schematic.jpg}
+\caption{Schematic Diagram of Biaxial Tension Test}
+\label{fig:biaxial_schematic}
+\end{figure}
 
 The material constants used in these models are curve-fitted from the standard ASTM412 tensile test results of the same material. See Shashikant. In Neo-Hookean model, $\mu_1 = 0.6548$ MPa; in Mooney-Rivlin model, $\mu_1 = 0.595522$ MPa, $\mu_2 = -0.0508009$ MPa; in Yeoh model, $c_1 = 0.358756$ MPa, $c_2 = - 0.0508009$ MPa, $c_3 = 0.0142132$ MPa. The Poisson's ratios for all the models are over $\nu = 0.49999$, closed enough to incompressibility.
 
@@ -61,7 +68,7 @@ $\lambda_y$ is greater than $\lambda_x$ when $0^\circ < \alpha < 45^\circ$ since
 
 \subsection{Cylindrical Pressure Vessel}
 \label{pressure_vessel}
-As a typical application, we consider a vessel under lumen pressure. The vessel has an internal radius of $R_i = 7$ m and an external radius of $R_o = 18.625$ m. Only a quarter of vessel is considered with plain strain assumption. First we model the vessel with Mooney-Rivlin model. The material parameters used are $\mu_1 = 160$ MPa and $\mu_2 = 40$ MPa. $\kappa$ is set to $1 \times 10^5$ MPa to make the material nearly incompressible. We compare the radial displacement, hoop stress, radial stress, and axial stress with the analytical solutions of incompressible Mooney-Rivlin model under an internal pressure of $p_i = 50$ MPa. The analytical solutions are found in [] as follows 
+As a typical application, we consider a vessel under lumen pressure. The vessel has an internal radius of $R_i = 7$ m and an external radius of $R_o = 18.625$ m. Only a quarter of vessel is considered with plain strain assumption as shown in Figure \ref{fig:vessel_schematic}. $21$ nodes are uniformly distributed in radial direction. As the first case, we model the vessel with Mooney-Rivlin model. The material parameters used are $\mu_1 = 160$ MPa and $\mu_2 = 40$ MPa. $\kappa$ is set to $1 \times 10^7$ MPa to make the material nearly incompressible. We compare the radial displacement, hoop stress, radial stress, and axial stress with the analytical solutions of incompressible Mooney-Rivlin model under an internal pressure of $p_i = 50$ MPa. The analytical solutions are found in [] as follows 
 \begin{subequations}
 \begin{align}
 p_i &= 2(\mu_1 + \mu_2)(log\frac{{R_i}^2 + b}{{R_o}^2 + b} - 2log\frac{R_i}{R_o} +
@@ -75,7 +82,14 @@ p &= - p_i - \mu_2 - (\mu_1 + \mu_2)(log\frac{r}{R_i} + \frac{b}{2}(r^2 - {R_i}^
 \end{subequations}
 where $R$ and $r$ are the radial coordinate before and after deformation, $p$ is the hydrostatic pressure, $u_r$ is the radial displacement, and $\sigma_{\theta}$, $\sigma_r$ and $\sigma_z$ are the hoop, radial and axial stresses respectively. $b$ is a constant determined by the internal pressure $p_i$, and $C$ is an arbitrary constant since the material is incompressible. 
 
-Fig \ref{fig:mooney-rivlin1} is the stress and displacement components along radius direction. Good agreement is achieved on all the components. Notice the axial stress is usually hard to predict but our result is satisfactory. The discrepancy between numerical computation and analytical solution is due to the slight compressibility used in computation. Furthermore, we pick the node at the midpoint along a radius ($R = 12.8125$ m) and study its deformation at different internal pressures. As shown in Fig \ref{fig:mooney-rivlin2}, the computational result and analytical solution agree well with each other in most cases except that there are significant discrepancy in hoop stress and radial stress in high pressure. This is because with such great bulk modulus, a small discrepancy in radial displacement will be amplified in stresses. 
+\begin{figure}[h!]
+\centering
+\includegraphics[width=.3\textwidth]{./figures/vessel_schematic.jpg}
+\caption{Schematic Diagram of Pressure Vessel}
+\label{fig:vessel_schematic}
+\end{figure}
+
+Fig \ref{fig:mooney-rivlin1} shows the stress components and the radial displacement along radius direction. Good agreement is achieved on all the components. Notice the axial stress is usually hard to predict but our result is satisfactory. Furthermore, we pick the node at the midpoint in the radial direction ($R = 12.8125$ m) and study its deformation under different internal pressures. As shown in Fig \ref{fig:mooney-rivlin2}, the computational result and analytical solution agree perfectly with each other. 
 
 \begin{figure}[t!p]
 	\begin{subfigure}[b]{0.5\textwidth}
@@ -137,7 +151,7 @@ Fig \ref{fig:mooney-rivlin1} is the stress and displacement components along rad
 	\label{fig:mooney-rivlin2}
 \end{figure}
 
-We use Neo-Hookean and Yeoh model to characterize the same material and repeat the vessel expansion test. The material constants are the same as in Section \ref{biaxial_tension_test}.
+Next we use Neo-Hookean and Yeoh model to characterize the same material and repeat the vessel expansion test. The material constants are the same as in Section \ref{biaxial_tension_test}. Figure \ref{hoop_nh_yeoh} shows the results of these two models under an inner pressure of $p_i = 350$ kPa. The displacements have similar trends but different values. It is surprising that hoop stress and radial stress predicted by two models are close. The major difference is the axial stress where Yeoh model predicts a larger range.
 
 \begin{figure}[t!p]
 	\begin{subfigure}[b]{0.5\textwidth}
@@ -169,6 +183,37 @@ We use Neo-Hookean and Yeoh model to characterize the same material and repeat t
 	\label{fig:nh_yeoh}
 \end{figure}
 
+As the last test case we compare HGO model to Neo-Hookean model. The parameters used in the HGO model is still the same as in Section \ref{biaxial_tension_test}, the geometry and mesh are the same as in previous cases. To demonstrate the effect of the anisotropic part of the HGO model, we use the same $\mu_1$ and $\kappa$ in the Neo-Hookean model. This time, the two families of fibers are arranged in the $\theta-z$ plane with constant angles to the circumferential direction of $\pm 50^\circ$. From Figure \ref{fig:nh_hgo} we can see that overall the vessel is significantly strengthened as the radial displacement is much smaller. While the radial stress does not change much (similar to Yeoh model), the hoop stress is smaller but has a similar trend. However the axial stress changes dramatically. In Neo-Hookean model the inner surface has the maximum axial stress while in HGO model the outer surface has the maximum axial stress. But overall both hoop stress and axial stress are much smaller in the HGO model.
+
+\begin{figure}[t!p]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{./figures/ur_nh_hgo.png}
+		\caption{Radial Displacement}
+		\label{ur_nh_hgo}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.5\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{./figures/hoop_nh_hgo.png}
+		\caption{Hoop Stress}
+		\label{hoop_nh_hgo}
+	\end{subfigure}
+	
+	\begin{subfigure}[b]{0.5\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{./figures/radial_nh_hgo.png}
+		\caption{Radial Stress}
+		\label{radial_nh_hgo}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.5\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{./figures/axial_nh_hgo.png}
+		\caption{Axial Stress}
+		\label{axial_nh_hgo}
+	\end{subfigure}
+	\caption{Vessel Expansion with Neo-Hookean and HGO Model}
+	\label{fig:nh_hgo}
+\end{figure}
 
 
 
