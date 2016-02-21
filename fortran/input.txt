@@ -4,7 +4,7 @@ tolerance:	0.0001
 maximum number of newton iteration:	200
 
 Static parameters
-first increment:	2d-2
+first increment:	1d-2
 adjust factor:	0.0
 
 Dynamic parameters
@@ -14,12 +14,12 @@ print interval:	10
 damping:	0.0
 
 =====================Material=====================
-Material type(neo-Hookean~2/Mooney-Rivlin~3):	3
+Material type(neo-Hookean~2/Mooney-Rivlin~3):	5
 
 Material coefficients
-mu1:	0.6548d6
+mu1:	3000
 mu2:	0
-K1:	1d11
+K1:	1d8
 rho:	0.0142132d6
 
 x_gravity:	0.

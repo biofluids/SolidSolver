@@ -3,18 +3,19 @@ module mixed_material
 	implicit none
 
 contains
-	function materialstiffness(nsd,ned,F,pressure,materialprops)
+	function materialstiffness(nsd,ned,intcoord,F,pressure,materialprops)
 		! Compute the material stiffness tensor
 		implicit none
 	
 		integer, intent(in) :: nsd, ned
 		real(8), intent(in) :: pressure
 		real(8), dimension(nsd,nsd), intent(in) :: F
+		real(8), dimension(nsd), intent(in) :: intcoord
 		real(8), dimension(5), intent(in) :: materialprops
 		real(8), dimension(ned,nsd,ned,nsd):: materialstiffness
 	
 		integer :: i, j, k, l, p
-		real(8) :: mu1, mu2, K1, I1, I2, c1, c2, c3, Ja, I4, I6, lambda, kk1, kk2, der14, der24, der16, der26
+		real(8) :: mu1, mu2, K1, I1, I2, c1, c2, c3, Ja, I4, I6, lambda, kk1, kk2, der14, der24, der16, der26, R, beta
 		real(8), dimension(nsd,nsd) :: B, Bbar, BB, eye, C
 		real(8), dimension(nsd) :: a0, g0, a, g
 	
@@ -77,11 +78,14 @@ contains
 			end do
 		else if (dAbs(materialprops(1)-5) < 1d-4) then ! HGO
 			! Material parameters are hard-coded
-			a0 = [0.,1.,0.]
-			g0 = [0.,1.,0.]
-			kk1 = 2.3632d3 ! mu = 3000
-			kk2 = 0.8393
-			
+			beta = 50*3.14159/180
+			R = sqrt((1+(tan(beta))**2)*((intcoord(1))**2 + (intcoord(2))**2))
+			!a0 = [1,0,0]
+			!g0 = [1,0,0]
+			a0 = [-intcoord(2)/R,intcoord(1)/R,tan(beta)/sqrt(1+(tan(beta))**2)]
+			g0 = [-intcoord(2)/R,intcoord(1)/R,-tan(beta)/sqrt(1+(tan(beta))**2)]
+			kk1 = 2363.2
+
 			C = matmul(transpose(F),F)
 			I4 = dot_product(a0,matmul(C,a0))
 			lambda = sqrt(I4)
@@ -145,18 +149,19 @@ contains
 		
 	end function materialstiffness
 	
-	function Kirchhoffstress(nsd,ned,F,pressure,materialprops)
+	function Kirchhoffstress(nsd,ned,intcoord,F,pressure,materialprops)
 		! Compute the Kirchhoff stress
 		implicit none
 		
 		integer, intent(in) :: nsd, ned
 		real(8), intent(in) :: pressure
 		real(8), dimension(nsd,nsd), intent(in) :: F
+		real(8), dimension(nsd), intent(in) :: intcoord
 		real(8), dimension(5), intent(in) :: materialprops
 		real(8), dimension(ned,nsd) :: Kirchhoffstress
 		real(8), dimension(nsd,nsd) :: B, Bbar, BB, eye, C
 		integer :: i, j, k
-		real(8) :: mu1, mu2, K1, I1, I2, c1, c2, c3, Ja, I4, I6, lambda, kk1, kk2
+		real(8) :: mu1, mu2, K1, I1, I2, c1, c2, c3, Ja, I4, I6, lambda, kk1, kk2, R, beta
 		real(8), dimension(nsd) :: a0, g0, a, g
 		
 		! square matrix
@@ -209,10 +214,13 @@ contains
 			end do
 		else if (dAbs(materialprops(1)-5) < 1d-4) then ! HGO
 			! Material parameters are hard-coded
-			a0 = [0.,1.,0.]
-			g0 = [0.,1.,0.]
-			kk1 = 2.3632d3 ! mu = 3000
-			kk2 = 0.8393
+			beta = 50*3.14159/180
+			R = sqrt((1+(tan(beta))**2)*((intcoord(1))**2 + (intcoord(2))**2))
+			!a0 = [1,0,0]
+			!g0 = [1,0,0]
+			a0 = [-intcoord(2)/R,intcoord(1)/R,tan(beta)/sqrt(1+(tan(beta))**2)]
+			g0 = [-intcoord(2)/R,intcoord(1)/R,-tan(beta)/sqrt(1+(tan(beta))**2)]
+			kk1 = 2363.2
 			
 			C = matmul(transpose(F),F)
 			I4 = dot_product(a0,matmul(C,a0))
