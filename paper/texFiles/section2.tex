@@ -83,7 +83,7 @@ The solutions in nonlinear finite element methods are often obtained incremental
 In the material description (reference configuration), the elasticity tensor is defined as the gradient of the PK2 stress to its work conjugate strain, the Green-Lagrange strain.
 
 \begin{equation}
-\mathbb{C} = \frac{\partial{\bold{S}(\bold{E})}}{\partial{\bold{E}}} =  2\frac{\partial{\bold{S}(\bold{C})}} {\partial{\bold{C}}} = 4 \frac{\partial^2{\Psi(\bold{C})}}{{\partial{\bold{C}}}{\partial{\bold{C}}}}
+\mathbb{C} = \frac{\partial{\bold{S}(\bold{E})}}{\partial{\bold{E}}} =  2\frac{\partial{\bold{S}(\bold{C})}} {\partial{\bold{C}}} = 4 \frac{\partial^2{\Psi(\bold{C})}}{{\partial{\bold{C}}}{\partial{\bold{C}}}} \label{def_elasticity_tensor}
 \end{equation}
 
 Based on the same idea of split, with Equation \ref{S}, the elasticity tensor can be rewritten in the decoupled form 
@@ -281,7 +281,7 @@ Combining Equation \ref{part11}, \ref{part21} and \ref{part31}, $\mathbb{C}_{iso
 &=
 2{J}^{-4/3}\mu_2(\bold{I} \otimes \bold{I} - \mathbb{I}) - \frac{2}{3}J^{-4/3}(\mu_1 + 2\mu_2\bar{I_1})({\overline{\bold{C}}}^{-1} \otimes \bold{I} + \bold{I} \otimes {\overline{\bold{C}}}^{-1}) + \frac{4}{3}J^{-4/3}\mu_2({\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}} + {\overline{\bold{C}}} \otimes {\overline{\bold{C}}}^{-1}) \\
 &+
-\frac{2}{9}J^{-4/3}(\mu_1\bar{I_1} + 4\mu_2\bar{I_2}) {\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1}) + \frac{2}{3}J^{-4/3}(\mu_1\bar{I_1} + 2\mu_2\bar{I_2}){\overline{\bold{C}}}^{-1} \odot {\overline{\bold{C}}}^{-1} 
+\frac{2}{9}J^{-4/3}(\mu_1\bar{I_1} + 4\mu_2\bar{I_2}) {\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1} + \frac{2}{3}J^{-4/3}(\mu_1\bar{I_1} + 2\mu_2\bar{I_2}){\overline{\bold{C}}}^{-1} \odot {\overline{\bold{C}}}^{-1} 
 \end{split}
 \end{equation} 
 Equation \ref{Cvol1} and \ref{Ciso1} completes the derivation of elasticity tensor in the reference configuration.
