@@ -151,7 +151,7 @@ Fig \ref{fig:mooney-rivlin1} shows the stress components and the radial displace
 	\label{fig:mooney-rivlin2}
 \end{figure}
 
-Next we use Neo-Hookean and Yeoh model to characterize the same material and repeat the vessel expansion test. The material constants are the same as in Section \ref{biaxial_tension_test}. Figure \ref{hoop_nh_yeoh} shows the results of these two models under an inner pressure of $p_i = 350$ kPa. The displacements have similar trends but different values. It is surprising that hoop stress and radial stress predicted by two models are close. The major difference is the axial stress where Yeoh model predicts a larger range.
+Next we use Neo-Hookean and Yeoh model to characterize the same material and repeat the vessel expansion test. The material constants are the same as in Section \ref{biaxial_tension_test}. Figure \ref{hoop_nh_yeoh} shows the results of these two models under an inner pressure of $p_i = 350$ KPa. The displacements have similar trends but different values. It is surprising that hoop stress and radial stress predicted by two models are close. The major difference is the axial stress where Yeoh model predicts a larger range.
 
 \begin{figure}[t!p]
 	\begin{subfigure}[b]{0.5\textwidth}
@@ -179,11 +179,11 @@ Next we use Neo-Hookean and Yeoh model to characterize the same material and rep
 		\caption{Axial Stress}
 		\label{axial_nh_yeoh}
 	\end{subfigure}
-	\caption{Vessel Expansion with Neo-Hookean and Yeoh Model}
+	\caption{Vessel Expansion with Neo-Hookean and Yeoh Model under $350$ KPa}
 	\label{fig:nh_yeoh}
 \end{figure}
 
-As the last test case we compare HGO model to Neo-Hookean model. The parameters used in the HGO model is still the same as in Section \ref{biaxial_tension_test}, the geometry and mesh are the same as in previous cases. To demonstrate the effect of the anisotropic part of the HGO model, we use the same $\mu_1$ and $\kappa$ in the Neo-Hookean model. This time, the two families of fibers are arranged in the $\theta-z$ plane with constant angles to the circumferential direction of $\pm 50^\circ$. From Figure \ref{fig:nh_hgo} we can see that overall the vessel is significantly strengthened as the radial displacement is much smaller. While the radial stress does not change much (similar to Yeoh model), the hoop stress is smaller but has a similar trend. However the axial stress changes dramatically. In Neo-Hookean model the inner surface has the maximum axial stress while in HGO model the outer surface has the maximum axial stress. But overall both hoop stress and axial stress are much smaller in the HGO model.
+As the last test case we compare HGO model to Neo-Hookean model. The parameters used in the HGO model is still the same as in Section \ref{biaxial_tension_test}, the geometry and mesh are the same as in previous cases. The pressure is $1.5$ KPa. To demonstrate the effect of the anisotropic part of the HGO model, we use the same $\mu_1$ and $\kappa$ in the Neo-Hookean model. This time, the two families of fibers are arranged in the $\theta-z$ plane with constant angles to the circumferential direction of $\pm 50^\circ$. From Figure \ref{fig:nh_hgo} we can see that overall the vessel is significantly strengthened as the radial displacement is much smaller. While the radial stress does not change much (similar to Yeoh model), the hoop stress is smaller but has a similar trend. However the axial stress changes dramatically. In Neo-Hookean model the inner surface has the maximum axial stress while in HGO model the outer surface has the maximum axial stress. But overall both hoop stress and axial stress are much smaller in the HGO model.
 
 \begin{figure}[t!p]
 	\begin{subfigure}[b]{0.5\textwidth}
@@ -211,7 +211,7 @@ As the last test case we compare HGO model to Neo-Hookean model. The parameters 
 		\caption{Axial Stress}
 		\label{axial_nh_hgo}
 	\end{subfigure}
-	\caption{Vessel Expansion with Neo-Hookean and HGO Model}
+	\caption{Vessel Expansion with Neo-Hookean and HGO Model under $1.5$ KPa}
 	\label{fig:nh_hgo}
 \end{figure}
 
