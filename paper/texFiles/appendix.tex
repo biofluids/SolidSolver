@@ -1,4 +1,4 @@
-\section{Appendices}
+\section{Appendix}
 In the updated Lagrangian Formulation, the Kirchhoff stress $\boldsymbol{\tau}$ or the Cauchy stress $\boldsymbol{\sigma}$ is used instead of the PK2 stress $\bold{S}$, which means the principle of virtual work or principle of stationary potential energy and their linearizations are also written in the current configuration. In the appendices we will introduce the corresponding formulations in the current configuration.
 
 %
@@ -104,11 +104,18 @@ Substitute Equation \ref{Ciso31} into Equation \ref{current_elasticity}, we have
 \begin{split}
 (c_{aniso})_{ijkl} &=  F_{iI}F_{jJ}F_{kK}F_{lL}(C_{aniso})_{IJKL} \\
 &= 
- \sum_{i = 4, 6} J^{-4/3}[4\frac{\partial^2\Psi_{aniso}}{\partial{\bar{I}_i}^2} \bold{A}_{0i} \otimes \bold{A}_{0i} - \frac{4}{3}(\bar{I}_i\frac{\partial^2\Psi_{aniso}}{\partial{\bar{I}_i}^2} + \frac{\partial\Psi_{aniso}}{\partial{\bar{I}_i}})(\overline{\bold{C}}^{-1} \otimes \bold{A}_{0i} + \bold{A}_{0i} \otimes \overline{\bold{C}}^{-1}) \\
-&+ \frac{4}{9}({\bar{I}_i}^2\frac{\partial^2\Psi_{aniso}}{\partial{\bar{I}_i}^2} + \bar{I}_i\frac{\partial\Psi_{aniso}}{\partial{\bar{I}_i}})(\overline{\bold{C}}^{-1} \otimes \overline{\bold{C}}^{-1}) 
-+ \frac{4}{3}\bar{I}_i \frac{\partial\Psi_{aniso}}{\partial{\bar{I}_i}} \overline{\bold{C}}^{-1} \odot \overline{\bold{C}}^{-1}]
+ \sum_{i = 4, 6} [4{\bar{I}_i}^2\frac{\partial^2\Psi_{aniso}}{\partial{\bar{I}_i}^2} \bold{A}_{i} \otimes \bold{A}_{i} - \frac{4}{3}\bar{I}_i(\bar{I}_i\frac{\partial^2\Psi_{aniso}}{\partial{\bar{I}_i}^2} + \frac{\partial\Psi_{aniso}}{\partial{\bar{I}_i}})
+ (\bold{A}_{i} \otimes \bold{I} + \bold{I} \otimes \bold{A}_i) \\
+&+ \frac{4}{9}({\bar{I}_i}^2\frac{\partial^2\Psi_{aniso}}{\partial{\bar{I}_i}^2} + \bar{I}_i\frac{\partial\Psi_{aniso}}{\partial{\bar{I}_i}})\bold{I} \otimes \bold{I} 
++ \frac{4}{3}\bar{I}_i \frac{\partial\Psi_{aniso}}{\partial{\bar{I}_i}} \mathbb{I}]
 \end{split}
-\end{equation} 
+\end{equation}
+
+With the total Lagrangian formulation introduced in Section \ref{formulation}, the only thing that is not trivial to discuss is the linearization of the internal work. Equation \ref{Kint} can be transformed into the following equation written in the current configuration:
+
+\begin{equation}
+D^2_{\delta\bold{u}, \Delta\bold{u}}\Pi_{int}(\bold{u}) = D_{\Delta{\bold{u}}}\delta{W_{int}}(\bold{u}, \delta{\bold{u}}) = \int_{\Omega_0}(\nabla_{\bold{x}}\delta\bold{u} : \nabla_{\bold{x}}\Delta\bold{u}\boldsymbol{\tau} + \nabla_{\bold{x}}\delta{\bold{u}} : \mathbb{c} :  \nabla_{\bold{x}}\Delta\bold{u})dV
+\end{equation}
 
 
 

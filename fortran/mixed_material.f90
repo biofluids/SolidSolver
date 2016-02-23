@@ -80,8 +80,8 @@ contains
 			! Material parameters are hard-coded
 			beta = 50*3.14159/180
 			R = sqrt((1+(tan(beta))**2)*((intcoord(1))**2 + (intcoord(2))**2))
-			!a0 = [1,0,0]
-			!g0 = [1,0,0]
+			!a0 = [0.,1.,0.]
+			!g0 = [0.,1.,0.]
 			a0 = [-intcoord(2)/R,intcoord(1)/R,tan(beta)/sqrt(1+(tan(beta))**2)]
 			g0 = [-intcoord(2)/R,intcoord(1)/R,-tan(beta)/sqrt(1+(tan(beta))**2)]
 			kk1 = 2363.2
@@ -217,8 +217,8 @@ contains
 			! Material parameters are hard-coded
 			beta = 50*3.14159/180
 			R = sqrt((1+(tan(beta))**2)*((intcoord(1))**2 + (intcoord(2))**2))
-			!a0 = [1,0,0]
-			!g0 = [1,0,0]
+			!a0 = [0.,1.,0.]
+			!g0 = [0.,1.,0.]
 			a0 = [-intcoord(2)/R,intcoord(1)/R,tan(beta)/sqrt(1+(tan(beta))**2)]
 			g0 = [-intcoord(2)/R,intcoord(1)/R,-tan(beta)/sqrt(1+(tan(beta))**2)]
 			kk1 = 2363.2
@@ -240,8 +240,8 @@ contains
 				do j=1,nsd
 					Kirchhoffstress(i,j) = -1/3.*mu1*I1*eye(i,j) + mu1*Bbar(i,j) + Ja*pressure*eye(i,j);
 					! anisotropic part
-					Kirchhoffstress(i,j) = Kirchhoffstress(i,j) + 2*kk1*( (I4-1)*exp(kk2*(I4-1)**2)*(a(i)*a(j)*Ja**(-2./3) - 1/3.*eye(i,j))*I4 ) &
-					                     + 2*kk1*( (I6-1)*exp(kk2*(I6-1)**2)*(g(i)*g(j)*Ja**(-2./3) - 1/3.*eye(i,j))*I6 )
+					Kirchhoffstress(i,j) = Kirchhoffstress(i,j) + 2*kk1*( (I4-1)*exp(kk2*(I4-1)**2)*(a(i)*a(j) - 1/3.*eye(i,j))*I4 ) &
+					                     + 2*kk1*( (I6-1)*exp(kk2*(I6-1)**2)*(g(i)*g(j) - 1/3.*eye(i,j))*I6 )
 				end do
 			end do
 		else !neo-Hookean and Mooney-Rivlin
