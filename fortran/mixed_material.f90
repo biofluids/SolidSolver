@@ -84,8 +84,8 @@ contains
 			!g0 = [0.,1.,0.]
 			a0 = [-intcoord(2)/R,intcoord(1)/R,tan(beta)/sqrt(1+(tan(beta))**2)]
 			g0 = [-intcoord(2)/R,intcoord(1)/R,-tan(beta)/sqrt(1+(tan(beta))**2)]
-			kk1 = 2363.2
-			kk2 = 0.8393
+			kk1 = 0.5158d6
+			kk2 = 0.9
 
 			C = matmul(transpose(F),F)
 			I4 = dot_product(a0,matmul(C,a0))
@@ -221,8 +221,8 @@ contains
 			!g0 = [0.,1.,0.]
 			a0 = [-intcoord(2)/R,intcoord(1)/R,tan(beta)/sqrt(1+(tan(beta))**2)]
 			g0 = [-intcoord(2)/R,intcoord(1)/R,-tan(beta)/sqrt(1+(tan(beta))**2)]
-			kk1 = 2363.2
-			kk2 = 0.8393
+			kk1 = 0.5158d6
+			kk2 = 0.9
 			
 			C = matmul(transpose(F),F)
 			I4 = dot_product(a0,matmul(C,a0))

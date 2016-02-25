@@ -6,7 +6,12 @@ Bel-Brunon, A., Kehl, S., Martin, C., Uhlig, S., and Wall, W. (2014).
   compressible behavior of soft tissue using uniaxial tensile tests and image
   registration -- application to rat lung parenchyma.
 \newblock {\em Journal of the Mechanical Behavior of Biomechanical Materials},
-  29:360 -- 374.
+  29:360--374.
+
+\bibitem[Belytschko et~al., 2000]{Belytschko}
+Belytschko, T., Liu, W.~K., and Moran, B. (2000).
+\newblock {\em Nonlinear finite elements for continua and structures}.
+\newblock Wiley, 1 edition.
 
 \bibitem[Bols et~al., 2013]{Bols}
 Bols, J., Degroote, J., Trachet, B., Verhegghe, B., Segers, P., and
@@ -15,24 +20,35 @@ Bols, J., Degroote, J., Trachet, B., Verhegghe, B., Segers, P., and
   using a fibre-reinforced hyperelastic model.
 \newblock {\em Journal of Computational and Applied Mathematics}, 246:10--17.
 
+\bibitem[Bower, 2009]{Bower}
+Bower, A.~F. (2009).
+\newblock {\em Applied mechanics of solids}.
+\newblock CRC Press, 1 edition.
+
 \bibitem[Fu et~al., 2013]{Fu}
 Fu, Y., Chui, C., and Teo, C. (2013).
 \newblock Liver tissue characterization from uniaxial stress--strain data using
   probabilistic and inverse finite element methods.
 \newblock {\em Journal of the Mechanical Behavior of Biomechanical Materials},
-  20:105 -- 112.
+  20:105--112.
+
+\bibitem[Holzapfel, 2000]{Holzapfel}
+Holzapfel, G.~A. (2000).
+\newblock {\em Nonlinear solid mechanics: a continuum approach for
+  engineering}.
+\newblock Wiley, 1 edition.
 
 \bibitem[Karimi et~al., 2013]{Karimi}
 Karimi, A., Navidbakhsh, M., Beigzadeh, B., and Faghihi, S. (2013).
 \newblock Hyperelastic mechanical behavior of rat brain infected by plasmodium
   berghei anka -- experimental testing and constitutive modelling.
-\newblock {\em International Journal of Damage Mechanics}, 0(0):1 -- 15.
+\newblock {\em International Journal of Damage Mechanics}, 0(0):1--15.
 
 \bibitem[Kaster et~al., 2011]{Samani}
 Kaster, T., Sack, I., and Samani, A. (2011).
 \newblock Measurement of the hyperelastic properties of ex vivo brain tissue
   slices.
-\newblock {\em Journal of Biomechanics}, 44:1158 -- 1163.
+\newblock {\em Journal of Biomechanics}, 44:1158--1163.
 
 \bibitem[Masson et~al., 2008]{Zidi2}
 Masson, I., Boutouyrie, P., Laurent, S., Humphrey, J.~D., and Zidi, M. (2008).
@@ -46,6 +62,12 @@ Masson, I., Fassot, C., and Zidi, M. (2010).
 \newblock Finite dynamic deformations of a hyperelastic, anisotropic,
   incompressible and prestressed tube. applications to in vivo arteries.
 \newblock {\em European Journal of Mechanics A/Solids}, 29:523--529.
+
+\bibitem[Nicholson, 1995]{Nicholson}
+Nicholson, D.~W. (1995).
+\newblock Tangent modulus matrix for finite element analysis of hyperelastic
+  materials.
+\newblock {\em Acta Mechanica}, 112(1):187--201.
 
 \bibitem[Oberai et~al., 2009]{Oberai}
 Oberai, A.~A., Gokhale, N.~H., Goenezen, S., Barbone, P.~E., Hall, T.~J.,
@@ -71,20 +93,20 @@ Rashid, B., Destrade, M., and Gilchrist, M.~D. (2013).
 \newblock Mechanical characterization of brain tissue in simple shear at
   dynamic strain rates.
 \newblock {\em Journal of the Mechanical Behavior of Biomechanical Materials},
-  28:71 -- 85.
+  28:71--85.
 
 \bibitem[Rausch et~al., 2011]{Wall2}
 Rausch, S., Martin, C., Bornemann, P., Uhlig, S., and Wall, W. (2011).
 \newblock Material model of lung parenchyma based on living precision- cut lung
   slice testing.
 \newblock {\em Journal of the Mechanical Behavior of Biomechanical Materials},
-  4:583 -- 592.
+  4:583--592.
 
 \bibitem[Steinmann et~al., 2012]{Steinmann}
 Steinmann, P., Hossain, M., and Possart, G. (2012).
 \newblock Hyperelastic models for rubber-like materials: consistent tangent
   operators and suitability for treloar's data.
-\newblock {\em Archive of Applied Mechanics}, 82:1183 -- 1217.
+\newblock {\em Archive of Applied Mechanics}, 82:1183--1217.
 
 \bibitem[Umale et~al., 2013]{Willinger}
 Umale, S., Deck, C., Bourdet, N., Dhumane, P., Soler, L., Marescaux, J., and
@@ -92,19 +114,26 @@ Umale, S., Deck, C., Bourdet, N., Dhumane, P., Soler, L., Marescaux, J., and
 \newblock Experimental mechanical characterization of abdominal organs: liver,
   kidney and spleen.
 \newblock {\em Journal of the Mechanical Behavior of Biomechanical Materials},
-  17:22 -- 33.
+  17:22--33.
 
 \bibitem[Untaroiu et~al., 2015]{Untaroiu}
 Untaroiu, C.~D., Lu, Y.-C., Siripurapu, S.~K., and Kemper, A.~R. (2015).
 \newblock Modeling the biomechanics and injury response of human liver
   parenchyma under tensile loading.
 \newblock {\em Journal of the Mechanical Behavior of Biomechanical Materials},
-  41:280 -- 291.
+  41:280--291.
+
+\bibitem[Weiss et~al., 1996]{Weiss}
+Weiss, J.~A., Maker, B.~N., and Govindjee, S. (1996).
+\newblock Finite element implementation of incompressible, transversely
+  isotropic hyperelasticity.
+\newblock {\em Computational Methods in Applied Mechanics and Engineering},
+  135:107--128.
 
 \bibitem[Wex et~al., 2015]{Kupriyanova}
 Wex, C., Arndt, S., Stoll, A., Bruns, C., and Kupriyanova, Y. (2015).
 \newblock Isotropic incompressible hyperelastic models for modelling the
   mechanical behaviour of biological tissues: a review.
-\newblock {\em Biomed Tech (Berl)}, 60(6):577 -- 592.
+\newblock {\em Biomed Tech (Berl)}, 60(6):577--592.
 
 \end{thebibliography}
