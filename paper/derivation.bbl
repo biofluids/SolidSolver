@@ -43,6 +43,12 @@ Holzapfel, G.~A. (2000).
   engineering}.
 \newblock Wiley, 1 edition.
 
+\bibitem[Holzapfel and Gasser, 2000]{Holzapfel2}
+Holzapfel, G.~A. and Gasser, T.~C. (2000).
+\newblock A new constitutive framework for arterial wall mechanics and a
+  comparative study of material models.
+\newblock {\em Journal of Elasticity}, 61:1--48.
+
 \bibitem[Karimi et~al., 2013]{Karimi}
 Karimi, A., Navidbakhsh, M., Beigzadeh, B., and Faghihi, S. (2013).
 \newblock Hyperelastic mechanical behavior of rat brain infected by plasmodium
@@ -106,6 +112,18 @@ Rausch, S., Martin, C., Bornemann, P., Uhlig, S., and Wall, W. (2011).
   slice testing.
 \newblock {\em Journal of the Mechanical Behavior of Biomechanical Materials},
   4:583--592.
+
+\bibitem[Sharma, 2003]{Sharma}
+Sharma, S. (2003).
+\newblock {\em Critical comparison of popular hyper-elastic material models in
+  design of anti-vibration mounts for automotive industry through FEA Critical
+  comparison of popular hyper-elastic material models in design of
+  anti-vibration mounts for automotive industry through FEA Critical comparison
+  of popular hyper-elastic material models in design of anti-vibration mounts
+  for automotive industry through FEA Critical comparison of popular
+  hyper-elastic material models in design of anti-vibration mounts for
+  automotive industry through FEA}, volume~3, pages 162--168.
+\newblock Swets and Zeitlinger.
 
 \bibitem[Steinmann et~al., 2012]{Steinmann}
 Steinmann, P., Hossain, M., and Possart, G. (2012).

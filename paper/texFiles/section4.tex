@@ -3,7 +3,7 @@ In this section, we present two sets of test cases to validate the results we ob
 
 \subsection{Biaxial Tension Test}
 \label{biaxial_tension_test}
-A long bar loaded equally in two directions with fixed tractions is considered. The section of the bar is a $1$ $m^2$ square. As shown in Figure \ref{fig:biaxial_schematic}, the bottom surface is fixed in $z$-direction; the left surface is fixed in $y$-direction and the back surface is fixed in $x$-direction. External tractions are applied to the front and right surfaces. Define the stretch $\lambda$ as the ratio between the deformed length to the original length, then for isotropic incompressible material, the stress is expressed as:
+In this test, we examine $3$ isotropic models followed by $1$ anisotropic model. A long bar loaded equally in two directions with a range of fixed tractions. The section of the bar is a $1$ $m^2$-square. As shown in Figure \ref{fig:biaxial_schematic}, the bottom surface is fixed in the $z$-direction; the left surface is fixed in the $y$-direction and the back surface is fixed in the $x$-direction. External tractions are applied to the front and right surfaces. The stretch $\lambda$ is defined as the ratio between the deformed length to the original length, then for isotropic incompressible material, the stress is expressed as:
 \begin{equation}
 S_{11} = S_{22} = 2(1 - {\lambda}^{-6})(\frac{\partial\Psi_{iso}}{\partial\bar{I}_1} + {\lambda}^2\frac{\partial\Psi_{iso}}{\partial\bar{I}_2}), \quad S_{33} = 0
 \end{equation}
@@ -34,9 +34,9 @@ P = \lambda S = 2(\lambda - {\lambda}^{-5})[c_1 + 2c_2(2{\lambda}^2 + {\lambda}^
 \label{fig:biaxial_schematic}
 \end{figure}
 
-The material constants used in these models are curve-fitted from the standard ASTM412 tensile test results of the same material. See Shashikant. In Neo-Hookean model, $\mu_1 = 0.6548$ MPa; in Mooney-Rivlin model, $\mu_1 = 0.595522$ MPa, $\mu_2 = 0.050381$ MPa; in Yeoh model, $c_1 = 0.358756$ MPa, $c_2 = - 0.0508009$ MPa, $c_3 = 0.0142132$ MPa. The Poisson's ratios for all the models are over $\nu = 0.49999$, closed enough to incompressibility.
+The material constants used in these models are curve-fitted from the standard ASTM412 tensile test results of the rubber used in the transmission mounts \cite{Sharma}. In Neo-Hookean model, $\mu_1 = 0.6548$ MPa; in Mooney-Rivlin model, $\mu_1 = 0.595522$ MPa, $\mu_2 = 0.050381$ MPa; in Yeoh model, $c_1 = 0.358756$ MPa, $c_2 = - 0.0508009$ MPa, $c_3 = 0.0142132$ MPa. The Poisson's ratios for all the models are over $\nu = 0.49999$, close enough to incompressibility.
 
-Figure \ref{fig:biaxial1} shows the results of the theoretical calculation and numerical computation. Perfect agreement is achieved. As expected, in the small strain range, all these models have similar linear performance. Also, it can be seen that $\mu_2$ in Mooney-Rivlin model acts as a modification to $\mu_1$ in Neo-Hookean model which increases the stiffness. In large strain range, the stiffness of Yeoh model grows quickly, becoming significantly larger than the others.
+Figure \ref{fig:biaxial1} shows the results of the theoretical calculation and numerical computations for all $3$ models for $\lambda$ in the range of $1$ to $1.8$. Perfect agreement is achieved. As expected, in the small strain range, all these models have similar linear performance. Also, it can be seen that $\mu_2$ in Mooney-Rivlin model acts as a modification to $\mu_1$ in Neo-Hookean model which increases the stiffness. In large strain range, the stiffness of Yeoh model grows quickly, becoming significantly larger than the others due to the inclusion of the higher order terms.
 
 \begin{figure}[h!]
 \centering
@@ -45,7 +45,7 @@ Figure \ref{fig:biaxial1} shows the results of the theoretical calculation and n
 \label{fig:biaxial1}
 \end{figure}
 
-To demonstrate the anisotropy of HGO model, we compare the stretches in two directions in the biaxial tension test. We use the material parameters calibrated from the media layer of artery in [ ] but only one direction is strengthened. That is, both two families of fibers are arranged in the same direction. The material parameters are $\mu_1 = 3$ KPa, $k_1 = 2.3632$ KPa and $k_2 = 0.8393$. We change the direction of the fibers which measured by the angle from the $x$ direction denoted as $\alpha$. 
+To demonstrate the anisotropy of HGO model, we compare the stretches in two directions in the biaxial tension test. We use the material parameters calibrated from the media layer of the artery in \cite{Holzapfel2} but only one direction is strengthened. That is, both two families of fibers are arranged in the same direction while the tractions are still applied in two directions. The material parameters are $\mu_1 = 3$ KPa, $k_1 = 2.3632$ KPa and $k_2 = 0.8393$. We vary the direction of the fibers measured by the angle from the $x$ direction denoted as $\alpha$, from $0^\circ$ to $90^\circ$. 
 
 We define the stretch ratio $\lambda$ in Equation \ref{stretchratio}, and plot the stretch ratio against the nominal stress in Figure \ref{fig:biaxial2}. Just as what we expect, the stretch ratio at $\alpha = 0^\circ$ is the same as $\alpha = 90^\circ$, and similarly for $\alpha = 30^\circ$ and $\alpha = 60^\circ$. 
 $\lambda_y$ is greater than $\lambda_x$ when $0^\circ < \alpha < 45^\circ$ since the $x$ direction is strengthened more. As the angle gets larger, $\lambda_x$ becomes greater too. While $\alpha = 45^\circ$ two directions become symmetric again.
