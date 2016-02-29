@@ -1,46 +1,46 @@
-This is BibTeX, Version 0.99d (TeX Live 2015)
+This is BibTeX, Version 0.99d (TeX Live 2014)
 Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: derivation.aux
 The style file: apalike.bst
 Database file #1: references.bib
-You've used 24 entries,
+You've used 30 entries,
             1935 wiz_defined-function locations,
-            631 strings with 8661 characters,
-and the built_in function-call counts, 10353 in all, are:
-= -- 1019
-> -- 483
-< -- 9
-+ -- 168
-- -- 166
-* -- 922
-:= -- 1814
-add.period$ -- 72
-call.type$ -- 24
-change.case$ -- 202
-chr.to.int$ -- 24
-cite$ -- 24
-duplicate$ -- 346
-empty$ -- 684
-format.name$ -- 196
-if$ -- 1981
+            670 strings with 9285 characters,
+and the built_in function-call counts, 12444 in all, are:
+= -- 1230
+> -- 531
+< -- 17
++ -- 184
+- -- 180
+* -- 1077
+:= -- 2169
+add.period$ -- 91
+call.type$ -- 30
+change.case$ -- 237
+chr.to.int$ -- 30
+cite$ -- 30
+duplicate$ -- 441
+empty$ -- 853
+format.name$ -- 218
+if$ -- 2406
 int.to.chr$ -- 1
 int.to.str$ -- 0
-missing$ -- 29
-newline$ -- 123
-num.names$ -- 72
-pop$ -- 170
+missing$ -- 39
+newline$ -- 153
+num.names$ -- 90
+pop$ -- 207
 preamble$ -- 1
-purify$ -- 203
+purify$ -- 240
 quote$ -- 0
-skip$ -- 255
+skip$ -- 328
 stack$ -- 0
-substring$ -- 791
-swap$ -- 34
-text.length$ -- 2
+substring$ -- 944
+swap$ -- 50
+text.length$ -- 4
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 134
+type$ -- 162
 warning$ -- 0
-while$ -- 89
+while$ -- 108
 width$ -- 0
-write$ -- 315
+write$ -- 393

@@ -1,5 +1,10 @@
 \begin{thebibliography}{}
 
+\bibitem[Bathe, 2014]{Bathe}
+Bathe, K.-J. (2014).
+\newblock {\em Finite element procedures}.
+\newblock Klaus-J{\"u}rgen Bathe, 2 edition.
+
 \bibitem[Bel-Brunon et~al., 2014]{Wall}
 Bel-Brunon, A., Kehl, S., Martin, C., Uhlig, S., and Wall, W. (2014).
 \newblock Numerical identification method for the non-linear viscoelastic
@@ -25,6 +30,17 @@ Bower, A.~F. (2009).
 \newblock {\em Applied mechanics of solids}.
 \newblock CRC Press, 1 edition.
 
+\bibitem[de~Borst, 1988]{Borst}
+de~Borst, R. (1988).
+\newblock Modelling and analysis of rubberlike materials.
+\newblock {\em Heron}, 33(1):1--56.
+
+\bibitem[de~Veubeke, 1965]{Veubeke}
+de~Veubeke, B.~F. (1965).
+\newblock {\em Displacement and equilibrium models in the finite element
+  method}, chapter~9, pages 145--197.
+\newblock Stress Analysis. Wiley.
+
 \bibitem[Fu et~al., 2013]{Fu}
 Fu, Y., Chui, C., and Teo, C. (2013).
 \newblock Liver tissue characterization from uniaxial stress--strain data using
@@ -36,6 +52,12 @@ Fu, Y., Chui, C., and Teo, C. (2013).
 Green, A.~E. and Zerna, W. (1968).
 \newblock {\em Theoretical Elasticity}.
 \newblock Oxford University Press, 2 edition.
+
+\bibitem[Herrmann, 1965]{Herrmann}
+Herrmann, L.~R. (1965).
+\newblock Elasticity equations for incompressible and nearly incompressible
+  materials by a variational theorem.
+\newblock {\em AIAA Journal}, 3(10):1896--1900.
 
 \bibitem[Holzapfel, 2000]{Holzapfel}
 Holzapfel, G.~A. (2000).
@@ -86,6 +108,11 @@ Oberai, A.~A., Gokhale, N.~H., Goenezen, S., Barbone, P.~E., Hall, T.~J.,
 \newblock Linear and nonlinear elasticity imaging of soft tissue in vivo:
   demonstration of feasibility.
 \newblock {\em Physics in Medicine and Biology}, 54:1191--1207.
+
+\bibitem[Oden, 1972]{Oden}
+Oden, J.~T. (1972).
+\newblock {\em Finite elements of nonlinear continua}.
+\newblock McGraw-Hill.
 
 \bibitem[O'Hagen and Samani, 2009]{OHagen}
 O'Hagen, J.~J. and Samani, A. (2009).
@@ -158,5 +185,10 @@ Wex, C., Arndt, S., Stoll, A., Bruns, C., and Kupriyanova, Y. (2015).
 \newblock Isotropic incompressible hyperelastic models for modelling the
   mechanical behaviour of biological tissues: a review.
 \newblock {\em Biomed Tech (Berl)}, 60(6):577--592.
+
+\bibitem[Zienkiewicz and Taylor, 2005]{Zienkiewicz}
+Zienkiewicz, O.~C. and Taylor, R.~L. (2005).
+\newblock {\em The finite element method for solid and structural mechanics}.
+\newblock Elsevier, 6 edition.
 
 \end{thebibliography}

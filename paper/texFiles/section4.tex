@@ -29,7 +29,7 @@ P = \lambda S = 2(\lambda - {\lambda}^{-5})[c_1 + 2c_2(2{\lambda}^2 + {\lambda}^
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=.3\textwidth]{./figures/biaxial_schematic.jpg}
+\includegraphics[width=.8\textwidth]{./figures/biaxial_schematic.png}
 \caption{Schematic Diagram of Biaxial Tension Test}
 \label{fig:biaxial_schematic}
 \end{figure}
@@ -68,7 +68,23 @@ $\lambda_y$ is greater than $\lambda_x$ when $0^\circ < \alpha < 45^\circ$ since
 
 \subsection{Cylindrical Pressure Vessel}
 \label{pressure_vessel}
-We consider a vessel under lumen pressure which is a typical application as the second experiment. The vessel has an internal radius of $R_i = 7$ m and an external radius of $R_o = 18.625$ m. Only a quarter of vessel is considered with plain strain assumption as shown in Figure \ref{fig:vessel_schematic}. $21$ nodes are uniformly distributed in radial direction. The material parameters we used is the same as in Section \ref{biaxial_tension_test} except that in the HGO model, two families of fibers are arranged in the $\theta-z$ plane with constant angles to the circumferential direction of $\pm 50^\circ$. 
+We consider a vessel under lumen pressure which is a typical application as the second experiment. The vessel has an internal radius of $R_i = 7$ m and an external radius of $R_o = 18.625$ m. Only a quarter of vessel is considered with plain strain assumption as shown in Figure \ref{fig:vessel_schematic}. $21$ nodes are uniformly distributed in radial direction. The material parameters we used is the same as in Section \ref{biaxial_tension_test} except that in the HGO model, two families of fibers are arranged in the $\theta-z$ plane with constant angles to the circumferential direction of $\pm 50^\circ$, as shown in Figure \ref{fig:vessel_schematic2}.
+
+\begin{figure}[t!p]
+	\centering
+	\begin{subfigure}[b]{0.5\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{./figures/vessel_schematic.jpg}
+		\caption{Schematic Diagram of Pressure Vessel}
+		\label{fig:vessel_schematic}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.4\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{./figures/vessel_schematic2.png}
+		\caption{Schematic Diagram for the Fiber Alignments}
+		\label{fig:vessel_schematic2}
+	\end{subfigure}
+\end{figure}
 
 As a benchmark, we model the vessel with Mooney-Rivlin model and compare the radial displacement, hoop stress, radial stress, and axial stress with the analytical solutions. The analytical solutions for incompressible material are found in \cite{Green} as follows: 
 \begin{subequations}
@@ -83,13 +99,6 @@ p &= - p_i - \mu_2 - (\mu_1 + \mu_2)(log\frac{r}{R_i} + \frac{b}{2}(r^2 - {R_i}^
 \end{align}
 \end{subequations}
 where $R$ and $r$ are the radial coordinate before and after deformation, $p$ is the hydrostatic pressure, $u_r$ is the radial displacement, and $\sigma_{\theta}$, $\sigma_r$ and $\sigma_z$ are the hoop, radial and axial stresses respectively. $b$ is a constant determined by the internal pressure $p_i$, and $C$ is an arbitrary constant since the material is incompressible. 
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=.3\textwidth]{./figures/vessel_schematic.jpg}
-\caption{Schematic Diagram of Pressure Vessel}
-\label{fig:vessel_schematic}
-\end{figure}
 
 Fig \ref{fig:mooney-rivlin1} shows the stress components and the radial displacement along radius direction under the pressure of $p_i = 200$ KPa. Good agreement is achieved on all the components. Notice the axial stress is usually hard to predict but our result is satisfactory. Furthermore, we pick the node at the midpoint in the radial direction ($R = 12.8125$ m) and study its deformation under different internal pressures. As shown in Fig \ref{fig:mooney-rivlin2}, the computational result and analytical solution agree perfectly with each other. 
 
@@ -185,16 +194,21 @@ Now that the validity of our computation is confirmed. We then compare the resul
 	\label{fig:models}
 \end{figure}
 
-As the last case, we use HGO model to simulate the expansion of the carotid artery of a healthy rabbit. The real artery tissues consists three layers: intima, media, and adventitia. In this case we only consider media and adventitia because the intima is made up of one layer of endothelial cells and is not of our mechanical interest. The artery is modeled as a cylinder with $2$ layers. The geometry of the artery is shown in Figure \ref{fig:artery}. Both layers are modeled with HGO model but the values of the material parameters differ, given in Table \ref{table:artery}.
+As the last case, we use HGO model to simulate the expansion of the carotid artery of a healthy rabbit. The real artery tissues consists three layers: intima, media, and adventitia. In this case we only consider media and adventitia because the intima is made up of one layer of endothelial cells and is not of our mechanical interest. The artery is modeled as a cylinder with $2$ layers. The geometry of the artery is shown in Figure \ref{fig:vessel_schematic3}. The fibers are still arranged in the $\theta-z$ plane, being symmetric about the $\theta$-direction. The angles between the fiber directions and the circumferential direction are denoted as $\pm\beta$. Both layers are modeled with HGO model but the values of the material parameters differ, which is from \cite{Holzapfel2} and given in Table \ref{table:artery}.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=.3\textwidth]{./figures/vessel_schematic3.png}
+\caption{Schematic Diagram for the Artery Model}
+\label{fig:vessel_schematic3}
+\end{figure}
 
 \begin{table}
 \centering
 \caption{The Configuration of the Artery Model}
 \label{table:artery}
-\begin{tabular}{ | p{2.0cm} || p{1.5cm} | p{1.5cm} | p{1.5cm} | p{1.5cm} | p{2.0cm} | p{1.5cm} |}
+\begin{tabular}{ | p{2.0cm} | p{1.5cm} | p{1.5cm} | p{1.5cm} | p{1.5cm} | p{2.0cm} | p{1.5cm} |}
 \hline
- & \multicolumn{4}{c}{Material}  \vline & \multicolumn{2}{c}{Geometry}  \vline\\
- \cline{2-7}
 & $\mu_1$/KPa & $k_1$/KPa & $k_2$/- & $\kappa$/KPa & $r$/m & $\beta/^\circ$ \\
  \hline
  Media &   $3.0$ & $2.3632$ & $0.8393$ & $10^5$ & $[0.71, 0.97)$ & $29.0$\\
@@ -203,30 +217,30 @@ As the last case, we use HGO model to simulate the expansion of the carotid arte
 \end{tabular}
 \end{table}
 
-
+Figure \ref{fig:artery} shows the computational results.
 \begin{figure}[t!p]
 	\begin{subfigure}[b]{0.5\textwidth}
 		\centering
-		\includegraphics[width=\textwidth]{./figures/hgo_uy.png}
+		\includegraphics[width=\textwidth]{./figures/artery_ur.png}
 		\caption{Radial Displacement}
 		\label{ur_artery}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.5\textwidth}
 		\centering
-		\includegraphics[width=\textwidth]{./figures/hgo_s11.png}
+		\includegraphics[width=\textwidth]{./figures/artery_hoop.png}
 		\caption{Hoop Stress}
 		\label{hoop_artery}
 	\end{subfigure}
 	
 	\begin{subfigure}[b]{0.5\textwidth}
 		\centering
-		\includegraphics[width=\textwidth]{./figures/hgo_s22.png}
+		\includegraphics[width=\textwidth]{./figures/artery_radial.png}
 		\caption{Radial Stress}
 		\label{radial_artery}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.5\textwidth}
 		\centering
-		\includegraphics[width=\textwidth]{./figures/hgo_s33.png}
+		\includegraphics[width=\textwidth]{./figures/artery_axial.png}
 		\caption{Axial Stress}
 		\label{axial_artery}
 	\end{subfigure}
