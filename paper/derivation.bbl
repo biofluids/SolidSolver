@@ -18,9 +18,16 @@ Belytschko, T., Liu, W.~K., and Moran, B. (2000).
 \newblock {\em Nonlinear finite elements for continua and structures}.
 \newblock Wiley, 1 edition.
 
-\bibitem[Bols et~al., 2013]{Bols}
+\bibitem[Bols et~al., 2013a]{Bols2}
 Bols, J., Degroote, J., Trachet, B., Verhegghe, B., Segers, P., and
-  Vierendeels, J. (2013).
+  Vierendeels, J. (2013a).
+\newblock A comparative study of several material models for prediction of
+  hyperelastic properties: application to silicone-rubber and soft tissues.
+\newblock {\em Journal of Computational and Applied Mathematics}, 246:10--17.
+
+\bibitem[Bols et~al., 2013b]{Bols}
+Bols, J., Degroote, J., Trachet, B., Verhegghe, B., Segers, P., and
+  Vierendeels, J. (2013b).
 \newblock Finite element modelling of cell wall properties for onion epidermis
   using a fibre-reinforced hyperelastic model.
 \newblock {\em Journal of Computational and Applied Mathematics}, 246:10--17.
@@ -71,6 +78,12 @@ Holzapfel, G.~A. and Gasser, T.~C. (2000).
   comparative study of material models.
 \newblock {\em Journal of Elasticity}, 61:1--48.
 
+\bibitem[Karimi et~al., 2014]{Navidbakhsh}
+Karimi, A., Navidbakhsh, M., Alizadeh, M., and Shojaei, A. (2014).
+\newblock A comparative study on the mechanical properties of the umbilical
+  vein and umbilical artery under uniaxial loading.
+\newblock {\em Artery Research}, 8:51--56.
+
 \bibitem[Karimi et~al., 2013]{Karimi}
 Karimi, A., Navidbakhsh, M., Beigzadeh, B., and Faghihi, S. (2013).
 \newblock Hyperelastic mechanical behavior of rat brain infected by plasmodium
@@ -95,6 +108,11 @@ Masson, I., Fassot, C., and Zidi, M. (2010).
 \newblock Finite dynamic deformations of a hyperelastic, anisotropic,
   incompressible and prestressed tube. applications to in vivo arteries.
 \newblock {\em European Journal of Mechanics A/Solids}, 29:523--529.
+
+\bibitem[Mooney, 1940]{Mooney}
+Mooney, M. (1940).
+\newblock A theory of large elastic deformation.
+\newblock {\em Journal of Applied Physics}, 11:582--592.
 
 \bibitem[Nicholson, 1995]{Nicholson}
 Nicholson, D.~W. (1995).
@@ -139,6 +157,17 @@ Rausch, S., Martin, C., Bornemann, P., Uhlig, S., and Wall, W. (2011).
   slice testing.
 \newblock {\em Journal of the Mechanical Behavior of Biomechanical Materials},
   4:583--592.
+
+\bibitem[Rivlin, 1948]{Rivlin}
+Rivlin, R.~S. (1948).
+\newblock Large elastic deformations of isotropic materials.
+\newblock {\em Philosophical Transactions of the Royal Society of London A:
+  Mathematical, Physical and Engineering Sciences}, 241(835):379--397.
+
+\bibitem[Saraf et~al., 2007]{Ramesh}
+Saraf, H., Ramesh, K., Lennon, A., Merkle, A., and Roberts, J. (2007).
+\newblock Mechanical properties of soft human tissues under dynamic loading.
+\newblock {\em Journal of Biomechanics}, 40:1960--1967.
 
 \bibitem[Sharma, 2003]{Sharma}
 Sharma, S. (2003).
@@ -185,6 +214,29 @@ Wex, C., Arndt, S., Stoll, A., Bruns, C., and Kupriyanova, Y. (2015).
 \newblock Isotropic incompressible hyperelastic models for modelling the
   mechanical behaviour of biological tissues: a review.
 \newblock {\em Biomed Tech (Berl)}, 60(6):577--592.
+
+\bibitem[Yeoh, 1990]{Yeoh}
+Yeoh, O.~H. (1990).
+\newblock Characterization of elastic properties of carbon black filled rubber
+  vulcanizates.
+\newblock {\em Rubber Chemistry and Technology}, 63(5):792--805.
+
+\bibitem[Yeoh, 1993]{Yeoh2}
+Yeoh, O.~H. (1993).
+\newblock Some forms of the strain energy function for rubber.
+\newblock {\em Rubber Chemistry and Technology}, 66(5):754--771.
+
+\bibitem[Zaeimdar, 2014]{Zaeimdar}
+Zaeimdar, S. (2014).
+\newblock {\em Mechanical characterization of breast tissue constituents for
+  cancer assessment}.
+\newblock PhD thesis, Simon Fraser University.
+
+\bibitem[Zhao et~al., 2008]{Zhao}
+Zhao, J., Liao, D., Chen, P., Kunwald, P., and Gregersen, H. (2008).
+\newblock Stomach stress and strain depend on location, direction and the
+  layered structure.
+\newblock {\em Journal of Biomechanics}, 41:3441--3447.
 
 \bibitem[Zienkiewicz and Taylor, 2005]{Zienkiewicz}
 Zienkiewicz, O.~C. and Taylor, R.~L. (2005).

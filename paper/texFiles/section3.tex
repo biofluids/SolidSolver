@@ -10,14 +10,14 @@ The variational approach is the cornerstone for finite element methods. The most
 \begin{align}
 \delta{W_{int}} &= \delta{W_{ext}} \label{basic} \\
 \delta W_{int}(\bold{u}, \delta\bold{u}) &= \int_\Omega \boldsymbol\sigma : \delta\bold{e}dV = \int_{\Omega_{0}}\bold{S} : \delta\bold{E}dV \label{Wint} \\
-\delta W_{ext}(\bold{u}, \delta\bold{u}) &= \int_\Omega\bold{b}\cdot\delta\bold{u}dV +  \int_{\partial\Omega}\overline{\bold{t}}\cdot\delta{\bold{u}}dS = \int_\Omega\bold{B}\cdot\delta\bold{u}dV +  \int_{\partial{\Omega_0}}\overline{\bold{T}}\cdot\delta{\bold{u}}dS \label{Wext1}
+\delta W_{ext}(\bold{u}, \delta\bold{u}) &= \int_\Omega\bold{b}\cdot\delta\bold{u}dV +  \int_{\partial\Omega}\overline{\bold{t}}\cdot\delta{\bold{u}}dS = \int_{\Omega_0}\bold{B}\cdot\delta\bold{u}dV +  \int_{\partial{\Omega_0}}\overline{\bold{T}}\cdot\delta{\bold{u}}dS \label{Wext1}
 \end{align}
 The internal work is done by Cauchy stress $\boldsymbol\sigma$ along the virtual Euler-Almansi strain $\delta\bold{e}$ about region $\Omega$ and the external work is done by the body force $\bold{b}$ and the surface traction $\overline{\bold{t}}$, along the virtual displacement $\delta{\bold{u}}$ about region $\Omega$ and its boundary surface $\partial\Omega$ respectively. They are assumed be mapped to the reference configuration. 
 
 If the external loading is given as fixed traction in reference configuration, the virtual external work is constant. An example for this type of loading is a tension test where the external force with respect to reference configuration is given as a constant. Another type of loading, which is more frequently encountered in biomechanics is the fixed pressure loading.
-In this case, the pressure on the current boundary surface is constant, i.e. $\overline{\bold{t}} = \boldsymbol{\sigma{n}} = p\bold{n}$ where $p$ is a given constant, $\bold{n}$ is the unit normal vector of the current surface. The external virtual work done by the constant pressure $p$ along the virtual displacement $\delta{\bold{u}}$ is defined by
+In this case, the pressure on the current boundary surface is constant, i.e. $\overline{\bold{t}} = \boldsymbol{\sigma{n}} = p_0\bold{n}$ where $p_0$ is a given constant, $\bold{n}$ is the unit normal vector of the current surface. The external virtual work done by the constant pressure $p_0$ along the virtual displacement $\delta{\bold{u}}$ is defined by
 \begin{align} 
-\delta{W_{ext}}(\bold{u}, \delta{\bold{u}}) &= p\int_{\partial\Omega} \bold{n}\cdot\delta{\bold{u}}dS \label{Wext2}
+\delta{W_{ext}}(\bold{u}, \delta{\bold{u}}) &= p_0\int_{\partial\Omega} \bold{n}\cdot\delta{\bold{u}}dS \label{Wext2}
 \end{align}
 \end{subequations}
 
@@ -25,14 +25,14 @@ In this case, the pressure on the current boundary surface is constant, i.e. $\o
 
 %
 \subsection{Principle of Stationary Potential Energy}
-Assuming the mechanical system is conservative, then there exists an energy functional $\Pi$ for both the stresses and the loadings whose sum is constant. In the displacement-based formulation, $\Pi$ is a function of $\bold{u}$ only, and it leads to the same equations as the virtual work balance. While in the displacement/pressure mixed formulation, $\Pi$ is a function of both $\bold{u}$ and $p$. It treats pressure as an independent variable and has advantages of avoiding locking and ameliorate the ill-condition of the stiffness matrix in certain situation.
+Assuming the mechanical system is conservative, then there exists an energy functional $\Pi$ for both the stresses and the loadings whose sum is constant. In the displacement-based formulation, $\Pi$ is a function of displacement $\bold{u}$ only, and it leads to the same equations as the virtual work balance. While in the displacement/pressure mixed formulation, $\Pi$ is a function of both displacement $\bold{u}$ and pressure $p$. It treats pressure as an independent variable and has advantages of avoiding locking and ameliorate the ill-condition of the stiffness matrix in certain situation.
 
-In displacement-based formulation, the potential energy is expressed as
+In displacement-based formulation, the potential energy is expressed as:
 \begin{subequations}
 \begin{align}
 \Pi(\bold{u}) &= \Pi_{int}(\bold{u}) + \Pi_{ext}(\bold{u}) \\
 \Pi_{int}(\bold{u}) &= \int_{\Omega_{0}}\Psi(\bold{F}(\bold{u}))dV  \label{pint} \\
-\Pi_{ext}(\bold{u}) &=  - \int_\Omega\bold{B}\cdot\bold{u}dV -  \int_{\partial{\Omega_0}}\overline{\bold{T}}\cdot{\bold{u}}dS
+\Pi_{ext}(\bold{u}) &=  - \int_{\Omega_0}\bold{B}\cdot\bold{u}dV -  \int_{\partial{\Omega_0}}\overline{\bold{T}}\cdot{\bold{u}}dS
 \label{pext} 
 \end{align}
 \end{subequations}
@@ -45,8 +45,8 @@ In other words, we require the first variation of the total energy potential $\d
 \begin{equation} \label{potential}
 \delta\Pi(\bold{u}, \delta\bold{u}) =\delta\Pi_{int}(\bold{u}) + \delta\Pi_{ext}(\bold{u}) = 0
 \end{equation}
-Here we adopt the convention in Holzapfel using $D_{\Delta{x}}f(x, y, \textit{etc.})$ to represent the directional derivative of $f$ as a function of $(x, y, \textit{etc.})$ along the direction of $\Delta{x}$ where $x$, $y$, \textit{etc.} can be a scalar or a tensor of any other order. The directional derivative $D_{\Delta{x}}f(x, y, \textit{etc.})$ is equivalent to the first variation of functional $f$ with respect to $x$.
-Equation \ref{equilibrium} or \ref{potential} is the equation we want to solve in the displacement-based formulation. It is easy to prove the equivalence between the principle of directional derivative of the potential energy and the virtual work
+Here we adopt the convention in \cite{Holzapfel} using $D_{\Delta{x}}f(x, y, \textit{etc.})$ to represent the directional derivative of $f$ as a function of $x, y, \textit{etc.}$ along the direction of $\Delta{x}$ where $x$, $y$, \textit{etc.} can be a scalar or a tensor of any other order. The directional derivative $D_{\Delta{x}}f(x, y, \textit{etc.})$ is equivalent to the first variation of functional $f$ with respect to $x$.
+Equation \ref{equilibrium} or \ref{potential} is the equation we want to solve in the displacement-based formulation. It is easy to prove the equivalence between the principle of directional derivative of the potential energy and the virtual work:
 
 \begin{equation}
 D_{\delta\bold{u}}\Pi_{int}(\bold{u}) = \delta W_{int}(\bold{u}, \delta\bold{u}) \quad
@@ -57,7 +57,7 @@ In the mixed formulation, we have two independent variables, $\bold{u}$ and $p$.
 \begin{equation} \label{target}
 D_{\delta\bold{u}}\Pi(\bold{u}, p) = 0 \quad D_{\delta{p}}\Pi(\bold{u}, p) = 0
 \end{equation}
-To summarize, in displacement-based formulation, our goal is to find an equilibrium state for total potential energy with respect to $\bold{u}$; in mixed formulation, we need to find an equilibrium state with respect to both $\bold{u}$ and $p$. To solve these equations, we have to linearize them first. That is, finding the second variation of the potential energy.
+To summarize, in displacement-based formulation, our goal is to find an equilibrium state for total potential energy with respect to $\bold{u}$; in mixed formulation, we need to find an equilibrium state with respect to both $\bold{u}$ and $p$. To solve these equations, we have to linearize them first. That is, to find the second variation of the potential energy.
 
 
 %

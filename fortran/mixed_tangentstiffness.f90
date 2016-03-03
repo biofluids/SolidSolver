@@ -158,7 +158,6 @@ contains
 				end do
 			end do
 			tangent_internal(ned*nn+ele,ned*nn+ele) = tangent_internal(ned*nn+ele,ned*nn+ele) + kint(ned*nen+1,ned*nen+1)
-		
 		end do
 		
 		deallocate(xilist)

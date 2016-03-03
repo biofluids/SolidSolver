@@ -25,12 +25,12 @@ program solidsolver
 	call system_clock(ct1)
 	call timestamp()
 	time_elapsed = dble(ct1-ct)/dble(ct_rate)
-	if (time_elapsed < 3600) then
-		! print result in minute
+	if (time_elapsed < 60) then
+		write(*,'("time elapsed:", f12.2, 3x, "seconds")'), time_elapsed
+	else if
 		time_elapsed = time_elapsed/60
 		write(*,'("time elapsed:", f12.2, 3x, "minutes")'), time_elapsed
 	else 
-		! print result in hour
 		time_elapsed = time_elapsed/3600
 		write(*,'("time elapsed:", f12.2, 3x, "hours")'), time_elapsed
 	end if
@@ -117,16 +117,6 @@ subroutine statics(filepath)
 				A(row,row) = A(row,row) + penalty*der_constraint(i,row)*der_constraint(i,row)
 				R(row) = R(row) + penalty*der_constraint(i,row)*constraint(i)
 			end do
-			! Apply the bc with old method
-			!do i = 1, size(bc1, 2)
-			!	row = ned*(int(bc1(1, i))-1) + int(bc1(2, i))
-			!	do col = 1, ned*nn + nel
-			!		A(row, col) = 0.
-			!		A(col, row) = 0.
-			!	end do
-			!	A(row, row) = 1.
-			!	R(row) = w(row) - bc1(3,i)
-			!end do
 			! Solve
 			!call ma41ds(nn*ned+nel,A,-R,dw)
 			call ma57ds(nn*ned+nel,A,-R,dw)

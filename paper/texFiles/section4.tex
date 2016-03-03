@@ -1,13 +1,9 @@
-$2\beta_M$
-
-$2\beta_A$
-
-\section{Tests}
+\section{Numerical Experiments}
 In this section, we present two sets of test cases to validate the results we obtained with the formulations we derived. The first case is the biaxial tension test which is often used to calibrate material constants. For isotropic materials, the analytical solution is easy to find if we assume the material is incompressible. The second case is the expansion of a vessel, which is a very representative application in the field of biomechanics.  
 
 \subsection{Biaxial Tension Test}
 \label{biaxial_tension_test}
-In this test, we examine $3$ isotropic models followed by $1$ anisotropic model. Consider a long bar loaded equally in two directions with fixed tractions. The section of the bar is a $1$ $m^2$-square. As shown in Figure \ref{fig:biaxial_schematic}, the bottom surface is fixed in the $x$-direction; the left surface is fixed in the $z$-direction and the back surface is fixed in the $y$-direction. External tractions are applied to the front and top surfaces. The stretch $\lambda$ is defined as the ratio between the deformed length to the original length, for isotropic incompressible material, the stress is expressed as:
+In this test, we examine $3$ isotropic models and $1$ anisotropic model. Consider a long bar loaded equally in two directions with fixed tractions. The section of the bar is a $1$ $m^2$-square. As shown in Figure \ref{fig:biaxial_schematic}, the bottom surface is fixed in the $x$-direction; the left surface is fixed in the $z$-direction and the back surface is fixed in the $y$-direction. External tractions are applied to the front and top surfaces. The stretch $\lambda$ is defined as the ratio between the deformed length to the original length, for isotropic incompressible material, the stress is expressed as:
 \begin{equation}
 S_{11} = S_{22} = 2(1 - {\lambda}^{-6})(\frac{\partial\Psi_{iso}}{\partial\bar{I}_1} + {\lambda}^2\frac{\partial\Psi_{iso}}{\partial\bar{I}_2}), \quad S_{33} = 0
 \end{equation}
@@ -38,7 +34,24 @@ P = \lambda S = 2(\lambda - {\lambda}^{-5})[c_1 + 2c_2(2{\lambda}^2 + {\lambda}^
 \label{fig:biaxial_schematic}
 \end{figure}
 
-The material constants used in these models are curve-fitted from the standard ASTM412 tensile test results of the rubber used in the transmission mounts \cite{Sharma}. In Neo-Hookean model, $\mu_1 = 0.6548$ MPa; in Mooney-Rivlin model, $\mu_1 = 0.595522$ MPa, $\mu_2 = 0.050381$ MPa; in Yeoh model, $c_1 = 0.358756$ MPa, $c_2 = - 0.0508009$ MPa, $c_3 = 0.0142132$ MPa. The Poisson's ratios for all the models are over $\nu = 0.49999$, close enough to incompressibility.
+Table \ref{parameters} shows the material constants used in these models, which are curve-fitted from the standard ASTM412 tensile test results of the rubber used in the transmission mounts \cite{Sharma}. The Poisson's ratios for all the models are over $\nu = 0.49999$, close enough to incompressibility.
+
+\begin{table}
+\centering
+\caption{Material Parameters}
+\begin{tabular} { l  l  l }
+	\hline
+	Neo-Hookean & Mooney-Rivlin & Yeoh \\
+	\hline
+	$\mu_1 = 0.595522$ MPa & $\mu_1 = 0.595522$ MPa & $c_1 = 0.358756$ MPa \\
+	& $\mu_2 = 0.050381$ MPa & $c_2 = - 0.0508009$ MPa \\
+	& & $c_3 = 0.0142132$ MPa \\
+	\hline
+	For all models, $\kappa = 1 \times 10^5 $ MPa \\
+	\hline
+\end{tabular}
+\label{parameters}
+\end{table}
 
 Figure \ref{fig:biaxial1} shows the results of the theoretical calculations and numerical computations for all $3$ models for $\lambda$ in the range of $1$ to $1.8$. Perfect agreement is achieved. As expected, in the small strain range, all these models have similar linear performance. Also, it can be seen that $\mu_2$ in Mooney-Rivlin model acts as a modification to $\mu_1$ in Neo-Hookean model which increases the stiffness. In large strain range, the stiffness of Yeoh model grows quickly, becoming significantly larger than the others due to the inclusion of the higher order terms.
 
@@ -216,7 +229,7 @@ As the last case, we use HGO model to simulate the expansion of the carotid arte
 \centering
 \caption{The Configuration of the Artery Model}
 \label{table:artery}
-\begin{tabular}{  p{2.0cm}  p{1.5cm}  p{1.5cm}  p{1.5cm}  p{1.5cm}  p{2.0cm}  p{1.5cm} }
+\begin{tabular}{ l l l l l l l}
 \hline
 & $\mu_1$/KPa & $k_1$/KPa & $k_2$/- & $\kappa$/KPa & $r$/m & $\beta/^\circ$ \\
  \hline
