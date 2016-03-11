@@ -10,7 +10,7 @@ contains
 		
 		implicit none
 		
-		real(8), dimension(nn*ned,nn*ned), intent(out) :: M
+		real(8), dimension(nn*ned+nel,nn*ned+nel), intent(out) :: M
 		real(8), dimension(nen*ned,nen*ned) :: mele
 		real(8), dimension(nsd,nen) :: elecoord
 		real(8), dimension(ned,nen) :: eledof
