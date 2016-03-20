@@ -3,13 +3,23 @@ In this section, we present two sets of test cases to validate the results we ob
 
 \subsection{Biaxial Tension Test}
 \label{biaxial_tension_test}
-In this test, we examine $3$ isotropic models and $1$ anisotropic model. Consider a long bar loaded equally in two directions with fixed tractions. The section of the bar is a $1$ $m^2$-square. As shown in Figure \ref{fig:biaxial_schematic}, the bottom surface is fixed in the $x$-direction; the left surface is fixed in the $z$-direction and the back surface is fixed in the $y$-direction. External tractions are applied to the front and top surfaces. The stretch $\lambda$ is defined as the ratio between the deformed length to the original length, for isotropic incompressible material, the stress is expressed as:
-\begin{equation}
+In this test, we examine $3$ isotropic models and $1$ anisotropic model. Consider a long bar loaded equally in two directions with fixed tractions. The section of the bar is a $1$ $m^2$-square. As shown in Figure \ref{fig:biaxial_schematic}, the bottom surface is fixed in the $x$-direction; the left surface is fixed in the $z$-direction and the back surface is fixed in the $y$-direction. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.8\textwidth]{./figures/biaxial_schematic.png}
+\caption{Schematic Diagram of Biaxial Tension Test}
+\label{fig:biaxial_schematic}
+\end{figure}
+
+
+External tractions are applied to the front and top surfaces. The stretch $\lambda$ is defined as the ratio between the deformed length to the original length, for isotropic incompressible material, the theoretical solution of the diagonal components of the PK2 stress is expressed as:
+\begin{equation} \label{biaxialPK2}
 S_{11} = S_{22} = 2(1 - {\lambda}^{-6})(\frac{\partial\Psi_{iso}}{\partial\bar{I}_1} + {\lambda}^2\frac{\partial\Psi_{iso}}{\partial\bar{I}_2}), \quad S_{33} = 0
 \end{equation}
-where $S_{11}$, $S_{22}$, $S_{33}$ are the diagonal components of the PK2 stress, all the off-diagonal components are $0$.
+All the off-diagonal components are $0$.
 
-Since the nonzero components of PK2 stress are the same, we denote them as $S$. For Mooney-Rivlin model, plug in Equation \ref{iso1}, we have
+Since the nonzero components of PK2 stress are the same, we denote them as $S$. For Mooney-Rivlin model, plug Equation \ref{iso1} into \ref{biaxialPK2}, we have
 
 \begin{equation}
 S = (1 - {\lambda}^{-6})(\mu_1 + \mu_2{\lambda}^2)
@@ -27,16 +37,11 @@ Similarly, for Yeoh model
 P = \lambda S = 2(\lambda - {\lambda}^{-5})[c_1 + 2c_2(2{\lambda}^2 + {\lambda}^{-4} - 3) + 3c_3(2{\lambda}^2 + {\lambda}^{-4} - 3)^2]
 \end{equation}
 
-\begin{figure}[h!]
-\centering
-\includegraphics[width=.8\textwidth]{./figures/biaxial_schematic.png}
-\caption{Schematic Diagram of Biaxial Tension Test}
-\label{fig:biaxial_schematic}
-\end{figure}
 
-Table \ref{parameters} shows the material constants used in these models, which are curve-fitted from the standard ASTM412 tensile test results of the rubber used in the transmission mounts \cite{Sharma}. The Poisson's ratios for all the models are over $\nu = 0.49999$, close enough to incompressibility.
 
-\begin{table}
+Table \ref{parameters} lists the material constants used in these models, which are curve-fitted from the standard ASTM412 tensile test results of the rubber used in the transmission mounts \cite{Sharma}. The Poisson's ratios for all the models are set to $\nu = 0.49999$, close enough to incompressibility.
+
+\begin{table}[H]
 \centering
 \caption{Material Parameters}
 \begin{tabular} { l  l  l }
@@ -56,7 +61,7 @@ Table \ref{parameters} shows the material constants used in these models, which 
 Figure \ref{fig:biaxial1} shows the results of the theoretical calculations and numerical computations for all $3$ models for $\lambda$ in the range of $1$ to $1.8$. Perfect agreement is achieved. As expected, in the small strain range, all these models have similar linear performance. Also, it can be seen that $\mu_2$ in Mooney-Rivlin model acts as a modification to $\mu_1$ in Neo-Hookean model which increases the stiffness. In large strain range, the stiffness of Yeoh model grows quickly, becoming significantly larger than the others due to the inclusion of the higher order terms.
 
 
-\begin{figure}[t!p]
+\begin{figure}[H]
 	\centering
 	\begin{subfigure}[b]{0.45\textwidth}
 		\centering
@@ -70,29 +75,27 @@ Figure \ref{fig:biaxial1} shows the results of the theoretical calculations and 
 		\caption{Biaxial Tension Test for HGO Model}
 		\label{fig:biaxial2}
 	\end{subfigure}
+	\caption{the Relationship of the Nominal Stress to the Stretch in Biaxial Tension Test}
 \end{figure}
 
 
-To demonstrate the anisotropy of HGO model, we compare the stretches in two directions in the biaxial tension test. We use the material parameters calibrated from the media layer of the artery in \cite{Holzapfel2} but only one direction is strengthened. That is, both two families of fibers are arranged in the same direction while the tractions are still applied in two directions. The material parameters are $\mu_1 = 3$ KPa, $k_1 = 2.3632$ KPa, $k_2 = 0.8393$ and $\kappa = 1 \times 10^5$ KPa. We vary the direction of the fibers measured by the angle from the $x$ direction denoted as $\alpha$, from $0^\circ$ to $90^\circ$. 
+To demonstrate the anisotropy of HGO model, we compare the stretches in two directions in the biaxial tension test. We use the material parameters calibrated from the media layer of the artery in \cite{Holzapfel2} but only one direction is strengthened. That is, both two families of fibers are arranged in the same direction while the tractions are still applied in two directions. The material parameters are $\mu_1 = 3$ KPa, $k_1 = 2.3632$ KPa, $k_2 = 0.8393$ and $\kappa = 1 \times 10^5$ KPa. We vary the direction of the fibers measured by the angle from the $x$ direction denoted as $\alpha$, from $0^\circ$ to $90^\circ$ to observe the trends qualitatively as there exists no theoretical solution to it. 
 
-The stretch ratio $\lambda$ is defined in Equation \ref{stretchratio}, and Figure \ref{fig:biaxial2} shows the nominal stress as a function of stretch ratio. Just as what we expect, the stretch ratio at $\alpha = 0^\circ$ is the same as $\alpha = 90^\circ$, and same for $\alpha = 30^\circ$ and $\alpha = 60^\circ$. 
-$\lambda_y$ is greater than $\lambda_x$ when $0^\circ < \alpha < 45^\circ$ since the $x$ direction is strengthened more. As the angle gets larger, $\lambda_x$ becomes greater too. When $\alpha = 45^\circ$ two directions become symmetric again.
-
-\begin{equation}
-\label{stretchratio}
-\lambda = 
+The stretch ratio $\lambda$ is defined as $\lambda = 
 \begin{cases}
 	\lambda_y/\lambda_x, & \text{$\alpha = 0^\circ$, $30^\circ$ or $45^\circ$} \\
 	\lambda_x/\lambda_y, & \text{$\alpha = 60^\circ$ or $90^\circ$}
 \end{cases}
-\end{equation}
+$ 
+and Figure \ref{fig:biaxial2} shows the nominal stress, which is nothing but the traction applied to each surface, as a function of stretch ratio. Just as what we expect, the stretch ratio at $\alpha = 0^\circ$ is the same as $\alpha = 90^\circ$. These complementary angles of $\alpha$ yields the most asymmertic results since the stretch ratio is the largest for a give nominal stress. Similarly for $\alpha = 30^\circ$ and $\alpha = 60^\circ$. 
+$\lambda_y$ is greater than $\lambda_x$ when $0^\circ < \alpha < 45^\circ$ since the $x$ direction is strengthened more. As the angle gets larger, $\lambda_x$ becomes greater too. When $\alpha = 45^\circ$ two directions become symmetric and the stretch ratio remains to be $1$.
  
 
 \subsection{Cylindrical Pressure Vessel}
 \label{pressure_vessel}
 In the second test, we consider a vessel under lumen pressure, which is a typical application in biomechanics. The vessel has an internal radius of $R_i = 7$ m and an external radius of $R_o = 18.625$ m. Only a quarter of vessel is considered with plain strain assumption as shown in Figure \ref{fig:vessel_schematic}. $21$ nodes are uniformly distributed in the radial direction. The material parameters we used is the same as in Section \ref{biaxial_tension_test} except that in the HGO model, two families of fibers are arranged in the $\theta-z$ plane with constant angles to the circumferential direction of $|\beta| = 50^\circ$, as shown in Figure \ref{fig:vessel_schematic2}.
 
-\begin{figure}[t!p]
+\begin{figure}[H]
 	\centering
 	\begin{subfigure}[b]{0.4\textwidth}
 		\centering
@@ -122,9 +125,9 @@ p &= - p_i - \mu_2 - (\mu_1 + \mu_2)(log\frac{r}{R_i} + \frac{b}{2}(r^2 - {R_i}^
 \end{subequations}
 where $R$ and $r$ are the radial coordinate before and after deformation, $p$ is the hydrostatic pressure, $u_r$ is the radial displacement, and $\sigma_{\theta\theta}$, $\sigma_{rr}$ and $\sigma_{zz}$ are the hoop, radial and axial stresses respectively. $b$ is a constant determined by the internal pressure $p_i$, and $C$ is an arbitrary constant since the material is incompressible. 
 
-Fig \ref{fig:mooney-rivlin1} shows the stress components and the radial displacement along radius direction under the pressure of $p_i = 200$ KPa. Good agreement is achieved on all the components. Furthermore, we pick the node at the midpoint in the radial direction ($R = 12.8125$ m) and study its deformation under different internal pressures. As shown in Fig \ref{fig:mooney-rivlin2}, the computational result and analytical solution agree perfectly with each other. 
+Figure \ref{fig:mooney-rivlin1} shows the stress components and the radial displacement along the radial direction under the pressure of $p_i = 200$ KPa. Good agreement is achieved on all the components. As expected, point on the outer surface undergoes less radial displacement than the inner surface in order to keep the area of cross-section unchanged. All the components of the Cauchy stress exhibit nonuniform distribution. The absolute value of hoop stress and radial stress on the inner surface are more significant than the outer surface. This is not altered by the value of the material constants or the pressure. But by setting different material constants along the thickness one can obtain more uniform stress distributions \cite{Batra}. Note that the axial stress is usually hard to validate and seldom shown in literature. Furthermore, we pick the node at the midpoint in the radial direction ($R = 12.8125$ m) and study its deformation under different internal pressures. As shown in Fig \ref{fig:mooney-rivlin2}, the computational result and analytical solution agree perfectly with each other. The variation of the radial displacement and the stress are nonlinear in the sense that the absolute value increases faster at greater pressure. This is similar to what we observed in Figure \ref{fig:biaxial1}.
 
-\begin{figure}[t!p]
+\begin{figure}[H]
 	\begin{subfigure}[b]{0.5\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{./figures/ur_200.png}
@@ -154,7 +157,7 @@ Fig \ref{fig:mooney-rivlin1} shows the stress components and the radial displace
 	\label{fig:mooney-rivlin1}
 \end{figure}
 
-\begin{figure}[t!p]
+\begin{figure}[H]
 	\begin{subfigure}[b]{0.5\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{./figures/ur.png}
@@ -184,9 +187,9 @@ Fig \ref{fig:mooney-rivlin1} shows the stress components and the radial displace
 	\label{fig:mooney-rivlin2}
 \end{figure}
 
-Now that the validity of our computation is confirmed. We then compare the results of Neo-Hookean, Mooney-Rivlin, Yeoh and HGO model. Figure \ref{fig:models} shows the results of these models under an inner pressure of $p_i = 350$ KPa. As expected, the isotropic models have similar trends, and the differences decrease from the inner surface to the outer surface. It means that under a moderate pressure, different isotropic models do not make too much difference. However, the two families of fibers in HGO model causes significant differences even though the ground material is modeled with Neo-Hookean with identical parameters. Due to the strengthening of the fibers, the radial displacement drops significantly. The trend of the axial stress is completely opposite to the isotropic models, i.e., the maximum axial stress appears at the inner radius. 
+Now that the validity of our computation is confirmed. We then compare the results of Neo-Hookean, Mooney-Rivlin, Yeoh and HGO model. Figure \ref{fig:models} shows the results of these models under an inner pressure of $p_i = 350$ KPa. The isotropic models have similar trends, and the discrepancies among different models decrease from the inner surface to the outer surface. It implies that under a moderate pressure, different isotropic models do not make too much difference. Especially the performance of the Yeoh model is very close to the Mooney-Rivlin model. This is because the strain has to be large enough for Yeoh model to demonstrate its particular characteristics. Considering in this case the maximum strain is already significant, we can expect Yeoh model and Mooney-Rivlin model will behave similarly in modeling vessel expansion. However, the two families of fibers in HGO model causes significant differences even though the ground material is modeled with Neo-Hookean with identical parameters. Due to the strengthening of the fibers, the radial displacement drops significantly. The change in radial stress is small because the fibers are arranged in the $\theta-z$ plane. The variation of the axial stress is much more significant compared to the isotropic models and the maximum axial stress appears at the inner radius which is the opposite to them. To resolve the unrealistic variation we must consider the residual stress \cite{Fung, Fung2}.
 
-\begin{figure}[t!p]
+\begin{figure}[H]
 	\begin{subfigure}[b]{0.5\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{./figures/ur_models.png}
@@ -218,14 +221,14 @@ Now that the validity of our computation is confirmed. We then compare the resul
 
 As the last case, we use HGO model to simulate the expansion of the carotid artery of a healthy rabbit. The real artery tissues consist three layers: intima, media, and adventitia. In this case we only consider media and adventitia because the intima is made up of one layer of endothelial cells and is not of our mechanical interest. Therefore the artery is modeled as a cylinder with $2$ layers. The geometry of the artery is shown in Figure \ref{fig:vessel_schematic3}. The fibers are still arranged in the $\theta-z$ plane, being symmetric about the $\theta$-direction. The angles between the fiber directions and the circumferential direction are denoted as $\pm\beta$. The values of the material parameters differ in the two layers, determined by Holzapfel \cite{Holzapfel2} , as shown in Table \ref{table:artery}. 
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \includegraphics[width=.3\textwidth]{./figures/vessel_schematic3.png}
 \caption{Schematic Diagram for the Artery Model}
 \label{fig:vessel_schematic3}
 \end{figure}
 
-\begin{table}
+\begin{table}[H]
 \centering
 \caption{The Configuration of the Artery Model}
 \label{table:artery}
@@ -241,7 +244,7 @@ As the last case, we use HGO model to simulate the expansion of the carotid arte
 
 Figure \ref{fig:artery} shows the computational results. Because the media is much stiffer than the adventitia, the stress gradient is significant in the media while negligible in the adventitia. 
 
-\begin{figure}[t!p]
+\begin{figure}[H]
 	\begin{subfigure}[b]{0.5\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{./figures/artery_ur.png}

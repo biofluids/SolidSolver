@@ -1,9 +1,21 @@
 \begin{thebibliography}{}
 
+\bibitem[Abaqus, 2014]{Abaqus}
+Abaqus (2014).
+\newblock {\em Abaqus Theory Manual}.
+\newblock Dassault Syst{\`e}mes Simulia Corporation, Providence, RI, USA, 6.14
+  edition.
+
 \bibitem[Bathe, 2014]{Bathe}
 Bathe, K.-J. (2014).
 \newblock {\em Finite element procedures}.
 \newblock Klaus-J{\"u}rgen Bathe, 2 edition.
+
+\bibitem[Batra, 1980]{Batra}
+Batra, R.~C. (1980).
+\newblock Finite plane strain deformations of rubberlike materials.
+\newblock {\em International Journal for Numerical Methods in Engineering},
+  15:145--160.
 
 \bibitem[Bel-Brunon et~al., 2014]{Wall}
 Bel-Brunon, A., Kehl, S., Martin, C., Uhlig, S., and Wall, W. (2014).
@@ -37,6 +49,16 @@ Bower, A.~F. (2009).
 \newblock {\em Applied mechanics of solids}.
 \newblock CRC Press, 1 edition.
 
+\bibitem[Chuong and Fung, 1983]{Fung}
+Chuong, C. and Fung, Y. (1983).
+\newblock Three-dimensional stress distribution in arteries.
+\newblock {\em Journal of Biomechanical Engineering}, 105:268--274.
+
+\bibitem[Chuong and Fung, 1986]{Fung2}
+Chuong, C. and Fung, Y. (1986).
+\newblock On residual stress in arteries.
+\newblock {\em Journal of Biomechanical Engineering}, 108:189--192.
+
 \bibitem[de~Borst, 1988]{Borst}
 de~Borst, R. (1988).
 \newblock Modelling and analysis of rubberlike materials.
@@ -54,6 +76,12 @@ Fu, Y., Chui, C., and Teo, C. (2013).
   probabilistic and inverse finite element methods.
 \newblock {\em Journal of the Mechanical Behavior of Biomechanical Materials},
   20:105--112.
+
+\bibitem[Gajewski et~al., 2015]{Gajewski}
+Gajewski, M., Szczerba, R., and Jemiolo, S. (2015).
+\newblock Modelling of elastomeric bearings with application of yeoh
+  hyperelastic material model.
+\newblock {\em Procedia Engineering}, 111:220--227.
 
 \bibitem[Green and Zerna, 1968]{Green}
 Green, A.~E. and Zerna, W. (1968).
@@ -172,13 +200,8 @@ Saraf, H., Ramesh, K., Lennon, A., Merkle, A., and Roberts, J. (2007).
 \bibitem[Sharma, 2003]{Sharma}
 Sharma, S. (2003).
 \newblock {\em Critical comparison of popular hyper-elastic material models in
-  design of anti-vibration mounts for automotive industry through FEA Critical
-  comparison of popular hyper-elastic material models in design of
-  anti-vibration mounts for automotive industry through FEA Critical comparison
-  of popular hyper-elastic material models in design of anti-vibration mounts
-  for automotive industry through FEA Critical comparison of popular
-  hyper-elastic material models in design of anti-vibration mounts for
-  automotive industry through FEA}, volume~3, pages 162--168.
+  design of anti-vibration mounts for automotive industry through FEA},
+  volume~3, pages 162--168.
 \newblock Swets and Zeitlinger.
 
 \bibitem[Steinmann et~al., 2012]{Steinmann}
@@ -186,6 +209,12 @@ Steinmann, P., Hossain, M., and Possart, G. (2012).
 \newblock Hyperelastic models for rubber-like materials: consistent tangent
   operators and suitability for treloar's data.
 \newblock {\em Archive of Applied Mechanics}, 82:1183--1217.
+
+\bibitem[Suchocki, 2011]{Suchocki}
+Suchocki, C. (2011).
+\newblock A finite element implementation of knowles stroed-energy function:
+  theory, coding and applications.
+\newblock {\em the Archive of Mechanical Engineering}, LVIII(3):319--346.
 
 \bibitem[Umale et~al., 2013]{Willinger}
 Umale, S., Deck, C., Bourdet, N., Dhumane, P., Soler, L., Marescaux, J., and
