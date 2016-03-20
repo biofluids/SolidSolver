@@ -58,7 +58,7 @@ Table \ref{parameters} lists the material constants used in these models, which 
 \label{parameters}
 \end{table}
 
-Figure \ref{fig:biaxial1} shows the results of the theoretical calculations and numerical computations for all $3$ models for $\lambda$ in the range of $1$ to $1.8$. Perfect agreement is achieved. As expected, in the small strain range, all these models have similar linear performance. Also, it can be seen that $\mu_2$ in Mooney-Rivlin model acts as a modification to $\mu_1$ in Neo-Hookean model which increases the stiffness. In large strain range, the stiffness of Yeoh model grows quickly, becoming significantly larger than the others due to the inclusion of the higher order terms.
+Figure \ref{fig:biaxial1} shows the results of the theoretical calculations and numerical computations for all $3$ models for $\lambda$ in the range of $1$ to $1.8$. Since the traction is fixed in the original configuration, the nominal stress equals the traction. Perfect agreement is achieved at every discrete data point. As expected, in the small strain range, all these models have similar linear performance. Also, it can be seen that $\mu_2$ in Mooney-Rivlin model acts as a modification to $\mu_1$ in Neo-Hookean model which increases the stiffness. In large strain range, the stiffness of Yeoh model grows quickly, becoming significantly larger than the others due to the inclusion of the higher order terms.
 
 
 \begin{figure}[H]
@@ -91,7 +91,7 @@ and Figure \ref{fig:biaxial2} shows the nominal stress, which is nothing but the
 $\lambda_y$ is greater than $\lambda_x$ when $0^\circ < \alpha < 45^\circ$ since the $x$ direction is strengthened more. As the angle gets larger, $\lambda_x$ becomes greater too. When $\alpha = 45^\circ$ two directions become symmetric and the stretch ratio remains to be $1$.
  
 
-\subsection{Cylindrical Pressure Vessel}
+\subsection{Vessel Expansion}
 \label{pressure_vessel}
 In the second test, we consider a vessel under lumen pressure, which is a typical application in biomechanics. The vessel has an internal radius of $R_i = 7$ m and an external radius of $R_o = 18.625$ m. Only a quarter of vessel is considered with plain strain assumption as shown in Figure \ref{fig:vessel_schematic}. $21$ nodes are uniformly distributed in the radial direction. The material parameters we used is the same as in Section \ref{biaxial_tension_test} except that in the HGO model, two families of fibers are arranged in the $\theta-z$ plane with constant angles to the circumferential direction of $|\beta| = 50^\circ$, as shown in Figure \ref{fig:vessel_schematic2}.
 
@@ -100,7 +100,7 @@ In the second test, we consider a vessel under lumen pressure, which is a typica
 	\begin{subfigure}[b]{0.4\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{./figures/vessel_schematic.jpg}
-		\caption{Pressure Vessel}
+		\caption{Cross Section of the Vessel}
 		\label{fig:vessel_schematic}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.4\textwidth}
@@ -109,6 +109,7 @@ In the second test, we consider a vessel under lumen pressure, which is a typica
 		\caption{Fiber Alignments}
 		\label{fig:vessel_schematic2}
 	\end{subfigure}
+	\caption{Schematic Diagram of Vessel Expansion}
 \end{figure}
 
 As a benchmark, we model the vessel with Mooney-Rivlin model and compare the radial displacement, hoop stress, radial stress, and axial stress with the analytical solutions. The analytical solutions for incompressible material are found in \cite{Green} as follows: 
@@ -234,7 +235,7 @@ As the last case, we use HGO model to simulate the expansion of the carotid arte
 \label{table:artery}
 \begin{tabular}{ l l l l l l l}
 \hline
-& $\mu_1$/KPa & $k_1$/KPa & $k_2$/- & $\kappa$/KPa & $r$/m & $\beta/^\circ$ \\
+& $\mu_1$/KPa & $k_1$/KPa & $k_2$/- & $\kappa$/KPa & $r$/mm & $\beta/^\circ$ \\
  \hline
  Media &   $3.0$ & $2.3632$ & $0.8393$ & $10^5$ & $[0.71, 0.97)$ & $29.0$\\
  Adventitia & $0.3$ & $0.5629$ & $0.7112$ & $10^5$ & [0.97, 1.43] & $62.0$\\
@@ -242,7 +243,7 @@ As the last case, we use HGO model to simulate the expansion of the carotid arte
 \end{tabular}
 \end{table}
 
-Figure \ref{fig:artery} shows the computational results. Because the media is much stiffer than the adventitia, the stress gradient is significant in the media while negligible in the adventitia. 
+Figure \ref{fig:artery} shows the computational results. Because the media is much stiffer than the adventitia, the stress is significant in the media while negligible in the adventitia.
 
 \begin{figure}[H]
 	\begin{subfigure}[b]{0.5\textwidth}
@@ -273,8 +274,6 @@ Figure \ref{fig:artery} shows the computational results. Because the media is mu
 	\caption{Rabbit Carotid Artery under $10$ KPa}
 	\label{fig:artery}
 \end{figure}
-
-%As the last test case we compare HGO model to Neo-Hookean model. The parameters used in the HGO model is still the same as in Section \ref{biaxial_tension_test}, the geometry and mesh are the same as in previous cases. The pressure is $1.5$ KPa. To demonstrate the effect of the anisotropic part of the HGO model, we use the same $\mu_1$ and $\kappa$ in the Neo-Hookean model. This time, the two families of fibers are arranged in the $\theta-z$ plane with constant angles to the circumferential direction of $\pm 50^\circ$. From Figure \ref{fig:nh_hgo} we can see that overall the vessel is significantly strengthened as the radial displacement is much smaller. While the radial stress does not change much (similar to Yeoh model), the hoop stress is smaller but has a similar trend. However the axial stress changes dramatically. In Neo-Hookean model the inner surface has the maximum axial stress while in HGO model the outer surface has the maximum axial stress. But overall both hoop stress and axial stress are much smaller in the HGO model.
 
 
 

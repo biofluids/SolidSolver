@@ -219,15 +219,6 @@ subroutine dynamics(filepath)
 	end if
 	
 	F = Fext
-	do i = 1, size(bc1,2)
-		row = ned*(int(bc1(1,i))-1) + int(bc1(2,i))
-		do col = 1, nn*ned
-			M(row, col) = 0.
-			M(col, row) = 0.
-		end do
-		M(row, row) = 1.
-		F(row) = 0.
-	end do
 	call ma57ds(nn*ned+nel,M,F,an)
 	
 	do step = 1, nsteps
@@ -246,8 +237,8 @@ subroutine dynamics(filepath)
 				Fext = force_pressure(w)
 			end if
 			F = Fext - Fint - damp*vn1
-			A = tangent_internal(w)
 			R = matmul(M, an1) - F
+			A = tangent_internal(w)
 			! penalty
 			do i = 1, size(bc1,2)
 				row = ned*(int(bc1(1,i))-1) + int(bc1(2,i))

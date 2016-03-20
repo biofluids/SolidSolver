@@ -77,15 +77,21 @@ contains
 				end do
 			end do
 		else if (dAbs(materialprops(1)-5) < 1d-4) then ! HGO
-			! Material parameters are hard-coded
-			beta = 50*3.14159/180
+			if (intcoord(1)**2 + intcoord(2)**2 <= (0.97d-3)**2) then
+				beta = 29*3.14159/180
+				kk1 = 2.3632d3
+				kk2 = 0.8393
+				mu1 = 3000
+			else
+				beta = 62*3.14159/180
+				kk1 = 0.5620d3
+				kk2 = 0.7112
+				mu1 = 300
+			end if
+			K1 = materialprops(4)
 			R = sqrt((1+(tan(beta))**2)*((intcoord(1))**2 + (intcoord(2))**2))
-			!a0 = [0.,1.,0.]
-			!g0 = [0.,1.,0.]
 			a0 = [-intcoord(2)/R,intcoord(1)/R,tan(beta)/sqrt(1+(tan(beta))**2)]
 			g0 = [-intcoord(2)/R,intcoord(1)/R,-tan(beta)/sqrt(1+(tan(beta))**2)]
-			kk1 = 0.5158d6
-			kk2 = 0.9
 
 			C = matmul(transpose(F),F)
 			I4 = dot_product(a0,matmul(C,a0))
@@ -102,8 +108,7 @@ contains
 			! 2nd order derivative of psi w.r.t. I4/I6
 			der24 = kk1*(1+2*kk2*(I4-1.)**2)*exp(kk2*(I4-1.)**2)
 			der26 = kk1*(1+2*kk2*(I6-1.)**2)*exp(kk2*(I6-1.)**2)
-			mu1 = materialprops(2)
-			K1 = materialprops(4)
+			
 			do i=1,ned
 				do j=1,nsd
 					do k=1,ned
@@ -214,15 +219,21 @@ contains
 				end do
 			end do
 		else if (dAbs(materialprops(1)-5) < 1d-4) then ! HGO
-			! Material parameters are hard-coded
-			beta = 50*3.14159/180
+			if (intcoord(1)**2 + intcoord(2)**2 <= (0.97d-3)**2) then
+				beta = 29*3.14159/180
+				kk1 = 2.3632d3
+				kk2 = 0.8393
+				mu1 = 3000
+			else
+				beta = 62*3.14159/180
+				kk1 = 0.5620d3
+				kk2 = 0.7112
+				mu1 = 300
+			end if
+			K1 = materialprops(4)
 			R = sqrt((1+(tan(beta))**2)*((intcoord(1))**2 + (intcoord(2))**2))
-			!a0 = [0.,1.,0.]
-			!g0 = [0.,1.,0.]
 			a0 = [-intcoord(2)/R,intcoord(1)/R,tan(beta)/sqrt(1+(tan(beta))**2)]
 			g0 = [-intcoord(2)/R,intcoord(1)/R,-tan(beta)/sqrt(1+(tan(beta))**2)]
-			kk1 = 0.5158d6
-			kk2 = 0.9
 			
 			C = matmul(transpose(F),F)
 			I4 = dot_product(a0,matmul(C,a0))
@@ -234,8 +245,6 @@ contains
 			g = matmul(F,g0)/lambda
 			I6 = I6/Ja**(2/3.)
 			
-			mu1 = materialprops(2)
-			K1 = materialprops(4)
 			do i=1,ned
 				do j=1,nsd
 					Kirchhoffstress(i,j) = -1/3.*mu1*I1*eye(i,j) + mu1*Bbar(i,j) + Ja*pressure*eye(i,j);

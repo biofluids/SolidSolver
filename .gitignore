@@ -55,4 +55,5 @@ load.txt
 *.spl
 *.gz
 *.toc
+*.lot
 *.pdf
