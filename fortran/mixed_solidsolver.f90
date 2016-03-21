@@ -204,9 +204,6 @@ subroutine dynamics(filepath)
 	der_constraint = 0.
 	gamma = 0.5
 	beta = 0.25
-	nprint = 20
-	nsteps = 100
-	dt = 0.1
 	loadfactor = 0.
 	increment = firststep
 	step = 0
@@ -219,7 +216,8 @@ subroutine dynamics(filepath)
 	end if
 	
 	F = Fext
-	call ma57ds(nn*ned+nel,M,F,an)
+
+	call ma57ds(nn*ned,M(1:nn*ned,1:nn*ned),F(1:nn*ned),an(1:nn*ned))
 	
 	do step = 1, nsteps
 		w = un
