@@ -59,6 +59,12 @@ Chuong, C. and Fung, Y. (1986).
 \newblock On residual stress in arteries.
 \newblock {\em Journal of Biomechanical Engineering}, 108:189--192.
 
+\bibitem[COMSOL, 2012]{COMSOL}
+COMSOL (2012).
+\newblock {\em COMSOL Multiphysics User's Guide}.
+\newblock COMSOL Inc., 100 District Avenue 100 District Avenue, Burlington, MA
+  01803, USA, 4.3 edition.
+
 \bibitem[de~Borst, 1988]{Borst}
 de~Borst, R. (1988).
 \newblock Modelling and analysis of rubberlike materials.
@@ -123,6 +129,11 @@ Kaster, T., Sack, I., and Samani, A. (2011).
 \newblock Measurement of the hyperelastic properties of ex vivo brain tissue
   slices.
 \newblock {\em Journal of Biomechanics}, 44:1158--1163.
+
+\bibitem[Mass et~al., 2012]{FEBio}
+Mass, S.~A., Ellis, B.~J., Ateshian, G.~A., and Weiss, J.~A. (2012).
+\newblock Febio: Finite elements for biomechanics.
+\newblock {\em Journal of Biomechanical Engineering}, 134:1--10.
 
 \bibitem[Masson et~al., 2008]{Zidi2}
 Masson, I., Boutouyrie, P., Laurent, S., Humphrey, J.~D., and Zidi, M. (2008).
