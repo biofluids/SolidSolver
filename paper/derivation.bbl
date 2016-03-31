@@ -49,6 +49,13 @@ Bower, A.~F. (2009).
 \newblock {\em Applied mechanics of solids}.
 \newblock CRC Press, 1 edition.
 
+\bibitem[Cervera et~al., 2010]{Cervera}
+Cervera, M., Chiumenti, M., and Codina, R. (2010).
+\newblock Mixed stabilized finite element methods in nonlinear solid mechanics
+  part i: Formulation.
+\newblock {\em Computational Methods in Applied Mechanics and Engineering},
+  199:2559--2570.
+
 \bibitem[Chuong and Fung, 1983]{Fung}
 Chuong, C. and Fung, Y. (1983).
 \newblock Three-dimensional stress distribution in arteries.
@@ -111,6 +118,12 @@ Holzapfel, G.~A. and Gasser, T.~C. (2000).
 \newblock A new constitutive framework for arterial wall mechanics and a
   comparative study of material models.
 \newblock {\em Journal of Elasticity}, 61:1--48.
+
+\bibitem[Hu, 1954]{Hu}
+Hu, H. (1954).
+\newblock On some variational principles in the theory of elasticity and the
+  theory of plasticity.
+\newblock {\em Acta Physica Sinica}, 10(3):259--290.
 
 \bibitem[Karimi et~al., 2014]{Navidbakhsh}
 Karimi, A., Navidbakhsh, M., Alizadeh, M., and Shojaei, A. (2014).
@@ -214,6 +227,13 @@ Sharma, S. (2003).
   design of anti-vibration mounts for automotive industry through FEA},
   volume~3, pages 162--168.
 \newblock Swets and Zeitlinger.
+
+\bibitem[Simo and Rifai, 1990]{Rifai}
+Simo, J.~C. and Rifai, M.~S. (1990).
+\newblock A class of mixed assumed strain methods and the method of
+  incompatible modes.
+\newblock {\em International Journal for Numerical Methods in Engineering},
+  29:1595--1638.
 
 \bibitem[Steinmann et~al., 2012]{Steinmann}
 Steinmann, P., Hossain, M., and Possart, G. (2012).
