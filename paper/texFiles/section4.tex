@@ -1,5 +1,5 @@
 \section{Numerical Experiments}
-In this section, we present two sets of test cases to validate the results we obtained with the formulations we derived. The first case is the biaxial tension test which is often used to calibrate material constants. For isotropic materials, the analytical solution is easy to find if we assume the material is incompressible. The second case is the expansion of a vessel, which is a very representative application in the field of biomechanics.  
+In this section, we present three sets of test cases to validate the results we obtained with the formulations we derived. The first case is the biaxial tension test which is often used to calibrate material constants. For isotropic materials, the analytical solution is easy to find if we assume the material is incompressible. The second case is the expansion of a cylindrical pressure vessel. This case is more challenging, especially in the Cartesian coordinates system since the deformation varies both in the radial and the circumferential directions. It is widely used to validate the numerical results because the theoretical solution can be found for the Mooney-Rivlin model. The last case is more biomechanics-specific: the expansion of a real artery vessel of a rabbit. Reasonable results are obtained in all of these experiments, and agree with the theoretical solutions very well whenever they can be found.
 
 \subsection{Biaxial Tension Test}
 \label{biaxial_tension_test}
@@ -91,13 +91,13 @@ and Figure \ref{fig:biaxial2} shows the nominal stress, which is nothing but the
 $\lambda_y$ is greater than $\lambda_x$ when $0^\circ < \alpha < 45^\circ$ since the $x$ direction is strengthened more. As the angle gets larger, $\lambda_x$ becomes greater too. When $\alpha = 45^\circ$ two directions become symmetric and the stretch ratio remains to be $1$.
  
 
-\subsection{Vessel Expansion}
+\subsection{Cylindrical Pressure Vessel}
 \label{pressure_vessel}
-In the second test, we consider a vessel under lumen pressure, which is a typical application in biomechanics. The vessel has an internal radius of $R_i = 7$ m and an external radius of $R_o = 18.625$ m. Only a quarter of vessel is considered with plain strain assumption as shown in Figure \ref{fig:vessel_schematic}. $21$ nodes are uniformly distributed in the radial direction. The material parameters we used is the same as in Section \ref{biaxial_tension_test} except that in the HGO model, two families of fibers are arranged in the $\theta-z$ plane with constant angles to the circumferential direction of $|\beta| = 50^\circ$, as shown in Figure \ref{fig:vessel_schematic2}.
+In the second test, we consider a vessel under lumen pressure. The vessel has an internal radius of $R_i = 7$ m and an external radius of $R_o = 18.625$ m. Only a quarter of vessel is considered with plain strain assumption as shown in Figure \ref{fig:vessel_schematic}. $21$ nodes are uniformly distributed in the radial direction. The material parameters we used is the same as in Section \ref{biaxial_tension_test} except that in the HGO model, two families of fibers are arranged in the $\theta-z$ plane with constant angles to the circumferential direction of $|\beta| = 50^\circ$, as shown in Figure \ref{fig:vessel_schematic2}.
 
 \begin{figure}[H]
 	\centering
-	\begin{subfigure}[b]{0.4\textwidth}
+	\begin{subfigure}[b]{0.3\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{./figures/vessel_schematic.jpg}
 		\caption{Cross Section of the Vessel}
@@ -220,11 +220,12 @@ Now that the validity of our computation is confirmed. We then compare the resul
 	\label{fig:models}
 \end{figure}
 
+\subsection{Expansion of a $2$-layer Vessel}
 As the last case, we use HGO model to simulate the expansion of the carotid artery of a healthy rabbit. The real artery tissues consist three layers: intima, media, and adventitia. In this case we only consider media and adventitia because the intima is made up of one layer of endothelial cells and is not of our mechanical interest. Therefore the artery is modeled as a cylinder with $2$ layers. The geometry of the artery is shown in Figure \ref{fig:vessel_schematic3}. The fibers are still arranged in the $\theta-z$ plane, being symmetric about the $\theta$-direction. The angles between the fiber directions and the circumferential direction are denoted as $\pm\beta$. The values of the material parameters differ in the two layers, determined by Holzapfel \cite{Holzapfel2} , as shown in Table \ref{table:artery}. 
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=.3\textwidth]{./figures/vessel_schematic3.png}
+\includegraphics[width=.4\textwidth]{./figures/vessel_schematic3.png}
 \caption{Schematic Diagram for the Artery Model}
 \label{fig:vessel_schematic3}
 \end{figure}
