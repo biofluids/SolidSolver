@@ -1,9 +1,9 @@
 \section{Numerical Experiments}
-In this section, we present three sets of test cases to validate the results we obtained with the formulations we derived. The first case is the biaxial tension test which is often used to calibrate material constants. For isotropic materials, the analytical solution is easy to find if we assume the material is incompressible. The second case is the expansion of a cylindrical pressure vessel. This case is more challenging, especially in the Cartesian coordinates system since the deformation varies both in the radial and the circumferential directions. It is widely used to validate the numerical results because the theoretical solution can be found for the Mooney-Rivlin model. The last case is more biomechanics-specific: the expansion of a real artery vessel of a rabbit. Reasonable results are obtained in all of these experiments, and agree with the theoretical solutions very well whenever they can be found.
+In this section, we present three sets of test cases to validate the results we obtained with the formulations we derived. The first case is the biaxial tension test which is often used to calibrate material constants. For isotropic materials, the analytical solution is easy to find if we assume the material is incompressible. The second case is the expansion of a cylindrical pressure vessel. This case is more challenging, especially in the Cartesian coordinates system since the deformation varies both in the radial and the circumferential directions. It is widely used to validate the numerical results because the theoretical solution can be found for some models. The last case is more biomechanics-specific: the expansion of a real artery vessel of a rabbit. Reasonable results are obtained in all of these experiments, and agree with the theoretical solutions very well whenever they can be found.
 
 \subsection{Biaxial Tension Test}
 \label{biaxial_tension_test}
-In this test, we examine $3$ isotropic models and $1$ anisotropic model. Consider a long bar loaded equally in two directions with fixed tractions. The section of the bar is a $1$ $m^2$-square. As shown in Figure \ref{fig:biaxial_schematic}, the bottom surface is fixed in the $x$-direction; the left surface is fixed in the $z$-direction and the back surface is fixed in the $y$-direction. 
+In this test, we examine the $3$ isotropic models and $1$ anisotropic model. Consider a long bar loaded equally in two directions with fixed tractions. The section of the bar is a $1$ $m^2$-square. As shown in Figure \ref{fig:biaxial_schematic}, the bottom surface is fixed in the $x$-direction; the left surface is fixed in the $z$-direction and the back surface is fixed in the $y$-direction. 
 
 \begin{figure}[H]
 \centering
@@ -11,7 +11,6 @@ In this test, we examine $3$ isotropic models and $1$ anisotropic model. Conside
 \caption{Schematic Diagram of Biaxial Tension Test}
 \label{fig:biaxial_schematic}
 \end{figure}
-
 
 External tractions are applied to the front and top surfaces. The stretch $\lambda$ is defined as the ratio between the deformed length to the original length, for isotropic incompressible material, the theoretical solution of the diagonal components of the PK2 stress is expressed as:
 \begin{equation} \label{biaxialPK2}
@@ -39,11 +38,11 @@ P = \lambda S = 2(\lambda - {\lambda}^{-5})[c_1 + 2c_2(2{\lambda}^2 + {\lambda}^
 
 
 
-Table \ref{parameters} lists the material constants used in these models, which are curve-fitted from the standard ASTM412 tensile test results of the rubber used in the transmission mounts \cite{Sharma}. The Poisson's ratios for all the models are set to $\nu = 0.49999$, close enough to incompressibility.
+Table \ref{parameters} lists the material constants used in the isotropic models, which are curve-fitted from the standard ASTM412 tensile test results of the rubber used in the transmission mounts \cite{Sharma}. The Poisson's ratios for all the models are set to $\nu = 0.49999$, close enough to incompressibility.
 
 \begin{table}[H]
 \centering
-\caption{Material Parameters}
+\caption{Material Parameters of the Isotropic Models}
 \begin{tabular} { l  l  l }
 	\hline
 	Neo-Hookean & Mooney-Rivlin & Yeoh \\
@@ -91,25 +90,14 @@ and Figure \ref{fig:biaxial2} shows the nominal stress, which is nothing but the
 $\lambda_y$ is greater than $\lambda_x$ when $0^\circ < \alpha < 45^\circ$ since the $x$ direction is strengthened more. As the angle gets larger, $\lambda_x$ becomes greater too. When $\alpha = 45^\circ$ two directions become symmetric and the stretch ratio remains to be $1$.
  
 
-\subsection{Cylindrical Pressure Vessel}
+\subsection{Cylindrical Pressure Vessel with Isotropic Models}
 \label{pressure_vessel}
-In the second test, we consider a vessel under lumen pressure. The vessel has an internal radius of $R_i = 7$ m and an external radius of $R_o = 18.625$ m. Only a quarter of vessel is considered with plain strain assumption as shown in Figure \ref{fig:vessel_schematic}. $21$ nodes are uniformly distributed in the radial direction. The material parameters we used is the same as in Section \ref{biaxial_tension_test} except that in the HGO model, two families of fibers are arranged in the $\theta-z$ plane with constant angles to the circumferential direction of $|\beta| = 50^\circ$, as shown in Figure \ref{fig:vessel_schematic2}.
-
+In the second test, we validate our implementation of the isotropic models. Consider a vessel under lumen pressure with an internal radius of $R_i = 7$ m and an external radius of $R_o = 18.625$ m. Only a quarter of vessel is considered with plain strain assumption as shown in Figure \ref{fig:vessel_schematic}. $21$ nodes are uniformly distributed in the radial direction. The material parameters we used is the same as in Table \ref{parameters}. 
 \begin{figure}[H]
 	\centering
-	\begin{subfigure}[b]{0.3\textwidth}
-		\centering
-		\includegraphics[width=\textwidth]{./figures/vessel_schematic.jpg}
-		\caption{Cross Section of the Vessel}
-		\label{fig:vessel_schematic}
-	\end{subfigure}
-	\begin{subfigure}[b]{0.4\textwidth}
-		\centering
-		\includegraphics[width=\textwidth]{./figures/vessel_schematic2.png}
-		\caption{Fiber Alignments}
-		\label{fig:vessel_schematic2}
-	\end{subfigure}
-	\caption{Schematic Diagram of Vessel Expansion}
+	\includegraphics[width=0.3\textwidth]{./figures/vessel_schematic.jpg}
+	\caption{Cross Section of the Vessel}
+	\label{fig:vessel_schematic}
 \end{figure}
 
 As a benchmark, we model the vessel with Mooney-Rivlin model and compare the radial displacement, hoop stress, radial stress, and axial stress with the analytical solutions. The analytical solutions for incompressible material are found in \cite{Green} as follows: 
@@ -188,7 +176,7 @@ Figure \ref{fig:mooney-rivlin1} shows the stress components and the radial displ
 	\label{fig:mooney-rivlin2}
 \end{figure}
 
-Now that the validity of our computation is confirmed. We then compare the results of Neo-Hookean, Mooney-Rivlin, Yeoh and HGO model. Figure \ref{fig:models} shows the results of these models under an inner pressure of $p_i = 350$ KPa. The isotropic models have similar trends, and the discrepancies among different models decrease from the inner surface to the outer surface. It implies that under a moderate pressure, different isotropic models do not make too much difference. Especially the performance of the Yeoh model is very close to the Mooney-Rivlin model. This is because the strain has to be large enough for Yeoh model to demonstrate its particular characteristics. Considering in this case the maximum strain is already significant, we can expect Yeoh model and Mooney-Rivlin model will behave similarly in modeling vessel expansion. However, the two families of fibers in HGO model causes significant differences even though the ground material is modeled with Neo-Hookean with identical parameters. Due to the strengthening of the fibers, the radial displacement drops significantly. The change in radial stress is small because the fibers are arranged in the $\theta-z$ plane. The variation of the axial stress is much more significant compared to the isotropic models and the maximum axial stress appears at the inner radius which is the opposite to them. This is very similar to the result reported in \cite{Fung}. To resolve the unrealistic variation we must consider the residual stress \cite{Fung2}.
+Now that the validity of our computation is confirmed. We then compare the performance of Neo-Hookean, Mooney-Rivlin, and Yeoh model. Figure \ref{fig:models} shows the results of these models under an inner pressure of $p_i = 350$ KPa. All these isotropic models have similar trends, and the discrepancies among different models decrease from the inner surface to the outer surface. It implies that under a moderate pressure, different isotropic models do not make too much difference. The performance of the Yeoh model is very close to the Neo-Hookean model and stiffening effect does not happen. This is because they both have only one invariant and the strain is not large enough for Yeoh model to demonstrate its particular characteristics due to the higher order term. Considering in this case the maximum strain is already significant, and the expansion of animal vessels is not likely to exceed this, we can expect Yeoh model and Neo-Hookean model will behave similarly in modeling vessel expansion.%However, the two families of fibers in HGO model causes significant differences even though the ground material is modeled with Neo-Hookean with identical parameters. Due to the strengthening of the fibers, the radial displacement drops significantly. The change in radial stress is small because the fibers are arranged in the $\theta-z$ plane. The variation of the axial stress is much more significant compared to the isotropic models and the maximum axial stress appears at the inner radius which is the opposite to them. This is very similar to the result reported in \cite{Fung}. To resolve the unrealistic variation we must consider the residual stress \cite{Fung2}.
 
 \begin{figure}[H]
 	\begin{subfigure}[b]{0.5\textwidth}
@@ -221,7 +209,7 @@ Now that the validity of our computation is confirmed. We then compare the resul
 \end{figure}
 
 \subsection{Expansion of a $2$-layer Vessel}
-As the last case, we use HGO model to simulate the expansion of the carotid artery of a healthy rabbit. The real artery tissues consist three layers: intima, media, and adventitia. In this case we only consider media and adventitia because the intima is made up of one layer of endothelial cells and is not of our mechanical interest. Therefore the artery is modeled as a cylinder with $2$ layers. The geometry of the artery is shown in Figure \ref{fig:vessel_schematic3}. The fibers are still arranged in the $\theta-z$ plane, being symmetric about the $\theta$-direction. The angles between the fiber directions and the circumferential direction are denoted as $\pm\beta$. The values of the material parameters differ in the two layers, determined by Holzapfel \cite{Holzapfel2} , as shown in Table \ref{table:artery}. 
+As the last case, we use HGO model to simulate the expansion of the carotid artery of a healthy rabbit. The real artery tissues consist three layers: intima, media, and adventitia. In this case we only consider media and adventitia because the intima of young health vessels is made up of only one layer of endothelial cells and is not important in terms of mechanics. Research shows that the intima is much stiffer than the media \cite{Keitzer}, therefore we model the artery as a cylinder with $2$ layers. The geometry of the artery is shown in Figure \ref{fig:vessel_schematic3}. The fibers are still arranged in the $\theta-z$ plane, being symmetric about the $\theta$-direction. The angles between the fiber directions and the circumferential direction are denoted as $\pm\beta$. The values of the material parameters differ in the two layers, determined by Holzapfel \cite{Holzapfel2} , as shown in Table \ref{table:artery}. 
 
 \begin{figure}[H]
 \centering
