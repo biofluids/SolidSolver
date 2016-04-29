@@ -1,5 +1,5 @@
 \section{Appendix}
-In the updated Lagrangian Formulation, the Kirchhoff stress $\boldsymbol{\tau}$ or the Cauchy stress $\boldsymbol{\sigma}$ is used instead of the PK2 stress $\bold{S}$, which means the principle of virtual work or principle of stationary potential energy and their linearizations are also written in the current configuration. In the appendices we will introduce the corresponding formulations in the current configuration.
+In the updated Lagrangian Formulation, the Kirchhoff stress $\boldsymbol{\tau}$ or the Cauchy stress $\boldsymbol{\sigma}$ is used instead of the PK2 stress $\bold{S}$, which means the principle of virtual work or principle of stationary potential energy and their linearizations are also written in the current configuration. In the appendices we will show the corresponding formulations in the current configuration.
 
 %
 We work with the Kirchhoff stress $\boldsymbol{\tau}$ in the updated Lagrangian formulation, which is obtained by a push-forward operation of the PK2 stress $\bold{S}$.
@@ -18,7 +18,7 @@ The spatial tensor of elasticity $\mathbb{c}$ can be transformed from the elasti
 c_{ijkl} = F_{iI}F_{jJ}F_{kK}F_{lL}C_{IJKL} \label{current_elasticity}
 \end{equation}
 
-Next we will derive the Kirchhoff stress $\boldsymbol{\tau}$ and the spatial tensor of elasticity $\mathbb{c}$ for Mooney-Rivlin model, Yeoh model and HGO model respectively. All these models have the same volumetric part, so we deal with it first. Substitute Equation \ref{Svol1} into Equation \ref{current_stress}
+Next we will derive the Kirchhoff stress $\boldsymbol{\tau}$ and the spatial tensor of elasticity $\mathbb{c}$ for Mooney-Rivlin model, Yeoh model and HGO model respectively. All these models have the same volumetric part, which can be obtained by substituting Equation \ref{Svol1} into Equation \ref{current_stress}
 
 \begin{subequations}
 \label{Tauvol1}
@@ -28,7 +28,7 @@ Next we will derive the Kirchhoff stress $\boldsymbol{\tau}$ and the spatial ten
 		      		    &= \kappa J(J-1) \bold{I} \label{Tauvol12}
 \end{align}
 \end{subequations}
-Substituting Equation \ref{Cvol1} into Equation \ref{current_elasticity} gives the volumetric spatial tensor of elasticity, for the convenience, here we use the index notation
+Substituting Equation \ref{Cvol1} into Equation \ref{current_elasticity} gives the volumetric spatial tensor of elasticity, for convenience, here we use the index notation
 
 \begin{subequations} \label{spatial_cvol1}
 \begin{align}
@@ -38,24 +38,23 @@ Substituting Equation \ref{Cvol1} into Equation \ref{current_elasticity} gives t
 \end{align}
 \end{subequations} 
 
-Equation \ref{Tauvol1} and \ref{spatial_cvol1} complete the volumetric part of the Kirchhoff stress and spatial tensor of elasticity for all these models. Next we will derive the isochoric parts individually.
+Equations \ref{Tauvol1} and \ref{spatial_cvol1} complete the volumetric part of the Kirchhoff stress and spatial tensor of elasticity for all these models. Next we will derive the isochoric parts individually.
 
 The isochoric Kirchhoff stress $\boldsymbol{\tau}_{iso}$ for Mooney-Rivlin model is transformed from Equation \ref{Siso1}:
 \begin{equation} \label{Tauiso1}
 \begin{split}
 \boldsymbol{\tau}_{iso} &= \bold{F}\bold{S}_{iso}{\bold{F}}^T \\
-	   			    &= \bold{F}  J^{-2/3} [    - \frac{1}{3}(\mu_1\bar{I_1} + 2\mu_2\bar{I_2}) \overline{\bold{C}}^{-1}  + (\mu_1 + \mu_2\bar{I_1})\bold{I} - \mu_2\overline{\bold{C}} ]   \bold{F}^T \\
+	   			    &= \bold{F}  J^{-2/3} \left[    - \frac{1}{3}(\mu_1\bar{I_1} + 2\mu_2\bar{I_2}) \overline{\bold{C}}^{-1}  + (\mu_1 + \mu_2\bar{I_1})\bold{I} - \mu_2\overline{\bold{C}} \right]   \bold{F}^T \\
 				    &= - \frac{1}{3}(\mu_1\bar{I_1} + 2\mu_2\bar{I_2})\bold{I} - \mu_2{\overline{\bold{B}}}^2 + (\mu_1 + \mu_2\bar{I_1}){\overline{\bold{B}}}
 \end{split}
 \end{equation}
-where $\overline{\bold{B}}$ is the modified right Cauchy-Green tensor defined as $\overline{\bold{B}} = \overline{\bold{F}}\overline{\bold{F}}^T = \overline{\bold{C}}^T$
-And the isochoric spatial tensor of elasticity $\mathbb{c}_{iso}$ is obtained from Equation \ref{Ciso1}:
+where $\overline{\bold{B}}$ is the modified right Cauchy-Green tensor defined as $\overline{\bold{B}} = \overline{\bold{F}}\overline{\bold{F}}^T = \overline{\bold{C}}^T$, and the isochoric spatial tensor of elasticity $\mathbb{c}_{iso}$ is obtained from Equation \ref{Ciso1}:
 
 \begin{equation} \label{spatial_ciso1}
 \begin{split}
 (c_{iso})_{ijkl} &=  F_{iI}F_{jJ}F_{kK}F_{lL}(C_{iso})_{IJKL} \\
 &= 
-2\mu_2[{\overline{\bold{B}}}_{ij} {\overline{\bold{B}}}_{kl} - \frac{1}{2}({\overline{\bold{B}}}_{ik}{\overline{\bold{B}}}_{jl} + {\overline{\bold{B}}}_{il}{\overline{\bold{B}}}_{jk}) ] 
+2\mu_2 \left[{\overline{\bold{B}}}_{ij} {\overline{\bold{B}}}_{kl} - \frac{1}{2}({\overline{\bold{B}}}_{ik}{\overline{\bold{B}}}_{jl} + {\overline{\bold{B}}}_{il}{\overline{\bold{B}}}_{jk}) \right] 
 - \frac{2}{3}(\mu_1 + 2\mu_2\bar{I_1})({\overline{\bold{B}}}_{ij}\delta_{kl} + {\overline{\bold{B}}}_{kl}\delta_{ij}) 
 + \frac{4}{3}\mu_2({\overline{\bold{B}}}^2_{ij}\delta_{kl} + {\overline{\bold{B}}}^2_{kl}\delta_{ij}) \\
 &+
@@ -64,14 +63,14 @@ And the isochoric spatial tensor of elasticity $\mathbb{c}_{iso}$ is obtained fr
 \end{split}
 \end{equation} 
 
-Similarly, the isochoric stress $\boldsymbol{\tau}_{iso}$ and the isochoric spatial tensor of elasticity $\mathbb{c}_{iso}$ for Yeoh model are transformed from Equation \ref{Siso2} and \ref{Ciso2}:
+Similarly, the isochoric stress $\boldsymbol{\tau}_{iso}$ and the isochoric spatial tensor of elasticity $\mathbb{c}_{iso}$ for Yeoh model are transformed from Equations \ref{Siso2} and \ref{Ciso2}:
 
 \begin{equation} \label{Tauiso2}
 \begin{split}
 \boldsymbol{\tau}_{iso} 
 &= \bold{F}\bold{S}_{iso}{\bold{F}}^T \\
-&= \bold{F}  J^{-2/3}[2c_1 + 4c_2(\bar{I_1} - 3) + 6c_3(\bar{I_1} - 3)^2] (\bold{I} - \frac{1}{3}\bar{I_1}{\overline{\bold{C}}}^{-1})  \bold{F}^T \\
-&= [2c_1 + 4c_2(\bar{I_1} - 3) + 6c_3(\bar{I_1} - 3)^2](\overline{\bold{B}} - \frac{1}{3}\bar{I}_1\bold{I})
+&= \bold{F}  J^{-2/3}[2c_1 + 4c_2(\bar{I_1} - 3) + 6c_3(\bar{I_1} - 3)^2] \left(\bold{I} - \frac{1}{3}\bar{I_1}{\overline{\bold{C}}}^{-1} \right)  \bold{F}^T \\
+&= [2c_1 + 4c_2(\bar{I_1} - 3) + 6c_3(\bar{I_1} - 3)^2] \left(\overline{\bold{B}} - \frac{1}{3}\bar{I}_1\bold{I} \right)
 \end{split}
 \end{equation}
 
@@ -80,9 +79,9 @@ Similarly, the isochoric stress $\boldsymbol{\tau}_{iso}$ and the isochoric spat
 (c_{iso})_{ijkl} &=  F_{iI}F_{jJ}F_{kK}F_{lL}(C_{iso})_{IJKL} \\
 &= 
 [8c_2+24c_3({\bar{I}}_1 - 3)] {\overline{\bold{B}}}_{ij}{\overline{\bold{B}}}_{kl} 
-- [\frac{4}{3}c_1 + (\frac{16}{3}{\bar{I}}_1 - 8)c_2 + 12({\bar{I}}_1 - 1)({\bar{I}}_1 - 3)c_3]({\overline{\bold{B}}}_{ij}\delta_{kl} + {\overline{\bold{B}}}_{kl}\delta_{ij}) \\
-&+ [\frac{4}{9}{\bar{I}}_1c_1 + (\frac{16}{9}{{\bar{I}}_1}^2 - \frac{8}{3}{\bar{I}}_1)c_2 + 4{\bar{I}}_1({\bar{I}}_1 - 1)({\bar{I}}_1 - 3)c_3] \delta_{ij}\delta_{kl} \\
-&+ [\frac{2}{3}c_1{\bar{I}}_1 + \frac{4}{3}c_2({\bar{I}}_1 - 3){\bar{I}}_1 + 2c_3({\bar{I}}_1 - 3)^2{\bar{I}}_1](\delta_{ik}\delta_{jl} + \delta_{il}\delta_{jk})
+- \left[\frac{4}{3}c_1 + \left(\frac{16}{3}{\bar{I}}_1 - 8\right)c_2 + 12({\bar{I}}_1 - 1)({\bar{I}}_1 - 3)c_3\right]({\overline{\bold{B}}}_{ij}\delta_{kl} + {\overline{\bold{B}}}_{kl}\delta_{ij}) \\
+&+ \left[\frac{4}{9}{\bar{I}}_1c_1 + \left(\frac{16}{9}{{\bar{I}}_1}^2 - \frac{8}{3}{\bar{I}}_1\right)c_2 + 4{\bar{I}}_1({\bar{I}}_1 - 1)({\bar{I}}_1 - 3)c_3\right] \delta_{ij}\delta_{kl} \\
+&+ \left[\frac{2}{3}c_1{\bar{I}}_1 + \frac{4}{3}c_2({\bar{I}}_1 - 3){\bar{I}}_1 + 2c_3({\bar{I}}_1 - 3)^2{\bar{I}}_1\right](\delta_{ik}\delta_{jl} + \delta_{il}\delta_{jk})
 \end{split}
 \end{equation} 
 
@@ -91,9 +90,9 @@ For the HGO model, we will simply derive the anisotropic part of the Kirchhoff s
 \begin{split}
 \boldsymbol{\tau}_{aniso} 
 &= \bold{F}\bold{S}_{aniso}{\bold{F}}^T \\
-&= \bold{F} 2J^{-2/3} [\sum_{i = 4, 6}\frac{\partial{\Psi_{aniso}}}{\partial{\bar{I}_i}}  (\bold{A}_{0i} - \frac{1}{3}\bar{I}_i\overline{\bold{C}}^{-1})] {\bold{F}}^T \\
-&= 2\sum_{i = 4, 6}[\frac{\partial{\Psi_{aniso}}}{\partial{\bar{I}_i}} ({\overline{\bold{F}}}\bold{A}_{0i}{\overline{\bold{F}}}^T - \frac{1}{3}\bar{I}_i{\overline{\bold{F}}}\overline{\bold{C}}^{-1}{\overline{\bold{F}}}^T)] \\
-&= 2\sum_{i = 4, 6}[\frac{\partial{\Psi_{aniso}}}{\partial{\bar{I}_i}}\bar{I}_i (\bold{A}_{i} - \frac{1}{3}\bold{I})]
+&= \bold{F} 2J^{-2/3} \left[\sum_{i = 4, 6}\frac{\partial{\Psi_{aniso}}}{\partial{\bar{I}_i}}  (\bold{A}_{0i} - \frac{1}{3}\bar{I}_i\overline{\bold{C}}^{-1})\right] {\bold{F}}^T \\
+&= 2\sum_{i = 4, 6}\left[\frac{\partial{\Psi_{aniso}}}{\partial{\bar{I}_i}} ({\overline{\bold{F}}}\bold{A}_{0i}{\overline{\bold{F}}}^T - \frac{1}{3}\bar{I}_i{\overline{\bold{F}}}\overline{\bold{C}}^{-1}{\overline{\bold{F}}}^T)\right] \\
+&= 2\sum_{i = 4, 6}\left[\frac{\partial{\Psi_{aniso}}}{\partial{\bar{I}_i}}\bar{I}_i (\bold{A}_{i} - \frac{1}{3}\bold{I})\right]
 \end{split}
 \end{equation}
 where $\bold{A}_i$ is dyadic product of the deformed fiber vectors defined as $\bold{A}_i = \bold{a}_i \otimes \bold{a}_i$. 
@@ -104,14 +103,14 @@ Substitute Equation \ref{Ciso31} into Equation \ref{current_elasticity}, we have
 \begin{split}
 (c_{aniso})_{ijkl} &=  F_{iI}F_{jJ}F_{kK}F_{lL}(C_{aniso})_{IJKL} \\
 &= 
- \sum_{i = 4, 6} [4{\bar{I}_i}^2\frac{\partial^2\Psi_{aniso}}{\partial{\bar{I}_i}^2} \bold{A}_{i} \otimes \bold{A}_{i} - \frac{4}{3}\bar{I}_i(\bar{I}_i\frac{\partial^2\Psi_{aniso}}{\partial{\bar{I}_i}^2} + \frac{\partial\Psi_{aniso}}{\partial{\bar{I}_i}})
+ \sum_{i = 4, 6} \biggl[4{\bar{I}_i}^2\frac{\partial^2\Psi_{aniso}}{\partial{\bar{I}_i}^2} \bold{A}_{i} \otimes \bold{A}_{i} - \frac{4}{3}\bar{I}_i\left(\bar{I}_i\frac{\partial^2\Psi_{aniso}}{\partial{\bar{I}_i}^2} + \frac{\partial\Psi_{aniso}}{\partial{\bar{I}_i}}\right)
  (\bold{A}_{i} \otimes \bold{I} + \bold{I} \otimes \bold{A}_i) \\
-&+ \frac{4}{9}({\bar{I}_i}^2\frac{\partial^2\Psi_{aniso}}{\partial{\bar{I}_i}^2} + \bar{I}_i\frac{\partial\Psi_{aniso}}{\partial{\bar{I}_i}})\bold{I} \otimes \bold{I} 
-+ \frac{4}{3}\bar{I}_i \frac{\partial\Psi_{aniso}}{\partial{\bar{I}_i}} \mathbb{I}]
+&+ \frac{4}{9}\left({\bar{I}_i}^2\frac{\partial^2\Psi_{aniso}}{\partial{\bar{I}_i}^2} + \bar{I}_i\frac{\partial\Psi_{aniso}}{\partial{\bar{I}_i}}\right)\bold{I} \otimes \bold{I} 
++ \frac{4}{3}\bar{I}_i \frac{\partial\Psi_{aniso}}{\partial{\bar{I}_i}} \mathbb{I} \biggr]
 \end{split}
 \end{equation}
 
-With the total Lagrangian formulation introduced in Section \ref{formulation}, the only thing that is not trivial to discuss is the linearization of the internal work. Equation \ref{Kint} can be transformed into the following equation written in the current configuration:
+Using the total Lagrangian formulation introduced in Section \ref{formulation}, the linearization of the internal work is then transforming Equation \ref{Kint} into the following equation written in the current configuration:
 
 \begin{equation}
 D^2_{\delta\bold{u}, \Delta\bold{u}}\Pi_{int}(\bold{u}) = D_{\Delta{\bold{u}}}\delta{W_{int}}(\bold{u}, \delta{\bold{u}}) = \int_{\Omega_0}(\nabla_{\bold{x}}\delta\bold{u} : \nabla_{\bold{x}}\Delta\bold{u}\boldsymbol{\tau} + \nabla_{\bold{x}}\delta{\bold{u}} : \mathbb{c} :  \nabla_{\bold{x}}\Delta\bold{u})dV
