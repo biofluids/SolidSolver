@@ -3,7 +3,7 @@
 In the updated Lagrangian Formulation, the Kirchhoff stress $\boldsymbol{\tau}$ or the Cauchy stress $\boldsymbol{\sigma}$ is used instead of the PK2 stress $\bold{S}$, meanwhile the principle of virtual work or principle of stationary potential energy and their linearization are written in the current configuration as well. In this appendix we will show the corresponding formulations in the current configuration.
 
 %
-We work with the Kirchhoff stress $\boldsymbol{\tau}$ in the updated Lagrangian formulation, which is obtained by a push-forward operation of the PK2 stress $\bold{S}$.
+The stress tensor we work with in the updated Lagrangian formulation is the Kirchhoff stress $\boldsymbol{\tau}$, which is obtained by a push-forward operation of the PK2 stress $\bold{S}$:
 
 \begin{equation}
 \boldsymbol{\tau} = \bold{F}\bold{S}{\bold{F}}^T \label{current_stress}
@@ -26,7 +26,7 @@ Next we will derive the Kirchhoff stress $\boldsymbol{\tau}$ and the spatial ten
 \begin{align}
 \boldsymbol{\tau}_\mathrm{vol} &= \bold{F}\bold{S}_\mathrm{vol}{\bold{F}}^T \\
 				    &= Jp\bold{I} \label{Tauvol11}\\
-		      		    &= \kappa J(J-1) \bold{I} \label{Tauvol12}
+		      		    &= J(J-1)\kappa \bold{I} \label{Tauvol12}
 \end{align}
 \end{subequations}
 Substituting Equation \ref{Cvol1} into Equation \ref{current_elasticity} gives the volumetric spatial tensor of elasticity. For convenience, here we use the index notation:
@@ -40,7 +40,7 @@ Substituting Equation \ref{Cvol1} into Equation \ref{current_elasticity} gives t
 \end{subequations} 
 Equations \ref{Tauvol1} and \ref{spatial_cvol1} complete the volumetric part of the Kirchhoff stress and spatial tensor of elasticity for all these models. Next we will derive the isochoric parts individually.
 
-The isochoric Kirchhoff stress $\boldsymbol{\tau}_{iso}$ for Mooney-Rivlin model is transformed from Equation \ref{Siso1}:
+The isochoric Kirchhoff stress $\boldsymbol{\tau}_\mathrm{iso}$ for Mooney-Rivlin model is transformed from Equation \ref{Siso1}:
 \begin{equation} \label{Tauiso1}
 \begin{split}
 \boldsymbol{\tau}_\mathrm{iso} &= \bold{F}\bold{S}_\mathrm{iso}{\bold{F}}^T \\
@@ -49,7 +49,7 @@ The isochoric Kirchhoff stress $\boldsymbol{\tau}_{iso}$ for Mooney-Rivlin model
 				    &= - \frac{1}{3}(\mu_1\bar{I_1} + 2\mu_2\bar{I_2})\bold{I} - \mu_2{\overline{\bold{B}}}^2 + (\mu_1 + \mu_2\bar{I_1}){\overline{\bold{B}}}
 \end{split}
 \end{equation}
-where $\overline{\bold{B}}$ is the modified right Cauchy-Green tensor defined as $\overline{\bold{B}} = \overline{\bold{F}}\overline{\bold{F}}^T = \overline{\bold{C}}^T$, and the isochoric spatial tensor of elasticity $\mathbb{c}_{iso}$ is obtained from Equation \ref{Ciso1}:
+where $\overline{\bold{B}}$ is the modified right Cauchy-Green tensor defined as $\overline{\bold{B}} = \overline{\bold{F}}\overline{\bold{F}}^T = \overline{\bold{C}}^T$, and the isochoric spatial tensor of elasticity $\mathbb{c}_\mathrm{iso}$ is obtained from Equation \ref{Ciso1}:
 
 \begin{equation} \label{spatial_ciso1}
 \begin{split}
@@ -104,13 +104,12 @@ Next we derive the anisotropic part of the isochoric Kirchhoff stress by substit
 \begin{split}
 \boldsymbol{\tau}_\mathrm{aniso} 
 &= \bold{F}\bold{S}_\mathrm{aniso}{\bold{F}}^T \\
-&= \bold{F} 2J^{-2/3} \left[\sum_{i = 4, 6}\frac{\partial{\Psi_\mathrm{aniso}}}{\partial{\bar{I}_i}}  (\bold{A}_{0i} - \frac{1}{3}\bar{I}_i\overline{\bold{C}}^{-1})\right] {\bold{F}}^T \\
-&= 2\sum_{i = 4, 6}\left[\frac{\partial{\Psi_\mathrm{aniso}}}{\partial{\bar{I}_i}} ({\overline{\bold{F}}}\bold{A}_{0i}{\overline{\bold{F}}}^T - \frac{1}{3}\bar{I}_i{\overline{\bold{F}}}\overline{\bold{C}}^{-1}{\overline{\bold{F}}}^T)\right] \\
-&= 2\sum_{i = 4, 6}\left[\frac{\partial{\Psi_\mathrm{aniso}}}{\partial{\bar{I}_i}}\bar{I}_i (\bold{A}_{i} - \frac{1}{3}\bold{I})\right]
+&= \bold{F} 2J^{-2/3} \left[\sum_{i = 4, 6}\frac{\partial{\Psi_\mathrm{aniso}}}{\partial{\bar{I}_i}}  \left(\bold{A}_{0i} - \frac{1}{3}\bar{I}_i\overline{\bold{C}}^{-1} \right)\right] {\bold{F}}^T \\
+&= 2\sum_{i = 4, 6}\left[\frac{\partial{\Psi_\mathrm{aniso}}}{\partial{\bar{I}_i}} \left({\overline{\bold{F}}}\bold{A}_{0i}{\overline{\bold{F}}}^T - \frac{1}{3}\bar{I}_i{\overline{\bold{F}}}\overline{\bold{C}}^{-1}{\overline{\bold{F}}}^T \right)\right] \\
+&= 2\sum_{i = 4, 6}\left[\frac{\partial{\Psi_\mathrm{aniso}}}{\partial{\bar{I}_i}}\bar{I}_i \left(\bold{A}_{i} - \frac{1}{3}\bold{I} \right)\right]
 \end{split}
 \end{equation}
 where $\bold{A}_i$ is dyadic product of the deformed fiber vectors defined as $\bold{A}_i = \bold{a}_i \otimes \bold{a}_i$. 
-
 The anisotropic part of the isochoric spatial tensor of elasticity is obtained by substituting Equation \ref{Ciso31} into Equation \ref{current_elasticity}:
 
 \begin{equation} \label{spatial_ciso3}

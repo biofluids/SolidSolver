@@ -88,8 +88,9 @@ D^2_{\delta\bold{u}, \Delta\bold{u}}\Pi_\mathrm{ext}(\bold{u}) = - D_{\Delta{\bo
 \end{equation}
 The linearization is obtained by a straight-forward derivation with respect to $\Delta\bold{u}$, the increment of displacement. 
 \begin{equation}  \label{Kext2}
-D^2_{\delta\bold{u}, \Delta\bold{u}}\Pi_\mathrm{ext}(\bold{u}) = - D_{\Delta{\bold{u}}}\delta{W_\mathrm{ext}}(\bold{u}, \delta{\bold{u}}) = - p_0\int_{\Omega_{\xi}}  \left(\frac{\partial{\bold{x}}}{\partial{\eta}} \times \delta\bold{u}\right) \cdot\Delta{\bold{u}}_{,\xi} - 
-\left(\frac{\partial{\bold{x}}}{\partial{\xi}} \times \delta\bold{u}\right) \cdot\Delta{\bold{u}}_{,\eta} d\xi{d\eta}
+D^2_{\delta\bold{u}, \Delta\bold{u}}\Pi_\mathrm{ext}(\bold{u}) = - D_{\Delta{\bold{u}}}\delta{W_\mathrm{ext}}(\bold{u}, \delta{\bold{u}}) = - p_0\int_{\Omega_{\xi}}  \left(\frac{\partial \Delta\bold{u}}{\partial{\xi}} \times
+\frac{\partial\bold{x}}{\partial\eta} - \frac{\partial \Delta\bold{u}}{\partial{\eta}} \times
+\frac{\partial\bold{x}}{\partial\xi}    \right) \cdot \delta{\bold{u}} d\xi d\eta
 \end{equation}
 Therefore with Equation \ref{Kint} and \ref{Kext} or \ref{Kext2} we are able to obtain the matrix form for displacement-based formulation:
 \begin{equation} \label{matrix}
