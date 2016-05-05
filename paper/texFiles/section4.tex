@@ -9,13 +9,13 @@ In this test, we examine the $3$ isotropic models (Neo-Hookean, Mooney-Rivlin, a
 \begin{figure}[H]
 \centering
 \includegraphics[width=.5\textwidth]{./figures/biaxial_schematic.png}
-\caption{Schematic Diagram of Biaxial Tension Test}
+\caption{Schematic diagram of biaxial tension test}
 \label{fig:biaxial_schematic}
 \end{figure}
 
 The bar is stretched by the tractions in $x$ and $y$ directions, and compressed in the $z$ direction in order to maintain the volume unchanged. The stretch $\lambda$ is defined as the ratio between the deformed length to the original length in $x$ and $y$ directions. For isotropic incompressible material the theoretical solution of the diagonal components of the PK2 stress is expressed as:
 \begin{equation} \label{biaxialPK2}
-S_{11} = S_{22} = 2(1 - {\lambda}^{-6})\left(\frac{\partial\Psi_{iso}}{\partial\bar{I}_1} + {\lambda}^2\frac{\partial\Psi_{iso}}{\partial\bar{I}_2}\right), \quad S_{33} = 0
+S_{11} = S_{22} = 2(1 - {\lambda}^{-6})\left(\frac{\partial\Psi_\mathrm{iso}}{\partial\bar{I}_1} + {\lambda}^2\frac{\partial\Psi_\mathrm{iso}}{\partial\bar{I}_2}\right), \quad S_{33} = 0
 \end{equation}
 All the off-diagonal components are $0$.
 
@@ -66,16 +66,16 @@ Figure \ref{fig:biaxial1} shows the results of the theoretical calculations and 
 	\begin{subfigure}[b]{0.45\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{./figures/biaxial1.png}
-		\caption{Biaxial Tension Test for Isotropic Models}
+		\caption{Isotropic models}
 		\label{fig:biaxial1}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.45\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{./figures/biaxial2.png}
-		\caption{Biaxial Tension Test for HGO Model}
+		\caption{HGO model}
 		\label{fig:biaxial2}
 	\end{subfigure}
-	\caption{the Relationship of the Nominal Stress to the Stretch in Biaxial Tension Test}
+	\caption{Relationship of nominal stress to stretch in biaxial tension test}
 \end{figure}
 
 
@@ -97,7 +97,7 @@ In the second test, we consider a vessel under internal pressure. This case is m
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.3\textwidth]{./figures/vessel_schematic.jpg}
-	\caption{Cross Section of the Vessel}
+	\caption{Cross section of the vessel}
 	\label{fig:vessel_schematic}
 \end{figure}
 
@@ -123,29 +123,29 @@ Figure \ref{fig:mooney-rivlin1} shows the stress components and the radial displ
 	\begin{subfigure}[b]{0.5\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{./figures/ur_200.png}
-		\caption{Radial Displacement}
+		\caption{Radial displacement}
 		\label{ur_200}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.5\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{./figures/hoop_stress_200.png}
-		\caption{Hoop Stress}
+		\caption{Hoop stress}
 		\label{hoop_200}
 	\end{subfigure}
 	
 	\begin{subfigure}[b]{0.5\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{./figures/radial_stress_200.png}
-		\caption{Radial Stress}
+		\caption{Radial stress}
 		\label{radial_200}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.5\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{./figures/axial_stress_200.png}
-		\caption{Axial Stress}
+		\caption{Axial stress}
 		\label{axial_200}
 	\end{subfigure}
-	\caption{Vessel Expansion Under $p_i = 200$ KPa with Mooney-Rivlin Model}
+	\caption{Vessel expansion under $p_i = 200$ KPa with Mooney-Rivlin model}
 	\label{fig:mooney-rivlin1}
 \end{figure}
 
@@ -153,29 +153,29 @@ Figure \ref{fig:mooney-rivlin1} shows the stress components and the radial displ
 	\begin{subfigure}[b]{0.5\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{./figures/ur.png}
-		\caption{Radial Displacement}
+		\caption{Radial displacement}
 		\label{ur}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.5\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{./figures/hoop.png}
-		\caption{Hoop Stress}
+		\caption{Hoop stress}
 		\label{hoop}
 	\end{subfigure}
 	
 	\begin{subfigure}[b]{0.5\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{./figures/radial.png}
-		\caption{Radial Stress}
+		\caption{Radial stress}
 		\label{radial}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.5\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{./figures/axial.png}
-		\caption{Axial Stress}
+		\caption{Axial stress}
 		\label{axial}
 	\end{subfigure}
-	\caption{Vessel Expansion Under Different Pressure with Mooney-Rivlin Model}
+	\caption{Vessel expansion under different pressure with Mooney-Rivlin model}
 	\label{fig:mooney-rivlin2}
 \end{figure}
 
@@ -185,29 +185,29 @@ With the validated implementation of the Mooney-Rivlin model, we then compare th
 	\begin{subfigure}[b]{0.5\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{./figures/ur_models.png}
-		\caption{Radial Displacement}
+		\caption{Radial displacement}
 		\label{ur_models}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.5\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{./figures/hoop_models.png}
-		\caption{Hoop Stress}
+		\caption{Hoop stress}
 		\label{hoop_models}
 	\end{subfigure}
 	
 	\begin{subfigure}[b]{0.5\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{./figures/radial_models.png}
-		\caption{Radial Stress}
+		\caption{Radial stress}
 		\label{radial_models}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.5\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{./figures/axial_models.png}
-		\caption{Axial Stress}
+		\caption{Axial stress}
 		\label{axial_models}
 	\end{subfigure}
-	\caption{Vessel Expansion with Different Models under $350$ KPa}
+	\caption{Vessel expansion with different models under $350$ KPa}
 	\label{fig:models}
 \end{figure}
 
@@ -217,7 +217,7 @@ In the last case, we use HGO model to simulate the expansion of the carotid arte
 \begin{figure}[H]
 \centering
 \includegraphics[width=.3\textwidth]{./figures/vessel_schematic2.png}
-\caption{Schematic Diagram for the Artery Model}
+\caption{Schematic diagram for the artery model}
 \label{fig:vessel_schematic3}
 \end{figure}
 
@@ -227,7 +227,7 @@ In the last case, we use HGO model to simulate the expansion of the carotid arte
 \label{table:artery}
 \begin{tabular}{ l l l l l l l}
 \hline
-& $\mu_1$/KPa & $k_1$/KPa & $k_2$/- & $\kappa$/KPa & $r$/mm & $\beta/^\circ$ \\
+& $\mu_1$(KPa) & $k_1$(KPa) & $k_2$(-) & $\kappa$(KPa) & $r$(mm) & $\beta(^\circ)$ \\
  \hline
  Media &   $3.0$ & $2.3632$ & $0.8393$ & $10^5$ & $[0.71, 0.97)$ & $29.0$\\
  Adventitia & $0.3$ & $0.5629$ & $0.7112$ & $10^5$ & [0.97, 1.1] & $62.0$\\
@@ -245,29 +245,29 @@ Our study agrees well with COMSOL, except for the minor differences at the inter
 	\begin{subfigure}[b]{0.5\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{./figures/artery_ur.png}
-		\caption{Radial Displacement}
+		\caption{Radial displacement}
 		\label{ur_artery}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.5\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{./figures/artery_hoop.png}
-		\caption{Hoop Stress}
+		\caption{Hoop stress}
 		\label{hoop_artery}
 	\end{subfigure}
 	
 	\begin{subfigure}[b]{0.5\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{./figures/artery_radial.png}
-		\caption{Radial Stress}
+		\caption{Radial stress}
 		\label{radial_artery}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.5\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{./figures/artery_axial.png}
-		\caption{Axial Stress}
+		\caption{Axial stress}
 		\label{axial_artery}
 	\end{subfigure}
-	\caption{Rabbit Carotid Artery under $10$ KPa}
+	\caption{Rabbit carotid artery under $10$ KPa}
 	\label{fig:artery}
 \end{figure}
 

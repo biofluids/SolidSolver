@@ -8,16 +8,16 @@ In this section, we introduce the finite element formulation to solve static pro
 The variational approach is the cornerstone for finite element methods. The most fundamental variational principle that origins from Newton's law is the principle of virtual work. Neglecting the kinematic term, it can be written as
 \begin{subequations} \label{virtualwork}
 \begin{align}
-\delta{W_{int}} &= \delta{W_{ext}} \label{basic} \\
-\delta W_{int}(\bold{u}, \delta\bold{u}) &= \int_\Omega \boldsymbol\sigma : \delta\bold{e}dV = \int_{\Omega_{0}}\bold{S} : \delta\bold{E}dV \label{Wint} \\
-\delta W_{ext}(\bold{u}, \delta\bold{u}) &= \int_\Omega\bold{b}\cdot\delta\bold{u}dV +  \int_{\partial\Omega}\overline{\bold{t}}\cdot\delta{\bold{u}}dS = \int_{\Omega_0}\bold{B}\cdot\delta\bold{u}dV +  \int_{\partial{\Omega_0}}\overline{\bold{T}}\cdot\delta{\bold{u}}dS \label{Wext1}
+\delta{W_\mathrm{int}} &= \delta{W_\mathrm{ext}} \label{basic} \\
+\delta W_\mathrm{int}(\bold{u}, \delta\bold{u}) &= \int_\Omega \boldsymbol\sigma : \delta\bold{e}dV = \int_{\Omega_{0}}\bold{S} : \delta\bold{E}dV \label{Wint} \\
+\delta W_\mathrm{ext}(\bold{u}, \delta\bold{u}) &= \int_\Omega\bold{b}\cdot\delta\bold{u}dV +  \int_{\partial\Omega}\overline{\bold{t}}\cdot\delta{\bold{u}}dS = \int_{\Omega_0}\bold{B}\cdot\delta\bold{u}dV +  \int_{\partial{\Omega_0}}\overline{\bold{T}}\cdot\delta{\bold{u}}dS \label{Wext1}
 \end{align}
 The internal work is done by Cauchy stress $\boldsymbol\sigma$ along the virtual Euler-Almansi strain $\delta\bold{e}$ about region $\Omega$ and the external work is done by the body force $\bold{b}$ and the surface traction $\overline{\bold{t}}$, along the virtual displacement $\delta{\bold{u}}$ about region $\Omega$ and its boundary surface $\partial\Omega$, respectively. They can be mapped to the reference configuration $\Omega_0$ using corresponding stress and strain tensors, and external body forces and tractions. 
 
 If the external loading is given as fixed traction in the reference configuration, the virtual external work is constant. An example for this type of loading is a tension test where the external force with respect to reference configuration is given as a constant. Another type of loading, which is more frequently encountered in biomechanics is the fixed pressure loading.
 In this case, the pressure on the current boundary surface $\partial\Omega$ is constant, i.e. $\overline{\bold{t}} = \boldsymbol{\sigma} \cdot \bold{n} = p_0\bold{n}$ where $p_0$ is a given constant, $\bold{n}$ is the unit normal vector of the current surface. The external virtual work done by the constant pressure $p_0$ along the virtual displacement $\delta{\bold{u}}$ is defined as:
 \begin{align} 
-\delta{W_{ext}}(\bold{u}, \delta{\bold{u}}) &= p_0\int_{\partial\Omega} \bold{n}\cdot\delta{\bold{u}}dS\label{Wext2}
+\delta{W_\mathrm{ext}}(\bold{u}, \delta{\bold{u}}) &= p_0\int_{\partial\Omega} \bold{n}\cdot\delta{\bold{u}}dS\label{Wext2}
 \end{align}
 \end{subequations}
 
@@ -32,7 +32,7 @@ ds = \left|\frac{\partial{\bold{x}}}{\partial{\xi}} \times  \frac{\partial{\bold
 With these two equations, $\delta W_{ext}$ in Equation \ref{Wext2} for a constant pressure applied on the current boundary can be expressed as:
 
 \begin{equation}
-\delta{W_{ext}}(\bold{u}, \delta{\bold{u}}) = p_0\int_{\Omega_{\xi}}  \left(\frac{\partial{\bold{x}}}{\partial{\xi}} \times  \frac{\partial{\bold{x}}}{\partial{\eta}}\right) \cdot\delta{\bold{u}}d\xi{d\eta}
+\delta{W_\mathrm{ext}}(\bold{u}, \delta{\bold{u}}) = p_0\int_{\Omega_{\xi}}  \left(\frac{\partial{\bold{x}}}{\partial{\xi}} \times  \frac{\partial{\bold{x}}}{\partial{\eta}}\right) \cdot\delta{\bold{u}}d\xi{d\eta}
 \end{equation}
 
 %
@@ -42,30 +42,30 @@ In the principle of virtual work, the stresses are considered without their conn
 In displacement-based formulation, the potential energy is expressed as:
 \begin{subequations}
 \begin{align}
-\Pi(\bold{u}) &= \Pi_{int}(\bold{u}) + \Pi_{ext}(\bold{u}) \\
-\Pi_{int}(\bold{u}) &= \int_{\Omega_{0}}\Psi(\bold{F}(\bold{u}))dV  \label{pint} \\
-\Pi_{ext}(\bold{u}) &=  - \int_{\Omega_0}\bold{B}\cdot\bold{u}dV -  \int_{\partial{\Omega_0}}\overline{\bold{T}}\cdot{\bold{u}}dS
+\Pi(\bold{u}) &= \Pi_\mathrm{int}(\bold{u}) + \Pi_\mathrm{ext}(\bold{u}) \\
+\Pi_\mathrm{int}(\bold{u}) &= \int_{\Omega_{0}}\Psi(\bold{F}(\bold{u}))dV  \label{pint} \\
+\Pi_\mathrm{ext}(\bold{u}) &=  - \int_{\Omega_0}\bold{B}\cdot\bold{u}dV -  \int_{\partial{\Omega_0}}\overline{\bold{T}}\cdot{\bold{u}}dS
 \label{pext} 
 \end{align}
 \end{subequations}
 
 Our objective is to find the state of equilibrium for which the system is stationary. In displacement-based formulation, this means the directional derivative with respect to the displacement $\bold{u}$ to vanish in all directions $\delta{\bold{u}}$.
 \begin{equation} \label{equilibrium}
-D_{\delta\bold{u}}\Pi(\bold{u}) = D_{\delta\bold{u}}\Pi_{int}(\bold{u}) + D_{\delta\bold{u}}\Pi_{ext}(\bold{u}) = 0
+D_{\delta\bold{u}}\Pi(\bold{u}) = D_{\delta\bold{u}}\Pi_\mathrm{int}(\bold{u}) + D_{\delta\bold{u}}\Pi_\mathrm{ext}(\bold{u}) = 0
 \end{equation} 
 In other words, we require the first variation of the total energy potential $\delta\Pi$ to vanish:
 \begin{equation} \label{potential}
-\delta\Pi(\bold{u}, \delta\bold{u}) =\delta\Pi_{int}(\bold{u}) + \delta\Pi_{ext}(\bold{u}) = 0
+\delta\Pi(\bold{u}, \delta\bold{u}) =\delta\Pi_\mathrm{int}(\bold{u}) + \delta\Pi_\mathrm{ext}(\bold{u}) = 0
 \end{equation}
 Here we adopt the convention in \cite{Holzapfel} using $D_{\Delta{x}}f(x, y, \textit{etc.})$ to represent the directional derivative of $f$ as a function of $x, y, \textit{etc.}$ along the direction of $\Delta{x}$ where $x$, $y$, \textit{etc.} can be a scalar or a tensor of any other order. The directional derivative $D_{\Delta{x}}f(x, y, \textit{etc.})$ is equivalent to the first variation of functional $f$ with respect to $x$.
 Equation \ref{equilibrium} or \ref{potential} is the equation we want to solve in the displacement-based formulation. It is easy to prove the equivalence between the principle of directional derivative of the potential energy and the virtual work:
 
 \begin{equation}
-D_{\delta\bold{u}}\Pi_{int}(\bold{u}) = \delta W_{int}(\bold{u}, \delta\bold{u}) \quad
-D_{\delta\bold{u}}\Pi_{ext}(\bold{u}) = - \delta W_{ext}(\bold{u}, \delta\bold{u})
+D_{\delta\bold{u}}\Pi_\mathrm{int}(\bold{u}) = \delta W_\mathrm{int}(\bold{u}, \delta\bold{u}) \quad
+D_{\delta\bold{u}}\Pi_\mathrm{ext}(\bold{u}) = - \delta W_\mathrm{ext}(\bold{u}, \delta\bold{u})
 \end{equation}
 
-In the mixed formulation, $\Pi_{int}(\bold{u}, p) = \int_{\Omega_{0}}\Psi(\bold{F}(\bold{u}), p)dV$ with two independent variables, $\bold{u}$ and $p$. The state of equilibrium is with respect to both of them. Our objective equation becomes
+In the mixed formulation, $\Pi_\mathrm{int}(\bold{u}, p) = \int_{\Omega_{0}}\Psi(\bold{F}(\bold{u}), p)dV$ with two independent variables, $\bold{u}$ and $p$. The state of equilibrium is with respect to both of them. Our objective equation becomes
 \begin{equation} \label{target}
 D_{\delta\bold{u}}\Pi(\bold{u}, p) = 0 \quad D_{\delta{p}}\Pi(\bold{u}, p) = 0
 \end{equation}
@@ -77,23 +77,23 @@ To summarize, in displacement-based formulation, our goal is to find an equilibr
 In displacement-based formulation, Equation \ref{equilibrium} is solved using Newton's method. At each iteration, evaluate the lefthand side $\bold{r}$ of Equation \ref{equilibrium} and its tangent stiffness matrix $\bold{A}$, respectively. Then the increment of the displacement $\Delta\bold{u}$ is obtained from solving linear system $\bold{A} \cdot \Delta\bold{u} = -\bold{r}$. Based on Equation \ref{Wint}, by means of differentiation, we have
 
 \begin{equation} \label{Kint}
-D^2_{\delta\bold{u}, \Delta\bold{u}}\Pi_{int}(\bold{u}) = D_{\Delta{\bold{u}}}\delta{W_{int}}(\bold{u}, \delta{\bold{u}}) = \int_{\Omega_0}(\nabla_{\bold{X}}\delta\bold{u} : \nabla_{\bold{X}}\Delta\bold{u}\bold{S} + \bold{F}^T\nabla_{\bold{X}}\delta{\bold{u}} : \mathbb{C} : \bold{F}^T \nabla_{\bold{X}}\Delta\bold{u})dV
+D^2_{\delta\bold{u}, \Delta\bold{u}}\Pi_\mathrm{int}(\bold{u}) = D_{\Delta{\bold{u}}}\delta{W_\mathrm{int}}(\bold{u}, \delta{\bold{u}}) = \int_{\Omega_0}(\nabla_{\bold{X}}\delta\bold{u} : \nabla_{\bold{X}}\Delta\bold{u}\bold{S} + \bold{F}^T\nabla_{\bold{X}}\delta{\bold{u}} : \mathbb{C} : \bold{F}^T \nabla_{\bold{X}}\Delta\bold{u})dV
 \end{equation}
 The first term in the integration is called the initial stress contribution since $\bold{S}$ characterizes the initial stress at every increment. The second term is called material contribution because $\mathbb{C}$ characterizes the material response to the displacement.
 
 As discussed in Section \ref{PVW}, for the first type of external loading as in Equation \ref{Wext1}, the external work is independent of the displacement. So the variation vanishes:
 
 \begin{equation} \label{Kext}
-D^2_{\delta\bold{u}, \Delta\bold{u}}\Pi_{ext}(\bold{u}) = - D_{\Delta{\bold{u}}}\delta{W_{ext}}(\bold{u}, \delta{\bold{u}}) = 0
+D^2_{\delta\bold{u}, \Delta\bold{u}}\Pi_\mathrm{ext}(\bold{u}) = - D_{\Delta{\bold{u}}}\delta{W_\mathrm{ext}}(\bold{u}, \delta{\bold{u}}) = 0
 \end{equation}
 The linearization is obtained by a straight-forward derivation with respect to $\Delta\bold{u}$, the increment of displacement. 
 \begin{equation}  \label{Kext2}
-D^2_{\delta\bold{u}, \Delta\bold{u}}\Pi_{ext}(\bold{u}) = - D_{\Delta{\bold{u}}}\delta{W_{ext}}(\bold{u}, \delta{\bold{u}}) = - p_0\int_{\Omega_{\xi}}  \left(\frac{\partial{\bold{x}}}{\partial{\eta}} \times \delta\bold{u}\right) \cdot\Delta{\bold{u}}_{,\xi} - 
+D^2_{\delta\bold{u}, \Delta\bold{u}}\Pi_\mathrm{ext}(\bold{u}) = - D_{\Delta{\bold{u}}}\delta{W_\mathrm{ext}}(\bold{u}, \delta{\bold{u}}) = - p_0\int_{\Omega_{\xi}}  \left(\frac{\partial{\bold{x}}}{\partial{\eta}} \times \delta\bold{u}\right) \cdot\Delta{\bold{u}}_{,\xi} - 
 \left(\frac{\partial{\bold{x}}}{\partial{\xi}} \times \delta\bold{u}\right) \cdot\Delta{\bold{u}}_{,\eta} d\xi{d\eta}
 \end{equation}
 Therefore with Equation \ref{Kint} and \ref{Kext} or \ref{Kext2} we are able to obtain the matrix form for displacement-based formulation:
 \begin{equation} \label{matrix}
-\left( D^2_{\delta\bold{u}, \Delta\bold{u}}\Pi_{int}(\bold{u}) + D^2_{\delta\bold{u}, \Delta\bold{u}}\Pi_{ext}(\bold{u})  \right) \Delta\bold{u} = D_{\delta\bold{u}}\Pi_{int}(\bold{u}) + D_{\delta\bold{u}}\Pi_{ext}(\bold{u})
+\left( D^2_{\delta\bold{u}, \Delta\bold{u}}\Pi_\mathrm{int}(\bold{u}) + D^2_{\delta\bold{u}, \Delta\bold{u}}\Pi_\mathrm{ext}(\bold{u})  \right) \Delta\bold{u} = D_{\delta\bold{u}}\Pi_\mathrm{int}(\bold{u}) + D_{\delta\bold{u}}\Pi_\mathrm{ext}(\bold{u})
 \end{equation}
 The terms in the parenthesis on the lefthand side is the tangent stiffness matrix, the righthand side is the residual of the system potential energy.
 
@@ -113,18 +113,18 @@ D_{\delta\bold{u}}\Pi(\bold{u}, p) \\ D_{\delta{p}}\Pi(\bold{u}, p)
 \end{equation}
 We first examine the righthand side. For incompressible materials, recall Equations \ref{energy_split} and \ref{Lagrange}, the potential energy is expressed as the sum of the internal and external energies:
 \begin{equation} \label{split3}
-\Pi(\bold{u}, p) = \int_{\Omega_0} \left[ p(J(\bold{u}) - 1) + \Psi_{iso}(\overline{\bold{C}}(\bold{u}))\right] dV + \Pi_{ext}(\bold{u})
+\Pi(\bold{u}, p) = \int_{\Omega_0} \left[ p(J(\bold{u}) - 1) + \Psi_\mathrm{iso}(\overline{\bold{C}}(\bold{u}))\right] dV + \Pi_\mathrm{ext}(\bold{u})
 \end{equation}
 Using the chain rule, the righthand side of Equation \ref{linear} can be expressed as:
 
 \begin{equation}\label{rhs1}
 D_{\delta\bold{u}}\Pi(\bold{u}, p) = \int_{\Omega_0}\left( J(\bold{u})p\bold{C}^{-1}(\bold{u}) + 
-2\frac{\partial{\Psi_{iso}(\overline{\bold{C}}(\bold{u}))}}{\partial{\bold{C}}}  \right) : \delta\bold{E}(\bold{u}) dV + D_{\delta\bold{u}}\Pi_{ext}(\bold{u})
+2\frac{\partial{\Psi_\mathrm{iso}(\overline{\bold{C}}(\bold{u}))}}{\partial{\bold{C}}}  \right) : \delta\bold{E}(\bold{u}) dV + D_{\delta\bold{u}}\Pi_\mathrm{ext}(\bold{u})
 \end{equation}
 \begin{equation}\label{rhs2}
 D_{\delta{p}}\Pi(\bold{u}, p) = \int_{\Omega_0} (J(\bold{u}) - 1 )\delta{p} dV
 \end{equation}
-For the lefthand side, $D_{\delta\bold{u}, \Delta\bold{u}}^2 \Pi(\bold{u}, p)$ has already been derived for the displacement-based formulation as the sum of Equation \ref{Kint} and Equation \ref{Kext} (the first type of external loading where $\Pi_{ext} = 0$) or \ref{Kext2} (the second type of external loading where a constant pressure is applied on the current boundary), i.e.
+For the lefthand side, $D_{\delta\bold{u}, \Delta\bold{u}}^2 \Pi(\bold{u}, p)$ has already been derived for the displacement-based formulation as the sum of Equation \ref{Kint} and Equation \ref{Kext} (the first type of external loading where $\Pi_\mathrm{ext} = 0$) or \ref{Kext2} (the second type of external loading where a constant pressure is applied on the current boundary), i.e.
 \begin{equation} \label{lhs0}
 D_{\delta\bold{u}, \Delta\bold{u}}^2 \Pi(\bold{u}, p) =  \int_{\Omega_0}(\nabla_{\bold{X}}\delta\bold{u} : \nabla_{\bold{X}}\Delta\bold{u}\bold{S} + \bold{F}^T\nabla_{\bold{X}}\delta{\bold{u}} : \mathbb{C} : \bold{F}^T \nabla_{\bold{X}}\Delta\bold{u})dV  \end{equation}
 when pressure boundary condition is applied
