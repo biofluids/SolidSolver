@@ -1,0 +1,81 @@
+\begin{table}
+\centering
+\caption{Material parameters of the isotropic models}
+\begin{tabular} { l  l  l }
+	\hline
+	Neo-Hookean & Mooney-Rivlin & Yeoh \\
+	\hline
+	$\mu_1 = 0.595522$ MPa & $\mu_1 = 0.595522$ MPa & $c_1 = 0.358756$ MPa \\
+	& $\mu_2 = 0.050381$ MPa & $c_2 = - 0.0508009$ MPa \\
+	& & $c_3 = 0.0142132$ MPa \\
+	\hline
+	For all models, $\kappa = 1 \times 10^5 $ MPa \\
+	\hline
+\end{tabular}
+\label{parameters}
+\end{table}
+
+\begin{table}
+\centering
+\caption{Configuration of the artery model}
+\label{table:artery}
+\begin{tabular}{ l l l l l l l}
+\hline
+& $\mu_1$(KPa) & $k_1$(KPa) & $k_2$(-) & $\kappa$(KPa) & $R$(mm) & $\beta(^\circ)$ \\
+ \hline
+ Media &   $3.0$ & $2.3632$ & $0.8393$ & $10^5$ & $[0.71, 0.97)$ & $29.0$\\
+ Adventitia & $0.3$ & $0.5629$ & $0.7112$ & $10^5$ & [0.97, 1.1] & $62.0$\\
+ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+\centering
+\caption{Equations in the reference configuration}
+\label{summary}
+\begin{tabular}{l c c c c} 
+\toprule
+\multirow{2}{*}{Model}  &  \multicolumn{2}{c}{Stress tensor} &  \multicolumn{2}{c}{Elasticity tensor} \\
+\cmidrule(l){2-5}
+& Isochoric  & Volumetric &  Isochoric  & Volumetric  \\
+\midrule
+Mooney-Rivlin  & \ref{Siso1} & \ref{Svol11} (mixed)  & \ref{Ciso1} & \ref{Cvol11} (mixed) \\
+Yeoh & \ref{Siso2} &  or & \ref{Ciso2} & or \\
+HGO & \ref{HGOSiso} & \ref{Svol12} (displacement-based) & \ref{Ciso3} & \ref{Cvol12} (displacement-based)\\ 
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}
+\centering
+\caption{Equations in the reference configuration}
+\label{summary1}
+\begin{tabular}{l c c c c} 
+\toprule
+\multirow{2}{*}{Model}  &  \multicolumn{2}{c}{Stress tensor} &  \multicolumn{2}{c}{Elasticity tensor} \\
+\cmidrule(l){2-5}
+& Isochoric  & Volumetric &  Isochoric  & Volumetric  \\
+\midrule
+Mooney-Rivlin  & \ref{Siso1} & \multirow{3}{*}{\ref{Svol11} or \ref{Svol12}} & \ref{Ciso1} & \multirow{3}{*}{\ref{Cvol11} or \ref{Cvol12}} \\
+Yeoh & \ref{Siso2} & & \ref{Ciso2} &\\
+HGO & \ref{HGOSiso} & & \ref{Ciso3} &\\ 
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}
+\centering
+\caption{Equations in the current configuration}
+\label{summary2}
+\begin{tabular}{l c c c c} 
+\toprule
+\multirow{2}{*}{Model}  &  \multicolumn{2}{c}{Stress tensor} &  \multicolumn{2}{c}{Elasticity tensor} \\
+\cmidrule(l){2-5}
+& Isochoric  & Volumetric &  Isochoric  & Volumetric  \\
+\midrule
+Mooney-Rivlin  & \ref{Tauiso1} & \multirow{3}{*}{\ref{Tauvol11} or \ref{Tauvol12}} & \ref{spatial_ciso1} & \multirow{3}{*}{\ref{spatial_cvol11} or \ref{spatial_cvol12}} \\
+Yeoh & \ref{Tauiso2} & & \ref{spatial_ciso2} &\\
+HGO & \ref{HGO_tauiso} & & \ref{HGO_spatial_ciso} &\\ 
+\bottomrule
+\end{tabular}
+\end{table}

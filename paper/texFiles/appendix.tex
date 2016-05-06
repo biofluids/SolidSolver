@@ -1,5 +1,5 @@
 \begin{appendices}
-\section{Updated Lagrangian Formulation}
+\section{Updated Lagrangian Formulation} \label{updated}
 In the updated Lagrangian Formulation, the Kirchhoff stress $\boldsymbol{\tau}$ or the Cauchy stress $\boldsymbol{\sigma}$ is used instead of the PK2 stress $\bold{S}$, meanwhile the principle of virtual work or principle of stationary potential energy and their linearization are written in the current configuration as well. In this appendix we will show the corresponding formulations in the current configuration.
 
 %
@@ -8,18 +8,18 @@ The stress tensor we work with in the updated Lagrangian formulation is the Kirc
 \begin{equation}
 \boldsymbol{\tau} = \bold{F}\bold{S}{\bold{F}}^T \label{current_stress}
 \end{equation}
-Recall the definition of the elasticity tensor $\mathbb{C}$ in Equation \ref{def_elasticity_tensor}, the spatial tensor of elasticity $\mathbb{c}$ is defined as:
+Recall the definition of the elasticity tensor $\mathbb{C}$ in Equation \ref{def_elasticity_tensor}, the spatial tensor of elasticity $\mathbbm{c}$ is defined as:
 
 \begin{equation}
-\mathbb{c} = \frac{\partial{ \pounds_{\bold{v}}({\boldsymbol{\tau}}^{\sharp}) } }{\partial{ \bold{d} }}
+\mathbbm{c} = \frac{\partial{ \pounds_{\bold{v}}({\boldsymbol{\tau}}^{\sharp}) } }{\partial{ \bold{d} }}
 \end{equation} 
 where $\pounds_{\bold{v}}({\boldsymbol{\tau}}^{\sharp})$ is the objective Oldroyd stress rate defined as: $\pounds_{\bold{v}}({\boldsymbol{\tau}}^{\sharp}) = \dot{\boldsymbol{\tau}} - \bold{l}\boldsymbol{\tau} - \boldsymbol{\tau}\bold{l}^T$, $\bold{l} = \nabla_{\bold{x}}\bold{v}$ and $\bold{d} = (\bold{l} + {\bold{l}}^T)/2$. 
-The spatial tensor of elasticity $\mathbb{c}$ can be transformed from the elasticity tensor $\mathbb{C}$ through a push-forward operation:
+The spatial tensor of elasticity $\mathbbm{c}$ can be transformed from the elasticity tensor $\mathbb{C}$ through a push-forward operation:
 \begin{equation}
 c_{ijkl} = F_{iI}F_{jJ}F_{kK}F_{lL}C_{IJKL} \label{current_elasticity}
 \end{equation}
 
-Next we will derive the Kirchhoff stress $\boldsymbol{\tau}$ and the spatial tensor of elasticity $\mathbb{c}$ for Mooney-Rivlin model, Yeoh model and HGO model respectively. All these models have the same volumetric part, which can be obtained by substituting Equation \ref{Svol1} into Equation \ref{current_stress}:
+Next we will derive the Kirchhoff stress $\boldsymbol{\tau}$ and the spatial tensor of elasticity $\mathbbm{c}$ for Mooney-Rivlin model, Yeoh model and HGO model respectively. All these models have the same volumetric part, which can be obtained by substituting Equation \ref{Svol1} into Equation \ref{current_stress}:
 
 \begin{subequations}
 \label{Tauvol1}
@@ -49,7 +49,7 @@ The isochoric Kirchhoff stress $\boldsymbol{\tau}_\mathrm{iso}$ for Mooney-Rivli
 				    &= - \frac{1}{3}(\mu_1\bar{I_1} + 2\mu_2\bar{I_2})\bold{I} - \mu_2{\overline{\bold{B}}}^2 + (\mu_1 + \mu_2\bar{I_1}){\overline{\bold{B}}}
 \end{split}
 \end{equation}
-where $\overline{\bold{B}}$ is the modified right Cauchy-Green tensor defined as $\overline{\bold{B}} = \overline{\bold{F}}\overline{\bold{F}}^T = \overline{\bold{C}}^T$, and the isochoric spatial tensor of elasticity $\mathbb{c}_\mathrm{iso}$ is obtained from Equation \ref{Ciso1}:
+where $\overline{\bold{B}}$ is the modified right Cauchy-Green tensor defined as $\overline{\bold{B}} = \overline{\bold{F}}\overline{\bold{F}}^T = \overline{\bold{C}}^T$, and the isochoric spatial tensor of elasticity $\mathbbm{c}_\mathrm{iso}$ is obtained from Equation \ref{Ciso1}:
 
 \begin{equation} \label{spatial_ciso1}
 \begin{split}
@@ -64,7 +64,7 @@ where $\overline{\bold{B}}$ is the modified right Cauchy-Green tensor defined as
 \end{split}
 \end{equation} 
 
-Similarly, the isochoric stress $\boldsymbol{\tau}_{iso}$ and the isochoric spatial tensor of elasticity $\mathbb{c}_{iso}$ for Yeoh model are transformed from Equations \ref{Siso2} and \ref{Ciso2}:
+Similarly, the isochoric stress $\boldsymbol{\tau}_{iso}$ and the isochoric spatial tensor of elasticity $\mathbbm{c}_\mathrm{iso}$ for Yeoh model are transformed from Equations \ref{Siso2} and \ref{Ciso2}:
 
 \begin{equation} \label{Tauiso2}
 \begin{split}
@@ -146,46 +146,9 @@ Therefore the isochoric Kirchhoff stress is obtained by adding up Equations \ref
 Using the total Lagrangian formulation introduced in Section \ref{formulation}, the linearization of the internal work is then transforming Equation \ref{Kint} into the following equation written in the current configuration:
 
 \begin{equation}
-D^2_{\delta\bold{u}, \Delta\bold{u}}\Pi_\mathrm{int}(\bold{u}) = D_{\Delta{\bold{u}}}\delta{W_\mathrm{int}}(\bold{u}, \delta{\bold{u}}) = \int_{\Omega_0}(\nabla_{\bold{x}}\delta\bold{u} : \nabla_{\bold{x}}\Delta\bold{u}\boldsymbol{\tau} + \nabla_{\bold{x}}\delta{\bold{u}} : \mathbb{c} :  \nabla_{\bold{x}}\Delta\bold{u})dV
+D^2_{\delta\bold{u}, \Delta\bold{u}}\Pi_\mathrm{int}(\bold{u}) = D_{\Delta{\bold{u}}}\delta{W_\mathrm{int}}(\bold{u}, \delta{\bold{u}}) = \int_{\Omega_0}(\nabla_{\bold{x}}\delta\bold{u} : \nabla_{\bold{x}}\Delta\bold{u}\boldsymbol{\tau} + \nabla_{\bold{x}}\delta{\bold{u}} : \mathbbm{c} :  \nabla_{\bold{x}}\Delta\bold{u})dV
 \end{equation}
 
-
-%
-\section{Summary of Formulas}
-Table \ref{summary1} lists the stress and elasticity tensors for Mooney-Rivlin, Yeoh and HGO models in the reference configuration. Accordingly Table \ref{summary2} lists the stress and elasticity tensors for those models in the current configuration.
-
-\begin{table}[H]
-\centering
-\caption{Formulas in the Reference Configuration}
-\label{summary1}
-\begin{tabular}{l c c c c} 
-\toprule
-\multirow{2}{*}{Model}  &  \multicolumn{2}{c}{Stress tensor} &  \multicolumn{2}{c}{Elasticity tensor} \\
-\cmidrule(l){2-5}
-& Isochoric  & Volumetric &  Isochoric  & Volumetric  \\
-\midrule
-Mooney-Rivlin  & \ref{Siso1} & \multirow{3}{*}{\ref{Svol11} or \ref{Svol12}} & \ref{Ciso1} & \multirow{3}{*}{\ref{Cvol11} or \ref{Cvol12}} \\
-Yeoh & \ref{Siso2} & & \ref{Ciso2} &\\
-HGO & \ref{HGOSiso} & & \ref{Ciso3} &\\ 
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{table}[H]
-\centering
-\caption{Formulas in the Current Configuration}
-\label{summary2}
-\begin{tabular}{l c c c c} 
-\toprule
-\multirow{2}{*}{Model}  &  \multicolumn{2}{c}{Stress tensor} &  \multicolumn{2}{c}{Elasticity tensor} \\
-\cmidrule(l){2-5}
-& Isochoric  & Volumetric &  Isochoric  & Volumetric  \\
-\midrule
-Mooney-Rivlin  & \ref{Tauiso1} & \multirow{3}{*}{\ref{Tauvol11} or \ref{Tauvol12}} & \ref{spatial_ciso1} & \multirow{3}{*}{\ref{spatial_cvol11} or \ref{spatial_cvol12}} \\
-Yeoh & \ref{Tauiso2} & & \ref{spatial_ciso2} &\\
-HGO & \ref{HGO_tauiso} & & \ref{HGO_spatial_ciso} &\\ 
-\bottomrule
-\end{tabular}
-\end{table}
+To summarize, Table \ref{summary1} and Table \ref{summary2} list the equation numbers of the derived stress and elasticity tensors for Mooney-Rivlin, Yeoh and HGO models in the reference configuration and the current configuration, respectively.
 
 \end{appendices}
