@@ -29,7 +29,7 @@ For the second type of loading as in Equation \ref{Wext2}, the external work is 
 \begin{equation}
 dS = \left|\frac{\partial{\bold{x}}}{\partial{\xi}} \times  \frac{\partial{\bold{x}}}{\partial{\eta}}\right| d\xi{d\eta}
 \end{equation}
-With these two equations, $\delta W_{ext}$ in Equation \ref{Wext2} for a constant pressure applied on the current boundary can be expressed as:
+With these two equations, $\delta W_\mathrm{ext}$ in Equation \ref{Wext2} for a constant pressure applied on the current boundary can be expressed as:
 
 \begin{equation}
 \delta{W_\mathrm{ext}}(\bold{u}, \delta{\bold{u}}) = p_0\int_{\Omega_{\xi}}  \left(\frac{\partial{\bold{x}}}{\partial{\xi}} \times  \frac{\partial{\bold{x}}}{\partial{\eta}}\right) \cdot\delta{\bold{u}}d\xi{d\eta}
@@ -57,7 +57,7 @@ In other words, we require the first variation of the total energy potential $\d
 \begin{equation} \label{potential}
 \delta\Pi(\bold{u}, \delta\bold{u}) =\delta\Pi_\mathrm{int}(\bold{u}) + \delta\Pi_\mathrm{ext}(\bold{u}) = 0
 \end{equation}
-Here we adopt the convention in \cite{Holzapfel} using $D_{\Delta{x}}f(x, y, \mathrm{etc.})$ to represent the directional derivative of $f$ which is a function of $x$, $y$, etc. along the direction of $\Delta{x}$ where $x$, $y$, etc. can be a scalar or a tensor of any other order. The directional derivative $D_{\Delta{x}}f(x, y, \mathrm{etc.})$ is equivalent to the first variation of functional $f$ with respect to $x$.
+Here we adopt the convention in \cite{Holzapfel} using $D_{\Delta{x}}f(x, y, \mathrm{etc.})$ to represent the directional derivative of $f$ which is a function of $x$, $y$, etc. along the direction of $\Delta{x}$, where $x$, $y$, etc. can be a scalar or a tensor of any other order. The directional derivative $D_{\Delta{x}}f(x, y, \mathrm{etc.})$ is equivalent to the first variation of functional $f$ with respect to $x$.
 Equation \ref{equilibrium} or \ref{potential} is the equation to be solved in the displacement-based formulation. It is easy to prove the equivalence between the principle of directional derivative of the potential energy and the virtual work:
 
 \begin{equation}
@@ -79,14 +79,14 @@ In the displacement-based formulation, Equation \ref{equilibrium} is solved usin
 \begin{equation} \label{Kint}
 D^2_{\delta\bold{u}, \Delta\bold{u}}\Pi_\mathrm{int}(\bold{u}) = D_{\Delta{\bold{u}}}\delta{W_\mathrm{int}}(\bold{u}, \delta{\bold{u}}) = \int_{\Omega_0}(\nabla_{\bold{X}}\delta\bold{u} : \nabla_{\bold{X}}\Delta\bold{u}\bold{S} + \bold{F}^T\nabla_{\bold{X}}\delta{\bold{u}} : \mathbb{C} : \bold{F}^T \nabla_{\bold{X}}\Delta\bold{u})dV
 \end{equation}
-The first term in the integration is called the initial stress contribution since $\bold{S}$ characterizes the initial stress at every increment. The second term is called the material contribution because $\mathbb{C}$ characterizes the material response to the displacement.
+The first term in the integration is called the initial stress contribution since $\bold{S}$ characterizes the initial stress at every increment. The second term is called the material contribution as $\mathbb{C}$ characterizes the material response to the displacement.
 
 As discussed in Section \ref{PVW}, for the first type of external loading as in Equation \ref{Wext1}, the external work is independent of the displacement. So the variation vanishes:
 
 \begin{equation} \label{Kext}
 D^2_{\delta\bold{u}, \Delta\bold{u}}\Pi_\mathrm{ext}(\bold{u}) = - D_{\Delta{\bold{u}}}\delta{W_\mathrm{ext}}(\bold{u}, \delta{\bold{u}}) = 0
 \end{equation}
-The linearization is obtained by a straight-forward derivation with respect to $\Delta\bold{u}$, the increment of displacement. 
+For the second type of external loading the linearization is obtained by a straight-forward derivation with respect to $\Delta\bold{u}$, the increment of displacement. 
 \begin{equation}  \label{Kext2}
 D^2_{\delta\bold{u}, \Delta\bold{u}}\Pi_\mathrm{ext}(\bold{u}) = - D_{\Delta{\bold{u}}}\delta{W_\mathrm{ext}}(\bold{u}, \delta{\bold{u}}) = - p_0\int_{\Omega_{\xi}}  \left(\frac{\partial \Delta\bold{u}}{\partial{\xi}} \times
 \frac{\partial\bold{x}}{\partial\eta} - \frac{\partial \Delta\bold{u}}{\partial{\eta}} \times
@@ -94,9 +94,9 @@ D^2_{\delta\bold{u}, \Delta\bold{u}}\Pi_\mathrm{ext}(\bold{u}) = - D_{\Delta{\bo
 \end{equation}
 Therefore with Equation \ref{Kint} and \ref{Kext} or \ref{Kext2} we are able to obtain the matrix form for displacement-based formulation:
 \begin{equation} \label{matrix}
-\left( D^2_{\delta\bold{u}, \Delta\bold{u}}\Pi_\mathrm{int}(\bold{u}) + D^2_{\delta\bold{u}, \Delta\bold{u}}\Pi_\mathrm{ext}(\bold{u})  \right) \Delta\bold{u} = D_{\delta\bold{u}}\Pi_\mathrm{int}(\bold{u}) + D_{\delta\bold{u}}\Pi_\mathrm{ext}(\bold{u})
+\left( D^2_{\delta\bold{u}, \Delta\bold{u}}\Pi_\mathrm{int}(\bold{u}) + D^2_{\delta\bold{u}, \Delta\bold{u}}\Pi_\mathrm{ext}(\bold{u})  \right) \Delta\bold{u} = - (D_{\delta\bold{u}}\Pi_\mathrm{int}(\bold{u}) + D_{\delta\bold{u}}\Pi_\mathrm{ext}(\bold{u}) )
 \end{equation}
-The terms in the parenthesis on the lefthand side is the tangent stiffness matrix, the righthand side is the residual of the system potential energy.
+The terms in the parenthesis on the lefthand side is the tangent stiffness matrix, the righthand side is the opposite of the residual of the system potential energy.
 
 The matrix form for the mixed formulation in Equation \ref{target} is more complicated as it requires the linearization with respect to both $\bold{u}$ and $p$. The increment matrix form becomes:
 
@@ -107,7 +107,7 @@ D_{\delta\bold{u}, \Delta\bold{u}}^2 \Pi(\bold{u}, p)  && D_{\delta\bold{u}, \De
 \begin{bmatrix}
 \Delta\bold{u} \\ \Delta{p}
 \end{bmatrix}
-= 
+= -
 \begin{bmatrix}
 D_{\delta\bold{u}}\Pi(\bold{u}, p) \\ D_{\delta{p}}\Pi(\bold{u}, p) 
 \end{bmatrix}

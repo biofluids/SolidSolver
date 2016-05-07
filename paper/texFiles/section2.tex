@@ -4,7 +4,7 @@ Yet not all biomaterials are isotropic. For example, the stomach wall tissues in
 
 %
 \subsection{Hyperelastic Models}
-Generally in continuum mechanics we use constitutive equations to describe the stress components in terms of other functions such as strain. This functional relationship distinguishes different types of materials. For hyperelastic material, we postulate there exists a Helmholtz free-energy function $\Psi$, which is defined per unit reference volume. If $\Psi$ is uniquely determined by deformation tensor $\bold{F}$ or other strain tensor, it is called strain-energy function. For example, all isotropic models are functions of the right Cauchy-Green tensor, which is defined as $\C = {\F}^T{\F}$. If the strain is given, the stress can be uniquely determined from the strain-energy function. Our discussion will be focused on rubber-like materials as often the case for biomaterials which are modeled as incompressible or nearly incompressible. In this case, the strain-energy function is postulated to have a unique decoupled form:
+Generally in continuum mechanics we use constitutive equations to describe the stress components in terms of other functions such as strain. This functional relationship distinguishes different types of materials. For hyperelastic material, we postulate there exists a Helmholtz free-energy function $\Psi$, which is defined per unit reference volume. If $\Psi$ is uniquely determined by the deformation tensor $\bold{F}$ or other strain tensor, it is called strain-energy function. For example, all isotropic models are functions of the right Cauchy-Green tensor, which is defined as $\C = {\F}^T{\F}$. If the strain is given, the stress can be uniquely determined from the strain-energy function. Our discussion will be focused on rubber-like materials as often the case for biomaterials which are modeled as incompressible or nearly incompressible. In this case, the strain-energy function is postulated to have a unique decoupled form:
 
 \begin{equation} \label{energy_split}
 \Psi(\C) = \Psi_\mathrm{vol}(J) + \Psi_\mathrm{iso}(\Cb)
@@ -29,7 +29,7 @@ where $p$ is a Lagrange multiplier and can be identified as the hydrostatic pres
 
 Furthermore, if the material is isotropic, the strain-energy function can be expressed as a function of the three invariants of the right (or left) Cauchy-Green tensor. 
 These invariants are 
-$I_1 = tr(\bold{C}) = tr(\bold{B})$, $I_2 = \frac{1}{2}(I_1^2 - tr(\bold{C}^2)) = \frac{1}{2}(I_1^2 - tr(\bold{B}^2))$, and $I_3 = det(\bold{C}) = det(\bold{B}) = J^2$, where $\bold{B}$ is the left Cauchy-Green tensor defined as $\bold{B} = \F{\F}^T$. 
+$I_1 = \mathrm{tr}(\bold{C}) = \mathrm{tr}(\bold{B})$, $I_2 = \frac{1}{2}(I_1^2 - \mathrm{tr}(\bold{C}^2)) = \frac{1}{2}(I_1^2 - \mathrm{tr}(\bold{B}^2))$, and $I_3 = \mathrm{det}(\bold{C}) = \mathrm{det}(\bold{B}) = J^2$, where $\bold{B}$ is the left Cauchy-Green tensor defined as $\bold{B} = \F{\F}^T$. 
 They also have their modified counterparts: $\bar{I}_1 = J^{-2/3}I_1$, $\bar{I}_2 = J^{-4/3}I_2$, and $\bar{I}_3 = 1$. In fact, most isotropic models can be expressed as:
 \begin{equation}
 \Psi = \Psi_\mathrm{vol}(J) + \Psi_\mathrm{iso}(\bar{I}_1, \bar{I}_2)
@@ -43,7 +43,7 @@ Based on the postulation of strain-energy function, it follows that the work don
 \Psi(\F_2) - \Psi(\F_1) = \delta{W_\mathrm{int}} = \int_{t_1}^{t_2}\bold{P}:\dot{\bold{F}}dt = \int_{t_1}^{t_2}\bold{S}:\dot{\bold{E}}dt = 
 \int_{t_1}^{t_2}\boldsymbol{\sigma}:\dot{\bold{e}}dt
 \end{equation}
-where $\bold{P}$ is the first Piola-Kirchhoff stress, $\bold{S}$ is the second Piola-Kirchhoff (PK2) stress tensor, $\bold{E}$ is the Green-Lagrange strain tensor defined as $\bold{E} = \frac{1}{2}(\C - \I)$, and $\bold{e}$ is Euler-Almansi strain tensor which is defined as the symmetric part of the gradient of the displacement in the current configuration, i.e., $\bold{e} = \frac{1}{2}( \bold{I} - {\bold{F}}^{-T}{\bold{F}}^{-1} )$, where $\bold{u}$ is the displacement.
+where $\bold{P}$ is the first Piola-Kirchhoff stress, $\bold{S}$ is the second Piola-Kirchhoff (PK2) stress tensor, $\bold{E}$ is the Green-Lagrange strain tensor defined as $\bold{E} = \frac{1}{2}(\C - \I)$, and $\bold{e}$ is Euler-Almansi strain tensor which is defined as $\bold{e} = \frac{1}{2}( \bold{I} - {\bold{F}}^{-T}{\bold{F}}^{-1} )$.
 
 If the material is homogeneous, the PK2 stress $\bold{S}$ can be determined by: 
 \begin{equation}
@@ -70,7 +70,7 @@ Note that if the material is completely incompressible, the hydrostatic pressure
 \begin{equation} \label{pressure}
 p = \frac{d\Psi_\mathrm{vol}(J)}{dJ} = \kappa\frac{dG(J)}{dJ}
 \end{equation}
-If we leave $p$ as an unknown and use Equation \ref{pressure} as an additional constraint, we will have a displacement/pressure mixed formulation. If we replace $p$ with a function of the displacement $\bold{u}$ using Equation \ref{pressure}, we end up with a displacement-based formulation.
+For the material that is not completely incompressible, either displacement-based formulation or mixed formulation can be used. If we explicitly substitute $p$ with Equation \ref{pressure}, we end up with a displacement-based formulation as $\bold{u}$ is the only unknown to be solved; If we leave $p$ as an unknown and use Equation \ref{pressure} as a relaxed constraint in the Lagrangian multiplier method, we will have a displacement/pressure mixed formulation.
 
 %
 The solutions in nonlinear finite element methods are often obtained incrementally with Newton's method. The elasticity tensors is crucial in the implementation of Newton's method.
@@ -90,7 +90,7 @@ Similar to $\Psi$ and $\PK$, the elasticity tensor can also be rewritten in the 
 \mathbb{C}_\mathrm{vol} &= 2\frac{\partial{\bold{S}_\mathrm{vol}}}{\partial{\bold{C}}} =
 J^{-1/3}\tilde{p}{\overline{\bold{C}}}^{-1}\otimes {\overline{\bold{C}}}^{-1} - 2J^{-1/3}p{\overline{\bold{C}}}^{-1}\odot {\overline{\bold{C}}}^{-1}  \label{Cvol} \\
 \mathbb{C}_\mathrm{iso} &= 2\frac{\partial{\bold{S}_\mathrm{iso}}}{\partial{\bold{C}}} =
-\mathbb{P} : \overline{\mathbb{C}} : \mathbb{P}^T + \frac{2}{3}Tr(J^{-2/3}\overline{\bold{S}})\tilde{\mathbb{P}} - \frac{2}{3}J^{-2/3}(\overline{\bold{C}}^{-1}\otimes\bold{S}_\mathrm{iso} + \bold{S}_\mathrm{iso}\otimes {\overline{\bold{C}}}^{-1})
+\mathbb{P} : \overline{\mathbb{C}} : \mathbb{P}^T + \frac{2}{3}\mathrm{Tr}(J^{-2/3}\overline{\bold{S}})\tilde{\mathbb{P}} - \frac{2}{3}J^{-2/3}(\overline{\bold{C}}^{-1}\otimes\bold{S}_\mathrm{iso} + \bold{S}_\mathrm{iso}\otimes {\overline{\bold{C}}}^{-1})
 \label{Ciso} 
 \end{align}
 \end{subequations}
@@ -98,7 +98,7 @@ where $\tilde{p}$ is defined as $\tilde{p} = p + J{dp}/{dJ}$. Note that in the m
 ${\overline{\bold{C}}}^{-1}\odot {\overline{\bold{C}}}^{-1} = - {\partial{{\overline{\bold{C}}}^{-1}}} / {\partial{{\overline{\bold{C}}}}}$; 
 $\overline{\mathbb{C}}$ is the fourth-order fictitious elasticity tensor defined as 
 $\overline{\mathbb{C}} = 2J^{-2/3}\dfrac{\partial{\overline{\bold{S}}}}{\partial{\overline{\bold{C}}}} = 4J^{-4/3} \dfrac{\partial^2\Psi_\mathrm{iso}(\overline{\bold{C}})} {\partial{\overline{\bold{C}}}{\partial{\overline{\bold{C}}}}} $;
-$Tr(\bullet)$ is the trace defined as $Tr(\bullet) = (\bullet) : \bold{C}$;
+$\mathrm{Tr}(\bullet)$ is the trace defined as $\mathrm{Tr}(\bullet) = (\bullet) : \bold{C}$;
 and $\tilde{\mathbb{P}}$ is the modified projection tensor of fourth-order defined as 
 $\tilde{\mathbb{P}} = \bold{C}^{-1} \odot \bold{C}^{-1} -  \frac{1}{3}\bold{C}^{-1} \otimes \bold{C}^{-1} = J^{-4/3}(
 {\overline{\bold{C}}}^{-1} \odot {\overline{\bold{C}}}^{-1} -  \frac{1}{3} {\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1})$.
@@ -117,7 +117,7 @@ Originally derived by Mooney \cite{Mooney} and Rivlin \cite{Rivlin}, Mooney-Rivl
 \Psi_\mathrm{iso} &= \frac{\mu_1}{2}(\bar{I_1} - 3) + \frac{\mu_2}{2}(\bar{I_2} - 3) \label{iso1}
 \end{align}
 \end{subequations}
-where $\mu_1$, $\mu_2$ and $\kappa$ are material constants. For small deformations, the shear modulus and bulk modulus can be approximated by $\mu_1+\mu_2$ and $\kappa$. When using mixed formulation Equation \ref{vol11} is replaced with Equation \ref{Lagrange} where $\Psi_\mathrm{vol} = p(J - 1) $.
+where $\mu_1$, $\mu_2$ and $\kappa$ are material constants. For small deformations, the shear modulus and bulk modulus can be approximated by $\mu_1+\mu_2$ and $\kappa$. When using mixed formulation Equation \ref{vol11} is rewritten as Equation \ref{Lagrange} where $\Psi_\mathrm{vol} = p(J - 1) $.
 
 To derive the expression for the PK2 stress, we will first decide $S_\mathrm{vol}$ and $S_\mathrm{iso}$ separately. The volumetric part of the PK2 stress that is defined in Equation \ref{Svol}, can be shown in the following forms:
 \begin{subequations}
@@ -155,7 +155,7 @@ With the fourth-order projection tensor $\mathbb{P}$, the isochoric PK2 stress b
 
 In the mixed formulation, the volumetric part and isochoric part of the PK2 stress are Equation \ref{Svol11} and \ref{Siso1}, respectively since $p$ is independent of $\bold{u}$. While in the displacement-based formulation, the two parts are Equation \ref{Svol12} and Equation \ref{Siso1}, respectively.
 
-Once the stress is evaluated, the next step is to evaluate the elasticity tensor $\mathbb{C}$ as defined in Equation \ref{C}. Recall that the volumetric elasticity tensor in Equation \ref{Cvol} is a function of $\tilde{p}$ where $\tilde{p}$ is
+Once the stress is evaluated, the next step is to evaluate the elasticity tensor $\mathbb{C}$ as defined in Equation \ref{C}. Recall that the volumetric elasticity tensor in Equation \ref{Cvol} is a function of $\tilde{p}$ where $\tilde{p}$ is:
 
 \begin{equation}
 \begin{split}
@@ -163,7 +163,7 @@ Once the stress is evaluated, the next step is to evaluate the elasticity tensor
              &= \kappa{(2J - 1)}
 \end{split}
 \end{equation}
-Substituting $\tilde{p}$ into Equation \ref{Cvol} and simply evaluating $p$ from Equation \ref{pressure}, $\mathbb{C}_{vol}$ becomes
+Substituting $\tilde{p}$ into Equation \ref{Cvol} and simply evaluating $p$ from Equation \ref{pressure}, $\mathbb{C}_{vol}$ becomes:
 
 \begin{subequations} \label{Cvol1}
 \begin{align}
@@ -203,10 +203,10 @@ with the projection tensor $\mathbb{P}$, the first term of the right-hand side i
 - \frac{1}{3}({\overline{\bold{C}}}^{-1} \otimes \overline{\bold{C}} ) :  \mathbb{I} : \frac{1}{3}({\overline{\bold{C}}} \otimes {\overline{\bold{C}} }^{-1}) \\
 &+ \frac{1}{3}(\overline{{\bold{C}}}^{-1} \otimes \overline{\bold{C}} ) : (\bold{I} \otimes \bold{I}) : \frac{1}{3}({\overline{\bold{C}}} \otimes {\overline{\bold{C}}}^{-1} ) + \frac{1}{3}({\overline{\bold{C}}} \otimes {\overline{\bold{C}}}^{-1}) : \mathbb{I} : \mathbb{I}
 \bigg] \\
-= {} & 2J^{-4/3}\mu_2 \bigg[\bold{I} \otimes \bold{I} - \frac{1}{3}\bar{I}_1\bold{I} \otimes {\overline{\bold{C}}}^{-1} - \mathbb{I} + \frac{1}{3}\overline{\bold{C}} \otimes {\overline{\bold{C}}}^{-1} -  \frac{1}{3}\bar{I}_1{\overline{\bold{C}}}^{-1} \otimes \bold{I}\\
-&- \frac{1}{9}(\overline{\bold{C}} : \overline{\bold{C}}){\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1} + \frac{1}{9}{\bar{I}_1}^2{\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1} +  \frac{1}{3}{\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}} \bigg] \\
+= {} & 2J^{-4/3}\mu_2 \bigg[\bold{I} \otimes \bold{I} - \frac{1}{3}\bar{I}_1(\bold{I} \otimes {\overline{\bold{C}}}^{-1}) - \mathbb{I} + \frac{1}{3}(\overline{\bold{C}} \otimes {\overline{\bold{C}}}^{-1}) -  \frac{1}{3}\bar{I}_1({\overline{\bold{C}}}^{-1} \otimes \bold{I})\\
+&- \frac{1}{9}(\overline{\bold{C}} : \overline{\bold{C}})({\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1})+ \frac{1}{9}{\bar{I}_1}^2({\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}})^{-1} +  \frac{1}{3}({\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}) \bigg] \\
 = {} & 2{J}^{-4/3}\mu_2 \bigg[ \bold{I} \otimes \bold{I} - \mathbb{I} - \frac{1}{3}\bar{I}_1({\overline{\bold{C}}}^{-1} \otimes \bold{I} + \bold{I}\otimes{\overline{\bold{C}}}^{-1} ) +
-\frac{1}{3}({\overline{\bold{C}}}^{-1} \otimes \overline{\bold{C}} + \overline{\bold{C}}\otimes{\overline{\bold{C}}}^{-1} )  + \frac{2}{9}\bar{I}_2 {\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1} \bigg] \\
+\frac{1}{3}({\overline{\bold{C}}}^{-1} \otimes \overline{\bold{C}} + \overline{\bold{C}}\otimes{\overline{\bold{C}}}^{-1} )  + \frac{2}{9}\bar{I}_2 ({\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1}) \bigg] \\
 = {} & 2{J}^{-4/3}\mu_2(\bold{I} \otimes \bold{I} - \mathbb{I}) - \frac{2}{3}J^{-4/3}\mu_2\bar{I}_1({\overline{\bold{C}}}^{-1} \otimes \bold{I} + \bold{I} \otimes {\overline{\bold{C}}}^{-1}) \\
 &+
 \frac{2}{3}J^{-4/3}\mu_2({\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}} + {\overline{\bold{C}}} \otimes {\overline{\bold{C}}}^{-1}) + \frac{4}{9}J^{-4/3}\mu_2\bar{I_2}({\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1})
@@ -216,7 +216,7 @@ The second term of the right-hand side of Equation \ref{Ciso} requires the trace
 
 \begin{equation}
 \begin{split}
-Tr(J^{-2/3}\overline{\bold{S}}) &= J^{-2/3}{\overline{\bold{S}}} : {\bold{C}} \\
+\mathrm{Tr}(J^{-2/3}\overline{\bold{S}}) &= J^{-2/3}{\overline{\bold{S}}} : {\bold{C}} \\
 &= \Sb : \Cb \\
 &= [(\mu_1 + \mu_2{\bar{I_1}})\bold{I} - \mu_2{\overline{\bold{C}}}] : \overline{\bold{C}} \\
 &= (\mu_1 + \mu_2\bar{I_1})\bar{I_1} - \mu_2{\overline{\bold{C}}} : {\overline{\bold{C}}} \\
@@ -228,7 +228,7 @@ Along with the modified projection tensor $\tilde{\mathbb{P}}$, the second term 
 
 \begin{equation} \label{part21}
 \begin{split}
-\frac{2}{3}Tr(J^{-2/3}\overline{\bold{S}})\tilde{\mathbb{P}}
+\frac{2}{3}\mathrm{Tr}(J^{-2/3}\overline{\bold{S}})\tilde{\mathbb{P}}
 &= \frac{2}{3}J^{-4/3}(\mu_1\bar{I_1} + 2\mu_2\bar{I_2})\left({\overline{\bold{C}}}^{-1} \odot {{\overline{\bold{C}}}}^{-1} - \frac{1}{3}{{\overline{\bold{C}}}}^{-1} \otimes {\overline{{\bold{C}}}}^{-1}\right)
 \end{split}
 \end{equation}
@@ -241,11 +241,12 @@ Finally, with Equation \ref{Siso1} for $\bold{S}_\mathrm{iso}$, the third term o
 &+
 \left[-\frac{1}{3}(\mu_1\bar{I_1} + 2\mu_2\bar{I_2}){\overline{\bold{C}}}^{-1} + (\mu_1 + \mu_2\bar{I_1})\bold{I} - \mu_2{\overline{\bold{C}}} \right] \otimes {\overline{\bold{C}}}^{-1} \bigg\} \\
 = {} &
-- \frac{2}{3}J^{-4/3} \bigg[ -\frac{1}{3}(\mu_1\bar{I_1} + 2\mu_2\bar{I_2}) {\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1} + (\mu_1 + \mu_2\bar{I_1}){\overline{\bold{C}}}^{-1}\otimes\bold{I} - \mu_2{\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}} \\
-&-
-\frac{1}{3}(\mu_1\bar{I_1} + 2\mu_2\bar{I_2}) {\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1} + (\mu_1 + \mu_2\bar{I_1})\bold{I} \otimes {\overline{\bold{C}}}^{-1} - \mu_2{\overline{\bold{C}}} \otimes {\overline{\bold{C}}}^{-1} \bigg] \\
+- \frac{2}{3}J^{-4/3} \bigg[ -\frac{1}{3}(\mu_1\bar{I_1} + 2\mu_2\bar{I_2}) ({\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1}) + (\mu_1 + \mu_2\bar{I_1})({\overline{\bold{C}}}^{-1}\otimes\bold{I}) \\ 
+& - \mu_2({\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}) 
+- \frac{1}{3}(\mu_1\bar{I_1} + 2\mu_2\bar{I_2}) ({\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1}) \\
+&+ (\mu_1 + \mu_2\bar{I_1}) (\bold{I} \otimes {\overline{\bold{C}}}^{-1}) - \mu_2 ({\overline{\bold{C}}} \otimes {\overline{\bold{C}}}^{-1}) \bigg] \\
 = {} &
- - \frac{2}{3}J^{-4/3} \bigg[ -\frac{2}{3}(\mu_1\bar{I_1} + 2\mu_2\bar{I_2}){\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1} + (\mu_1+\mu_2\bar{I_1})({\overline{\bold{C}}}^{-1} \otimes \bold{I} + \bold{I} \otimes {\overline{\bold{C}}}^{-1})\\
+ - \frac{2}{3}J^{-4/3} \bigg[ -\frac{2}{3}(\mu_1\bar{I_1} + 2\mu_2\bar{I_2})({\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1}) + (\mu_1+\mu_2\bar{I_1})({\overline{\bold{C}}}^{-1} \otimes \bold{I} + \bold{I} \otimes {\overline{\bold{C}}}^{-1})\\
 &- \mu_2({\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}+{\overline{\bold{C}}} \otimes {\overline{\bold{C}}}^{-1}) \bigg]
 \end{split}
 \end{equation}
@@ -271,7 +272,7 @@ Combining Equations \ref{part11}, \ref{part21} and \ref{part31}, $\mathbb{C}_\ma
 = {} &
 2{J}^{-4/3}\mu_2(\bold{I} \otimes \bold{I} - \mathbb{I}) - \frac{2}{3}J^{-4/3}(\mu_1 + 2\mu_2\bar{I_1})({\overline{\bold{C}}}^{-1} \otimes \bold{I} + \bold{I} \otimes {\overline{\bold{C}}}^{-1}) + \frac{4}{3}J^{-4/3}\mu_2({\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}} + {\overline{\bold{C}}} \otimes {\overline{\bold{C}}}^{-1}) \\
 &+
-\frac{2}{9}J^{-4/3}(\mu_1\bar{I_1} + 4\mu_2\bar{I_2}) {\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1} + \frac{2}{3}J^{-4/3}(\mu_1\bar{I_1} + 2\mu_2\bar{I_2}){\overline{\bold{C}}}^{-1} \odot {\overline{\bold{C}}}^{-1} 
+\frac{2}{9}J^{-4/3}(\mu_1\bar{I_1} + 4\mu_2\bar{I_2}) ({\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1}) + \frac{2}{3}J^{-4/3}(\mu_1\bar{I_1} + 2\mu_2\bar{I_2})({\overline{\bold{C}}}^{-1} \odot {\overline{\bold{C}}}^{-1}) 
 \end{split}
 \end{equation} 
 Equations \ref{Cvol1} and \ref{Ciso1} complete the derivations of elasticity tensor for the volumetric and isochoric parts, respectively, in the reference configuration.
@@ -349,7 +350,7 @@ Using the fictitious PK2 stress derived in Equation \ref{Sbar2}, we can obtain t
 
 \begin{equation}
 \begin{split}
-Tr(J^{-2/3}\overline{\bold{S}}) &= J^{-2/3}\overline{\bold{S}}:\bold{C} \\
+\mathrm{Tr}(J^{-2/3}\overline{\bold{S}}) &= J^{-2/3}\overline{\bold{S}}:\bold{C} \\
 &= \overline{\bold{S}} : \overline{\bold{C}} \\
 &=  [2c_1 + 4c_2(\bar{I}_1 - 3) + 6c_3(\bar{I}_1 - 3)^2] (\bold{I} : \overline{\bold{C}}) \\
 &= 2c_1\bar{I}_1 + 4c_2(\bar{I_1} - 3)\bar{I}_1 + 6c_3(\bar{I}_1 - 3)^2\bar{I}_1
@@ -359,7 +360,7 @@ So that the second term on the right-hand side of Equation \ref{Ciso} is
 
 \begin{equation} \label{part22}
 \begin{split}
-\frac{2}{3}Tr(J^{-2/3}\overline{\bold{S}}) \tilde{\mathbb{P}}
+\frac{2}{3}\mathrm{Tr}(J^{-2/3}\overline{\bold{S}}) \tilde{\mathbb{P}}
 = {} & 
 \frac{2}{3}J^{-4/3} [2c_1\bar{I}_1 + 4c_2(\bar{I_1} - 3)\bar{I}_1 + 6c_3(\bar{I_1} - 3)^2\bar{I}_1] \left({\overline{\bold{C}}}^{-1} \odot {\overline{\bold{C}}}^{-1} - \frac{1}{3}{\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1} \right) \\
 = {} &
@@ -377,17 +378,17 @@ The third term on the right-hand-side of Equation \ref{Ciso} is obtained by usin
 \left(\bold{I} - \frac{1}{3}{\bar{I}_1}{\overline{\bold{C}}}^{-1}\right) \otimes {\overline{\bold{C}}}^{-1}\right]\\
 = {} &
 J^{-4/3}  \left[-\frac{4}{3}c_1 - \frac{8}{3}c_2({\bar{I}}_1 - 3) - 4c_3({\bar{I}}_1 - 3)^2\right] ({\overline{\bold{C}}}^{-1} \otimes \bold{I} + \bold{I} \otimes {\overline{\bold{C}}}^{-1}) \\
-&+ J^{-4/3}  \left[\frac{8}{9}c_1{\bar{I}}_1 + \frac{16}{9}c_2({\bar{I}}_1 - 3){\bar{I}}_1 + \frac{8}{3}c_3({\bar{I}}_1 - 3)^2{\bar{I}}_1 \right] {\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1}
+&+ J^{-4/3}  \left[\frac{8}{9}c_1{\bar{I}}_1 + \frac{16}{9}c_2({\bar{I}}_1 - 3){\bar{I}}_1 + \frac{8}{3}c_3({\bar{I}}_1 - 3)^2{\bar{I}}_1 \right] ({\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1})
 \end{split}
 \end{equation}
 Combining Equations \ref{part12}, \ref{part22} and \ref{part32}, we have the isochoric part of the elasticity tensor:
 \begin{equation} \label{Ciso2}
 \begin{split}
 {\mathbb{C}}_\mathrm{iso} = {} & J^{-4/3} \bigg\{
-[8c_2+24c_3({\bar{I}}_1 - 3)] \bold{I} \otimes \bold{I} \\
+[8c_2+24c_3({\bar{I}}_1 - 3)] (\bold{I} \otimes \bold{I}) \\
 &- \left[\frac{4}{3}c_1 + c_2\left(\frac{16}{3}{\bar{I}}_1 - 8\right) + 12c_3({\bar{I}}_1 - 1)({\bar{I}}_1 - 3)\right]({\overline{\bold{C}}}^{-1} \otimes \bold{I} + \bold{I} \otimes {\overline{\bold{C}}}^{-1})\\
-&+ \left[\frac{4}{9}c_1{\bar{I}}_1 + c_2\left(\frac{16}{9}{{\bar{I}}_1}^2 - \frac{8}{3}{\bar{I}}_1\right) + 4c_3{\bar{I}}_1({\bar{I}}_1 - 1)({\bar{I}}_1 - 3)\right] {\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1} \\
-&+ \left[\frac{4}{3}c_1{\bar{I}}_1 + \frac{8}{3}c_2({\bar{I}}_1 - 3){\bar{I}}_1 + 4c_3({\bar{I}}_1 - 3)^2{\bar{I}}_1\right]{\overline{\bold{C}}}^{-1} \odot {\overline{\bold{C}}}^{-1}
+&+ \left[\frac{4}{9}c_1{\bar{I}}_1 + c_2\left(\frac{16}{9}{{\bar{I}}_1}^2 - \frac{8}{3}{\bar{I}}_1\right) + 4c_3{\bar{I}}_1({\bar{I}}_1 - 1)({\bar{I}}_1 - 3)\right] ({\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1}) \\
+&+ \left[\frac{4}{3}c_1{\bar{I}}_1 + \frac{8}{3}c_2({\bar{I}}_1 - 3){\bar{I}}_1 + 4c_3({\bar{I}}_1 - 3)^2{\bar{I}}_1\right]({\overline{\bold{C}}}^{-1} \odot {\overline{\bold{C}}}^{-1})
 \bigg\}
 \end{split}
 \end{equation}
@@ -490,12 +491,9 @@ where
 ${\partial\Psi_\mathrm{aniso}}/{\partial{\bar{I}_i}} = k_1(\bar{I}_i - 1)e^{k_2(\bar{I}_i - 1)^2}$.
 Combining Equations \ref{Sisotropic} and \ref{Sanisotropic} we have the isochoric PK2 stress for the HGO model:
 \begin{equation} \label{HGOSiso}
-\begin{split}
 \bold{S}_\mathrm{iso} 
-= {} &
-J^{-2/3}\mu_1 \left( -\frac{1}{3}\bar{I}_1\overline{\bold{C}}^{-1} + \bold{I} \right) \\
-&+2J^{-2/3} \sum_{i = 4, 6} \left[ \frac{\partial{\Psi_\mathrm{aniso}}}{\partial{\bar{I}_i}}  \left(\bold{A}_{0i} - \frac{1}{3}\bar{I}_i\overline{\bold{C}}^{-1} \right) \right]
-\end{split}
+= J^{-2/3}\mu_1 \left( -\frac{1}{3}\bar{I}_1\overline{\bold{C}}^{-1} + \bold{I} \right) 
++2J^{-2/3} \sum_{i = 4, 6} \left[ \frac{\partial{\Psi_\mathrm{aniso}}}{\partial{\bar{I}_i}}  \left(\bold{A}_{0i} - \frac{1}{3}\bar{I}_i\overline{\bold{C}}^{-1} \right) \right]
 \end{equation}
 
 Next we derive the anisotropic part of the isochoric elasticity tensor of the HGO model. For convenience, we do not explicitly write out ${\partial\Psi_\mathrm{aniso}}/{\partial{\bar{I}_i}}$ and $\partial^2{\Psi_\mathrm{aniso}}/\partial{\bar{I}_i}^2$ where $i = 4, 6$. The first and second derivatives of $\Psi_\mathrm{aniso}$ with respect to $\overline{\bold{C}}$ can be easily converted to that with respect to $\bar{I}_{i}$ ($i = 4, 6$) as follows:
@@ -536,7 +534,7 @@ Recall Equation \ref{helper2}, the second term on the right-hand side of Equatio
 
 \begin{equation} \label{part23}
 \begin{split}
-\frac{2}{3}Tr(J^{-2/3}\overline{\bold{S}}_\mathrm{aniso})\tilde{\mathbb{P}} &= \frac{2}{3}(\overline{\bold{S}}_\mathrm{aniso} : \overline{\bold{C}}) \tilde{\mathbb{P}} \\
+\frac{2}{3}\mathrm{Tr}(J^{-2/3}\overline{\bold{S}}_\mathrm{aniso})\tilde{\mathbb{P}} &= \frac{2}{3}(\overline{\bold{S}}_\mathrm{aniso} : \overline{\bold{C}}) \tilde{\mathbb{P}} \\
 &= \frac{2}{3}J^{-4/3}(\overline{\bold{S}}_\mathrm{aniso} : \overline{\bold{C}}) 
 \left( \overline{\bold{C}}^{-1} \odot \overline{\bold{C}}^{-1} - \frac{1}{3}\overline{\bold{C}}^{-1}\otimes\overline{\bold{C}}^{-1} \right) \\
 &= \sum_{i = 4, 6}\frac{4}{3}J^{-4/3}\bar{I}_i\frac{\partial{\Psi_\mathrm{aniso}}}{\partial\bar{I}_i}
@@ -562,9 +560,9 @@ Adding up Equations \ref{part13}, \ref{part23} and \ref{part33} we have the anis
 \begin{equation} \label{Ciso31}
 \begin{split}
 \mathbb{C}_\mathrm{aniso} 
-&= \sum_{i = 4, 6} J^{-4/3} \bigg[ 4\frac{\partial^2\Psi_\mathrm{aniso}}{\partial{\bar{I}_i}^2} \bold{A}_{0i} \otimes \bold{A}_{0i} - \frac{4}{3} \left( \bar{I}_i\frac{\partial^2\Psi_\mathrm{aniso}}{\partial{\bar{I}_i}^2} + \frac{\partial\Psi_\mathrm{aniso}}{\partial{\bar{I}_i}} \right) (\overline{\bold{C}}^{-1} \otimes \bold{A}_{0i} + \bold{A}_{0i} \otimes \overline{\bold{C}}^{-1}) \\
-&+ \frac{4}{9} \left( {\bar{I}_i}^2\frac{\partial^2\Psi_\mathrm{aniso}}{\partial{\bar{I}_i}^2} + \bar{I}_i\frac{\partial\Psi_\mathrm{aniso}}{\partial{\bar{I}_i}} \right) \overline{\bold{C}}^{-1} \otimes \overline{\bold{C}}^{-1} 
-+ \frac{4}{3}\bar{I}_i \frac{\partial\Psi_\mathrm{aniso}}{\partial{\bar{I}_i}} \overline{\bold{C}}^{-1} \odot \overline{\bold{C}}^{-1} \bigg]
+&= \sum_{i = 4, 6} J^{-4/3} \bigg[ 4\frac{\partial^2\Psi_\mathrm{aniso}}{\partial{\bar{I}_i}^2} (\bold{A}_{0i} \otimes \bold{A}_{0i}) - \frac{4}{3} \left( \bar{I}_i\frac{\partial^2\Psi_\mathrm{aniso}}{\partial{\bar{I}_i}^2} + \frac{\partial\Psi_\mathrm{aniso}}{\partial{\bar{I}_i}} \right) (\overline{\bold{C}}^{-1} \otimes \bold{A}_{0i} + \bold{A}_{0i} \otimes \overline{\bold{C}}^{-1}) \\
+&+ \frac{4}{9} \left( {\bar{I}_i}^2\frac{\partial^2\Psi_\mathrm{aniso}}{\partial{\bar{I}_i}^2} + \bar{I}_i\frac{\partial\Psi_\mathrm{aniso}}{\partial{\bar{I}_i}} \right) (\overline{\bold{C}}^{-1} \otimes \overline{\bold{C}}^{-1}) 
++ \frac{4}{3}\bar{I}_i \frac{\partial\Psi_\mathrm{aniso}}{\partial{\bar{I}_i}}( \overline{\bold{C}}^{-1} \odot \overline{\bold{C}}^{-1}) \bigg]
 \end{split}
 \end{equation}
 where the $\partial\Psi_{aniso}/\partial{\bar{I}_i}$ iand $\partial^2\Psi_{aniso}/{\partial{\bar{I}_i}^2}$ ($i = 4, 6$) are given in Equation \ref{convert}.
@@ -575,10 +573,10 @@ Combining Equation \ref{Ciso32} with Equation \ref{Ciso31} the complete isochori
 \begin{split}
 \mathbb{C}_\mathrm{iso} = {}& 
 - \frac{2}{3}J^{-4/3}\mu_1({\overline{\bold{C}}}^{-1} \otimes \bold{I} + \bold{I} \otimes {\overline{\bold{C}}}^{-1})  +
-\frac{2}{9}J^{-4/3}\mu_1\bar{I_1}  {\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1} + \frac{2}{3}J^{-4/3} \mu_1\bar{I_1} {\overline{\bold{C}}}^{-1} \odot {\overline{\bold{C}}}^{-1} \\
-&+ \sum_{i = 4, 6} J^{-4/3} \bigg[ 4\frac{\partial^2\Psi_\mathrm{aniso}}{\partial{\bar{I}_i}^2} \bold{A}_{0i} \otimes \bold{A}_{0i} - \frac{4}{3} \left( \bar{I}_i\frac{\partial^2\Psi_\mathrm{aniso}}{\partial{\bar{I}_i}^2} + \frac{\partial\Psi_\mathrm{aniso}}{\partial{\bar{I}_i}} \right) (\overline{\bold{C}}^{-1} \otimes \bold{A}_{0i} + \bold{A}_{0i} \otimes \overline{\bold{C}}^{-1}) \\
-&+ \frac{4}{9} \left( {\bar{I}_i}^2\frac{\partial^2\Psi_\mathrm{aniso}}{\partial{\bar{I}_i}^2} - \bar{I}_i\frac{\partial\Psi_\mathrm{aniso}}{\partial{\bar{I}_i}} \right) \overline{\bold{C}}^{-1} \otimes \overline{\bold{C}}^{-1}
-+ \frac{4}{3}\bar{I}_i \frac{\partial\Psi_\mathrm{aniso}}{\partial{\bar{I}_i}} \overline{\bold{C}}^{-1} \odot \overline{\bold{C}}^{-1} \bigg] 
+\frac{2}{9}J^{-4/3}\mu_1\bar{I_1} ( {\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1}) + \frac{2}{3}J^{-4/3} \mu_1\bar{I_1} ({\overline{\bold{C}}}^{-1} \odot {\overline{\bold{C}}}^{-1})\\
+&+ \sum_{i = 4, 6} J^{-4/3} \bigg[ 4\frac{\partial^2\Psi_\mathrm{aniso}}{\partial{\bar{I}_i}^2} (\bold{A}_{0i} \otimes \bold{A}_{0i}) - \frac{4}{3} \left( \bar{I}_i\frac{\partial^2\Psi_\mathrm{aniso}}{\partial{\bar{I}_i}^2} + \frac{\partial\Psi_\mathrm{aniso}}{\partial{\bar{I}_i}} \right) (\overline{\bold{C}}^{-1} \otimes \bold{A}_{0i} + \bold{A}_{0i} \otimes \overline{\bold{C}}^{-1}) \\
+&+ \frac{4}{9} \left( {\bar{I}_i}^2\frac{\partial^2\Psi_\mathrm{aniso}}{\partial{\bar{I}_i}^2} - \bar{I}_i\frac{\partial\Psi_\mathrm{aniso}}{\partial{\bar{I}_i}} \right) (\overline{\bold{C}}^{-1} \otimes \overline{\bold{C}}^{-1} )
++ \frac{4}{3}\bar{I}_i \frac{\partial\Psi_\mathrm{aniso}}{\partial{\bar{I}_i}} (\overline{\bold{C}}^{-1} \odot \overline{\bold{C}}^{-1}) \bigg] 
 \end{split}
 \end{equation}
 The volumetric part of the elasticity tensor is still the same as Equation \ref{Cvol1}.
