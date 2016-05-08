@@ -5,7 +5,7 @@ In this section, we introduce the finite element formulation to solve static pro
 
 %
 \subsection{Principle of Virtual Work} \label{PVW}
-The variational approach is the cornerstone for finite element methods. The most fundamental variational principle that origins from Newton's law is the principle of virtual work. Neglecting the kinematic term, it can be written as
+The variational approach is the cornerstone for finite element methods. The most fundamental variational principle that origins from Newton's law is the principle of virtual work. Neglecting the kinematic term, it can be written as:
 \begin{subequations} \label{virtualwork}
 \begin{align}
 \delta{W_\mathrm{int}} &= \delta{W_\mathrm{ext}} \label{basic} \\
@@ -21,7 +21,7 @@ In this case, the pressure on the current boundary surface $\partial\Omega$ is c
 \end{align}
 \end{subequations}
 
-For the second type of loading as in Equation \ref{Wext2}, the external work is changing with the current configuration due to the change of normal $\bold{n}$ and integration boundary $\partial\Omega$. To evaluate it, let $\bold{x}$ be an arbitrary point on the surface of a 3D element, $\xi$ and $\eta$ be the parent coordinates on that surface. $\Omega_{\xi}$ represents the parameter plane characterized by $\xi$ and $\eta$. Then the unit normal vector of that surface $\bold{n}$ as well as the infinite small area $dS$ can be expressed as
+For the second type of loading as in Equation \ref{Wext2}, the external work is changing with the current configuration due to the change of normal $\bold{n}$ and integration boundary $\partial\Omega$. To evaluate it, let $\bold{x}$ be an arbitrary point on the surface of a 3D element, $\xi$ and $\eta$ be the parent coordinates on that surface. $\Omega_{\xi}$ represents the parameter plane characterized by $\xi$ and $\eta$. Then the unit normal vector of that surface $\bold{n}$ as well as the infinite small area $dS$ can be expressed as:
 
 \begin{equation}
 \bold{n} = \frac{  \frac{\partial{\bold{x}}}{\partial{\xi}} \times  \frac{\partial{\bold{x}}}{\partial{\eta}} }{\left| \frac{\partial{\bold{x}}}{\partial{\xi}} \times  \frac{\partial{\bold{x}}}{\partial{\eta}} \right|}
@@ -98,7 +98,7 @@ Therefore with Equation \ref{Kint} and \ref{Kext} or \ref{Kext2} we are able to 
 \end{equation}
 The terms in the parenthesis on the lefthand side is the tangent stiffness matrix, the righthand side is the opposite of the residual of the system potential energy.
 
-The matrix form for the mixed formulation in Equation \ref{target} is more complicated as it requires the linearization with respect to both $\bold{u}$ and $p$. The increment matrix form becomes:
+The matrix form for the mixed formulation in Equation \ref{target} is more complicated as it requires the linearization with respect to both $\bold{u}$ and $p$. The incremental matrix form becomes:
 
 \begin{equation} \label{linear}
 \begin{bmatrix}
@@ -138,14 +138,14 @@ D_{\delta\bold{u}, \Delta\bold{u}}^2 \Pi(\bold{u}, p)
 \frac{\partial\bold{x}}{\partial\xi}    \right) \cdot \delta{\bold{u}} d\xi d\eta
 \end{split}
 \end{equation}
-It is a little tricky but not complicated to obtain that
+It is a little tricky but not complicated to obtain that:
 \begin{equation} \label{lhs2}
 D_{\delta\bold{u}, \Delta{p}}^2 \Pi(\bold{u}, p) = \int_{\Omega_0} J(\bold{u})\Delta{p}(\mathrm{div}\delta{\bold{u}})dV
 \end{equation}
 \begin{equation} \label{lhs3}
 D_{\delta{p}, \Delta\bold{u}}^2 \Pi(\bold{u}, p) = \int_{\Omega_0} J(\bold{u})(\mathrm{div}\Delta{\bold{u}})\delta{p}dV
 \end{equation}
-Since $\Pi$ is a first order function with respect to $p$ in the mixed formulation, we have
+Since $\Pi$ is a first order function with respect to $p$ in the mixed formulation, we have:
 \begin{equation} \label{lhs4}
 D_{\delta{p}, \Delta{p}}^2 \Pi(\bold{u}, p) = 0
 \end{equation}

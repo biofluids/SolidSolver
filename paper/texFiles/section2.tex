@@ -163,7 +163,7 @@ Once the stress is evaluated, the next step is to evaluate the elasticity tensor
              &= \kappa{(2J - 1)}
 \end{split}
 \end{equation}
-Substituting $\tilde{p}$ into Equation \ref{Cvol} and simply evaluating $p$ from Equation \ref{pressure}, $\mathbb{C}_{vol}$ becomes:
+Substituting $\tilde{p}$ into Equation \ref{Cvol} and simply evaluating $p$ from Equation \ref{pressure}, $\mathbb{C}_\mathrm{vol}$ becomes:
 
 \begin{subequations} \label{Cvol1}
 \begin{align}
@@ -275,7 +275,7 @@ Combining Equations \ref{part11}, \ref{part21} and \ref{part31}, $\mathbb{C}_\ma
 \frac{2}{9}J^{-4/3}(\mu_1\bar{I_1} + 4\mu_2\bar{I_2}) ({\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1}) + \frac{2}{3}J^{-4/3}(\mu_1\bar{I_1} + 2\mu_2\bar{I_2})({\overline{\bold{C}}}^{-1} \odot {\overline{\bold{C}}}^{-1}) 
 \end{split}
 \end{equation} 
-Equations \ref{Cvol1} and \ref{Ciso1} complete the derivations of elasticity tensor for the volumetric and isochoric parts, respectively, in the reference configuration.
+Equations \ref{Cvol1} and \ref{Ciso1} complete the derivations of the elasticity tensor for the volumetric and isochoric parts, respectively, in the reference configuration.
 
 %
 \subsubsection{Yeoh Model}
@@ -283,7 +283,7 @@ First introduced in 1990 \cite{Yeoh} and modified in 1993 \cite{Yeoh2}, Yeoh mod
 
 The volumetric part to account for compressibility in Yeoh model is the same as in Mooney-Rivlin model. Consequently the volumetric parts of both stress and elasticity tensors are the same as Equations \ref{Svol1} and \ref{Cvol1}. Therefore, we will only show the derivation of the isochoric component.
 
-The isochoric part in Yeoh model includes higher order terms. It is written as
+The isochoric part in Yeoh model includes higher order terms. It is written as:
 
 \begin{equation} \label{iso2}
 \Psi_\mathrm{iso} = c_1(\bar{I_1} - 3) + c_2(\bar{I_1} - 3)^2 + c_3(\bar{I_1} - 3)^3
@@ -327,11 +327,11 @@ The second order derivative is:
 &= [2c_2 + 6c_3({\bar{I}}_1-3)] \bold{I} \otimes \bold{I}
 \end{split}
 \end{equation}
-Therefore the fictitious elasticity tensor is
+Therefore the fictitious elasticity tensor is:
 \begin{equation}
 \overline{\mathbb{C}} = 4J^{-4/3}\frac{\partial^2\Psi_\mathrm{iso}(\overline{\bold{C}})}{\partial{\overline{\bold{C}}}{\partial{\overline{\bold{C}}}}} = 8J^{-4/3}[c_2 + 3c_3({\bar{I}}_1 - 3) ]\bold{I} \otimes \bold{I}
 \end{equation}
-The first term on the right-hand side of Equation \ref{Ciso} can be found as
+The first term on the right-hand side of Equation \ref{Ciso} can be found as:
 
 \begin{equation} \label{part12}
 \begin{split}
@@ -346,7 +346,7 @@ The first term on the right-hand side of Equation \ref{Ciso} can be found as
 J^{-4/3} \left[ \frac{8}{9}c_2{\bar{I}_1}^2 + \frac{8}{3}c_3({\bar{I}}_1 - 3 ){\bar{I}_1}^2 \right] ({\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1})
 \end{split}
 \end{equation}
-Using the fictitious PK2 stress derived in Equation \ref{Sbar2}, we can obtain the trace of $J^{-2/3}\overline{\bold{S}}$
+Using the fictitious PK2 stress derived in Equation \ref{Sbar2}, we can obtain the trace of $J^{-2/3}\overline{\bold{S}}$:
 
 \begin{equation}
 \begin{split}
@@ -356,7 +356,7 @@ Using the fictitious PK2 stress derived in Equation \ref{Sbar2}, we can obtain t
 &= 2c_1\bar{I}_1 + 4c_2(\bar{I_1} - 3)\bar{I}_1 + 6c_3(\bar{I}_1 - 3)^2\bar{I}_1
 \end{split}
 \end{equation}
-So that the second term on the right-hand side of Equation \ref{Ciso} is
+So that the second term on the right-hand side of Equation \ref{Ciso} is:
 
 \begin{equation} \label{part22}
 \begin{split}
@@ -367,7 +367,7 @@ So that the second term on the right-hand side of Equation \ref{Ciso} is
 J^{-4/3} \left[\frac{4}{3}c_1\bar{I}_1 + \frac{8}{3}c_2(\bar{I_1} - 3)\bar{I}_1 + 4c_3(\bar{I_1} - 3)^2\bar{I}_1\right] \left({\overline{\bold{C}}}^{-1} \odot {\overline{\bold{C}}}^{-1} - \frac{1}{3}{\overline{\bold{C}}}^{-1} \otimes {\overline{\bold{C}}}^{-1} \right) 
 \end{split}
 \end{equation}
-The third term on the right-hand-side of Equation \ref{Ciso} is obtained by using $\bold{S}_\mathrm{iso}$ in Equation \ref{Siso2}
+The third term on the right-hand-side of Equation \ref{Ciso} is obtained by using $\bold{S}_\mathrm{iso}$ in Equation \ref{Siso2}:
 
 \begin{equation} \label{part32}
 \begin{split}
