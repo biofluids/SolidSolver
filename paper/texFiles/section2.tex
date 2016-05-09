@@ -1,5 +1,5 @@
 \section{Stress and Elasticity Tensors in Hyperelastic Models} \label{general}
-In this section, we briefly review the hyperelastic models and their decomposition, and the general approach to derive stress and elasticity tensors, followed by three examples of different models: Mooney-Rivlin model, Yeoh model and Holzapfel-Gasser-Ogden model. The first two are isotropic models written as polynomial functions of invariants. There are also isotropic models written as exponential functions or combination of both forms \cite{Fung5, Demiray, Westmann}. 
+In this section, we briefly review the hyperelastic models and their decomposition, and the general approach to derive stress and elasticity tensors, followed by three examples of different models: Mooney-Rivlin model, Yeoh model and HGO model. The first two are isotropic models written as polynomial functions of invariants. There are also isotropic models written as exponential functions or combination of both forms \cite{Fung5, Demiray, Westmann}. 
 Yet not all biomaterials are isotropic. For example, the stomach wall tissues in pigs are found to be direction-dependent \cite{Zhao}. Heart muscles have strong directional properties as well \cite{Ramesh}. Materials like these are modeled as a combination of a ground substance and one or more families of fibers which are continuously arranged in the ground material. In literature, this kind of materials are referred as transversely isotropic materials. HGO model is one of the anisotropic models with two families of fibers. To model anisotropy, two pseudo-invariants are introduced. However, the procedure of the derivation of the stress and elasticity tensors remain the same for both isotropic and anisotropic materials.
 
 %
@@ -70,7 +70,7 @@ Note that if the material is completely incompressible, the hydrostatic pressure
 \begin{equation} \label{pressure}
 p = \frac{d\Psi_\mathrm{vol}(J)}{dJ} = \kappa\frac{dG(J)}{dJ}
 \end{equation}
-For the material that is not completely incompressible, either displacement-based formulation or mixed formulation can be used. If we explicitly substitute $p$ with Equation \ref{pressure}, we end up with a displacement-based formulation as $\bold{u}$ is the only unknown to be solved; If we leave $p$ as an unknown and use Equation \ref{pressure} as a relaxed constraint in the Lagrangian multiplier method, we will have a displacement/pressure mixed formulation.
+For the material that is not completely incompressible, either displacement-based formulation or mixed formulation can be used. If we explicitly substitute $p$ with Equation \ref{pressure}, we end up with a displacement-based formulation as $\bold{u}$ is the only unknown to be solved; if we leave $p$ as an unknown and use Equation \ref{pressure} as a relaxed constraint in the Lagrangian multiplier method, we will have a displacement/pressure mixed formulation.
 
 %
 The solutions in nonlinear finite element methods are often obtained incrementally with Newton's method. The elasticity tensors is crucial in the implementation of Newton's method.
