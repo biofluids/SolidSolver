@@ -15,7 +15,7 @@
 %
 %This class file is made available for use by authors who wish to prepare an
 %article for publication in the
-%INTERNATIONAL JOURNAL FOR NUMERICAL METHODS IN BIOMEDICAL ENGINEERING
+%INTERNATIONAL JOURNAL FOR NUMERICAL METHODS IN ENGINEERING
 %published by John Wiley & Sons Ltd. The user may not exploit any part of
 %the class file commercially.
 %
@@ -28,21 +28,22 @@
 %these rules of use.
 %---------------------------------------------------------------------------
 %
-% Created by Alistair Smith, Sunrise Setting Ltd, 27 March 2010
+% Created by Alistair Smith, Sunrise Setting Ltd, 13 May 2010
+% Change to Wiley web address 2/3/16 
 %
-% cnmauth.cls --- For Int. J. Numer. Meth. Biomed. Engng.
+% nmeauth.cls --- For Int. J. Numer. Meth. Engng
 
-\def\update{2010/03/27 v2.00}
+\def\update{2016/03/02 v3.01}
 
-\newcommand{\journalname}{INTERNATIONAL JOURNAL FOR NUMERICAL METHODS IN BIOMEDICAL ENGINEERING}
-\newcommand{\journalnamelc}{International Journal for Numerical Methods in Biomedical Engineering}
-\newcommand{\journalabb}{Int. J. Numer. Meth. Biomed. Engng.}
-\newcommand{\journalclass}{cnmauth.cls}
-\newcommand{\journalclassshort}{cnmauth}
-\newcommand{\DOI}{cnm}
+\newcommand{\journalname}{INTERNATIONAL JOURNAL FOR NUMERICAL METHODS IN ENGINEERING}
+\newcommand{\journalnamelc}{International Journal for Numerical Methods in Engineering}
+\newcommand{\journalabb}{Int. J. Numer. Meth. Engng}
+\newcommand{\journalclass}{nmeauth.cls}
+\newcommand{\journalclassshort}{nmeauth}
+\newcommand{\DOI}{nme}
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{cnmauth}[\update\ \journalclass]
+\ProvidesClass{nmeauth}[\update\ \journalclass]
 
 %\newcommand\hmmax{0}
 
@@ -258,7 +259,7 @@ Contract/grant sponsor: #1}}}
 \begin{tabular}[t]{@{}l@{}}%
 {\footnotesize\journalname}\\[-3pt]
 {\footnotesize\emph{\journalabb} \volumeyear; \textbf{\volumenumber}:\startpage--\endpage}\\[-3pt]
-{\footnotesize Published online in Wiley InterScience (www.interscience.wiley.com). DOI: 10.1002/\DOI}
+{\footnotesize Published online in Wiley Online Library (wileyonlinelibrary.com). DOI: 10.1002/\DOI}
 \end{tabular}}}%
 \let\@evenhead\@oddhead
 \def\@oddfoot{\parbox[t]{\textwidth}{%
