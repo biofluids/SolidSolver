@@ -1,3 +1,4 @@
+! DEPRECATED
 module unsymmetric_solver
 	implicit none
 contains

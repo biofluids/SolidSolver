@@ -1,7 +1,8 @@
 #include <iostream>
 #include <iomanip>
 
-int main() {
+int main() 
+{
     double K, G, nu;
     std::cout << "Input the shear modulus (mu1 + mu2):" << std::endl;
     std::cin >> G;

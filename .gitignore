@@ -42,11 +42,16 @@ compute_poisson_ratio
 pre_preocessing
 
 # My Input Files
+input.txt
 bc.txt
 connect.txt
 coords.txt
 load.txt
+key.txt
+CRS.bin
 .DS_Store
+main
+pre_processing
 
 # LaTex files
 *.aux
