@@ -224,9 +224,9 @@ contains
     end subroutine read_CRS
 
     ! Add val at (row, col) into a SYMMETRIC matrix
-    subroutine addValueSymmetric(nonzeros, row, col, val)
+    subroutine addValueSymmetric(A, row, col, val)
         integer, intent(in) :: row, col
-        real(8), dimension(:), intent(inout):: nonzeros
+        real(8), dimension(:), intent(inout):: A
         real(8), intent(in) :: val
         integer :: i, pos
 
@@ -238,14 +238,14 @@ contains
                     exit
                 end if
             end do
-            nonzeros(pos) = nonzeros(pos) + val
+            A(pos) = A(pos) + val
         end if
     end subroutine addValueSymmetric
 
     ! Set val at (row, col) into a SYMMETRIC matrix
-    subroutine setValueSymmetric(nonzeros, row, col, val)
+    subroutine setValueSymmetric(A, row, col, val)
         integer, intent(in) :: row, col
-        real(8), dimension(:), intent(inout):: nonzeros
+        real(8), dimension(:), intent(inout):: A
         real(8), intent(in) :: val
         integer :: i, pos
 
@@ -257,14 +257,14 @@ contains
                     exit
                 end if
             end do
-            nonzeros(pos) = val
+            A(pos) = val
         end if
     end subroutine setValueSymmetric
 
     ! Get val at (row, col)/(col, row) from a SYMMETRIC matrix
-    function getValueSymmetric(nonzeros, row, col)
+    function getValueSymmetric(A, row, col)
         integer, intent(in) :: row, col
-        real(8), dimension(:), intent(in) :: nonzeros
+        real(8), dimension(:), intent(in) :: A
         real(8) :: val, getValueSymmetric
         integer :: i, pos, rw, cl
 
@@ -283,7 +283,7 @@ contains
                 exit
             end if
         end do
-        getValueSymmetric = nonzeros(pos)
+        getValueSymmetric = A(pos)
     end function getValueSymmetric
 
 end module read_file

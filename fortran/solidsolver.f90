@@ -21,6 +21,8 @@ program solidsolver
     call read_CRS(no_nonzeros, col_ind, row_ind, nonzeros, row_ptr)
     if (mode == 0) then 
         call statics(filepath)
+    else if (mode == 1) then
+        call dynamics(filepath)
     end if
     call system_clock(ct1)
     call timestamp()
@@ -51,7 +53,7 @@ subroutine statics(filepath)
 
     implicit none
 
-    integer :: i, nit, row, col, j, k, pos
+    integer :: i, nit, row, col, j, k
     real(8), allocatable, dimension(:) :: Fext, Fint, R, w, w1, dw
     real(8) :: loadfactor, increment, err1, err2
     real(8), dimension(bc_size) :: constraint
@@ -136,6 +138,131 @@ subroutine statics(filepath)
     deallocate(w1)
     deallocate(dw)
 end subroutine statics
+
+subroutine dynamics(filepath)
+    use read_file
+    use integration
+    use face
+    use shapefunction
+    use material
+    use externalforce
+    use internalforce
+    use tangentstiffness
+    use symmetric_solver
+    use output
+    use mass
+
+    implicit none
+
+    integer :: i, nit, row, col, j, k
+    real(8), allocatable, dimension(:) :: Fext, Fint, F, R, un, un1, vn, vn1, an, an1, du, M
+    real(8) :: err1, err2, gamma, beta
+    real(8), dimension(bc_size) :: constraint
+    character(80), intent(in) :: filepath
+
+    allocate(Fext(nn*nsd))
+    allocate(Fint(nn*nsd))
+    allocate(R(nn*nsd))
+    allocate(du(nn*nsd))
+    allocate(un(nn*nsd))
+    allocate(un1(nn*nsd))
+    allocate(vn(nn*nsd))
+    allocate(vn1(nn*nsd))
+    allocate(an(nn*nsd))
+    allocate(an1(nn*nsd))
+    allocate(M(no_nonzeros))
+
+    ! initialization
+    un = 0.
+    un1 = 0.
+    du = 0.
+    vn = 0.
+    vn1 = 0.
+    an = 0.
+    an1 = 0.
+    constraint = 0.
+    gamma = 0.5
+    beta = 0.25
+    step = 0
+
+    call write_results(filepath, un)
+    call mass_matrix(M)
+
+    ! If the external load is traction, then the external force doesn't change
+    if (load_type /= 1) then
+        call force_traction(Fext)
+    else
+        call force_pressure(un, Fext)
+    end if
+
+    F = Fext
+    call ma57ds(M, nn*nsd, F, an) ! initial accerleration
+
+    do step = 1, nsteps
+        un1 = un + dt*vn + 0.5*dt**2*(1 - 2*beta)*an
+        err1 = 1.
+        err2 = 1.
+        nit = 0
+        write(*,'(A, A, i5, 5x, A, e12.4, A)') repeat('=', 30), 'Step', step, 'Time', step*dt, repeat('=', 36)
+        do while (((err1 > tol) .or. (err2 > tol)) .and. (nit < maxit))
+            nit = nit + 1
+            an1 = (un1 - (un + dt*vn + 0.5*dt**2*(1 - 2*beta)*an))/(beta*dt**2)
+            vn1 = vn + (1 - gamma)*dt*an + gamma*dt*an1
+            call force_internal(un1, Fint)
+            if (load_type == 1) then
+                call force_pressure(un1, Fext)
+            end if
+            F = Fext - Fint
+            ! R = matmul(M, an1) - F
+            do i = 1, nn*nsd
+                R(i) = 0.0d0
+                do j = 1, nn*nsd
+                    R(i) = R(i) + getValueSymmetric(M, i, j)*an1(j)
+                end do
+                R(i) = R(i) - F(i)
+            end do
+            call tangent_internal(un1)
+            nonzeros = nonzeros + M/(beta*dt**2)
+            ! penalty
+            do i = 1, bc_size
+                row = nsd*(bc_num(1, i) - 1) + bc_num(2, i)
+                constraint(i) = un1(row) - bc_val(i)
+                call addValueSymmetric(nonzeros, row, row, penalty)
+                R(row) = R(row) + penalty*constraint(i)
+            end do
+            ! solve
+            call ma57ds(nonzeros, nn*nsd, -R, du)
+            un1 = un1 + du
+            ! check convergence
+            err1 = sqrt(dot_product(du,du)/dot_product(un1, un1))
+            err2 = sqrt(dot_product(R,R))/(nsd*nn)
+            write(*,'("Iteration number:",i8,5x,"Err1:",E12.4,5x,"Err2:",E12.4,5x,"Tolerance:",E12.4)') nit, err1, err2, tol
+        end do
+        if (nit == maxit) then
+            write(*, *) "Maximum number of iterations reached!"
+            stop
+        end if
+        vn = vn1
+        un = un1
+        an = an1
+        if (MOD(step, nprint) == 0) then
+            call write_results(filepath, un)
+        end if
+    end do
+    write(*,*) repeat("=", 95)
+
+    deallocate(Fext)
+    deallocate(Fint)
+    deallocate(R)
+    deallocate(du)
+    deallocate(un)
+    deallocate(un1)
+    deallocate(vn)
+    deallocate(vn1)
+    deallocate(an)
+    deallocate(an1)
+    deallocate(M)
+end subroutine dynamics 
 
 subroutine timestamp ( )
 ! *****************************************************************************

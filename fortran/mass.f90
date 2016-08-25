@@ -29,7 +29,7 @@ contains
         weights = int_weights(nsd,nen,npt)
             
         ! initialize
-        mass= 0.
+        mass = 0.
         
         ! loop over elements
         do ele=1,nel
