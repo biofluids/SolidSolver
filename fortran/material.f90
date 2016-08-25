@@ -1,9 +1,10 @@
 module material
     implicit none
 contains
-    subroutine Kirchhoffstress(nsd, intcoord, F, materialtype, materialprops, stress)
+    subroutine Kirchhoffstress(nsd, intcoord, F, pressure, materialtype, materialprops, stress)
         ! Compute the Kirchhoff stress
         integer, intent(in) :: nsd, materialtype
+        real(8), intent(in) :: pressure
         real(8), dimension(nsd,nsd), intent(inout) :: F
         real(8), dimension(nsd), intent(in) :: intcoord
         real(8), dimension(5), intent(in) :: materialprops
@@ -64,7 +65,7 @@ contains
             mu2 = materialprops(4)
             do i=1,nsd
                 do j=1,nsd
-                    stress(i,j) = -(mu1*I1+2*mu2*I2)*eye(i,j)/3. - mu2*BB(i,j) + (mu1+mu2*I1)*Bbar(i,j) + Ja*(Ja-1)*kappa*eye(i,j)
+                    stress(i,j) = -(mu1*I1+2*mu2*I2)*eye(i,j)/3. - mu2*BB(i,j) + (mu1+mu2*I1)*Bbar(i,j) + Ja*pressure*eye(i,j)
                 end do
             end do
         else if (materialtype == 2) then ! Yeoh
@@ -74,7 +75,7 @@ contains
             c3 = materialprops(5)
             do i = 1, nsd
                 do j = 1, nsd
-                    stress(i,j) = (2*c1 + 4*c2*(I1 - 3) + 6*c3*(I1-3)**2)*(Bbar(i,j) - 1/3.*I1*eye(i,j)) + Ja*(Ja-1)*kappa*eye(i,j)
+                    stress(i,j) = (2*c1 + 4*c2*(I1 - 3) + 6*c3*(I1-3)**2)*(Bbar(i,j) - 1/3.*I1*eye(i,j)) + Ja*pressure*eye(i,j)
                 end do
             end do
         else if (materialtype == 3) then ! HGO
@@ -121,7 +122,7 @@ contains
             
             do i = 1, nsd
                 do j = 1, nsd
-                    stress(i,j) = -1/3.*mu1*I1*eye(i,j) + mu1*Bbar(i,j) + Ja*(Ja-1)*kappa*eye(i,j)
+                    stress(i,j) = -1/3.*mu1*I1*eye(i,j) + mu1*Bbar(i,j) + Ja*pressure*eye(i,j)
                     ! anisotropic part
                     if (lambda4 > 1.0) then
                         stress(i,j) = stress(i,j) + 2*kk1*( (I4-1)*exp(kk2*(I4-1)**2)*(a(i)*a(j) - 1/3.*eye(i,j))*I4 )
@@ -134,9 +135,10 @@ contains
         end if
     end subroutine Kirchhoffstress
 
-    subroutine materialstiffness(nsd, intcoord, F, materialtype, materialprops, mstiff)
+    subroutine materialstiffness(nsd, intcoord, F, pressure, materialtype, materialprops, mstiff)
         ! Compute the material stiffness tensor
         integer, intent(in) :: nsd, materialtype
+        real(8), intent(in) :: pressure
         real(8), dimension(nsd,nsd), intent(in) :: F
         real(8), dimension(nsd), intent(in) :: intcoord
         real(8), dimension(5), intent(in) :: materialprops
@@ -205,9 +207,9 @@ contains
                                             + 4/3.*mu2*(BB(i,j)*eye(k,l)+BB(k,l)*eye(i,j)) &
                                             + 2/9.*(mu1*I1+4*mu2*I2)*eye(i,j)*eye(k,l) &
                                             + 1/3.*(mu1*I1+2*mu2*I2)*(eye(i,k)*eye(j,l)+eye(i,l)*eye(j,k)) &
-                                            + (Ja*(2*Ja-1)*eye(i,j)*eye(k,l) - Ja*(Ja-1)*(eye(i,k)*eye(j,l)+eye(i,l)*eye(j,k))) &
-                                            *kappa
-                                            !+ (eye(i,j)*eye(k,l) - (eye(i,k)*eye(j,l)+eye(i,l)*eye(j,k)))*Ja*pressure
+                                            !+ (Ja*(2*Ja-1)*eye(i,j)*eye(k,l) - Ja*(Ja-1)*(eye(i,k)*eye(j,l)+eye(i,l)*eye(j,k))) &
+                                            !*kappa
+                                            + (eye(i,j)*eye(k,l) - (eye(i,k)*eye(j,l)+eye(i,l)*eye(j,k)))*Ja*pressure
                         end do
                     end do
                 end do
@@ -227,9 +229,9 @@ contains
                                             + (4/9.*I1*c1 + (16/9.*I1**2 - 8/3.*I1)*c2 + 4*I1*(I1-1)*(I1-3)*c3)*eye(i,j)*eye(k,l) &
                                             + (2/3.*I1*c1 + 4/3.*I1*(I1-3)*c2 + (2*I1*(I1-3)**2)*c3) & 
                                             *(eye(i,k)*eye(j,l) + eye(i,l)*eye(j,k)) &
-                                            + (Ja*(2*Ja-1)*eye(i,j)*eye(k,l) - Ja*(Ja-1)*(eye(i,k)*eye(j,l)+eye(i,l)*eye(j,k))) & 
-                                            *kappa
-                                            !+ (eye(i,j)*eye(k,l) - (eye(i,k)*eye(j,l)+eye(i,l)*eye(j,k)))*Ja*pressure
+                                            !+ (Ja*(2*Ja-1)*eye(i,j)*eye(k,l) - Ja*(Ja-1)*(eye(i,k)*eye(j,l)+eye(i,l)*eye(j,k))) & 
+                                            !*kappa
+                                            + (eye(i,j)*eye(k,l) - (eye(i,k)*eye(j,l)+eye(i,l)*eye(j,k)))*Ja*pressure
                         end do
                     end do
                 end do
@@ -290,9 +292,9 @@ contains
                             mstiff(i,j,k,l) = - 2/3.*(mu1)*(Bbar(k,l)*eye(i,j)+Bbar(i,j)*eye(k,l)) &
                                             + 2/9.*(mu1*I1)*eye(i,j)*eye(k,l) &
                                             + 1/3.*(mu1*I1)*(eye(i,k)*eye(j,l)+eye(i,l)*eye(j,k)) &
-                                            + (Ja*(2*Ja-1)*eye(i,j)*eye(k,l) - Ja*(Ja-1)*(eye(i,k)*eye(j,l)+eye(i,l)*eye(j,k))) &
-                                            *kappa
-                                            !+ (eye(i,j)*eye(k,l) - (eye(i,k)*eye(j,l)+eye(i,l)*eye(j,k)))*Ja*pressure
+                                            !+ (Ja*(2*Ja-1)*eye(i,j)*eye(k,l) - Ja*(Ja-1)*(eye(i,k)*eye(j,l)+eye(i,l)*eye(j,k))) &
+                                            !*kappa
+                                            + (eye(i,j)*eye(k,l) - (eye(i,k)*eye(j,l)+eye(i,l)*eye(j,k)))*Ja*pressure
                             if (lambda4 > 1.0) then
                                 ! anisotropic part 1
                                 mstiff(i,j,k,l) = mstiff(i,j,k,l) + 4*I4**2*der24*a(i)*a(j)*a(k)*a(l) &

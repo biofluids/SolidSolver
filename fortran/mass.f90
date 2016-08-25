@@ -6,7 +6,7 @@ contains
         use shapefunction
         use integration
         
-        real(8), dimension(no_nonzeros), intent(inout) :: mass
+        real(8), dimension(no_nonzeros), intent(inout) :: mass ! The actual length should be less thant no_nonzeros
         real(8), dimension(nen*nsd,nen*nsd) :: mele
         real(8), dimension(nsd,nen) :: elecoord
         real(8), dimension(nsd,nen) :: eledof

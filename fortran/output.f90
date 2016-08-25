@@ -4,7 +4,7 @@ contains
     subroutine write_results(filepath,dofs)
         use read_file, only: mode, step, nn, nsd, nel, isbinary
         character(80) :: filepath
-        real(8), dimension(nn*nsd), intent(in) :: dofs
+        real(8), dimension(nn*nsd+nel), intent(in) :: dofs
         if (step == 0) then
             call write_case(filepath)
         end if
@@ -43,7 +43,7 @@ contains
 
     subroutine write_geometry(filepath,dofs)
         use read_file, only: step, nn, nsd, nen, nel, connect, coords, nprint, isbinary
-        real(8), dimension(nn*nsd), intent(in) :: dofs
+        real(8), dimension(nn*nsd+nel), intent(in) :: dofs
         character(80) :: filepath, filename, buffer
         integer :: i,j
         integer, dimension(nn) :: nodeid
@@ -160,7 +160,7 @@ contains
 
     subroutine write_displacement(filepath,dofs)
         use read_file, only: step, nsd, nsd, nn, coords, nel, nen, connect, nprint, isbinary
-        real(8), dimension(nn*nsd), intent(in) :: dofs
+        real(8), dimension(nn*nsd+nel), intent(in) :: dofs
         character(80) :: filepath, filename, buffer
         integer :: i,j,row
         character(6) :: temp
@@ -215,7 +215,7 @@ contains
         use shapefunction
         use integration
         use material
-        real(8), dimension(nn*nsd), intent(in) :: dofs
+        real(8), dimension(nn*nsd+nel), intent(in) :: dofs
         character(80) :: filepath, filename, buffer
         character(6) :: temp
         real(8), dimension(nsd,nen) :: elecoord
@@ -226,7 +226,7 @@ contains
         real(8), dimension(nsd,nsd) :: dxdxi, dxidx, F, B, eye
         real(8), allocatable, dimension(:,:) :: xilist
         integer :: ele,a,i,npt,j,intpt
-        real(8) :: Ja, avg_vcr
+        real(8) :: Ja, pressure, avg_vcr
         real(8), dimension(nel) :: vcr, abs_vcr ! volume change rate
         real(8), dimension(nsd) :: xi, intcoord ! intcoord is the coordinates of the integration points, necessary for anisotropic models
         real(8), dimension(nsd) :: work ! for lapack inverse
@@ -269,6 +269,8 @@ contains
                     eledof(i,a) = dofs(nsd*(connect(a,ele)-1)+i)
                 end do
             end do
+            ! extract pressure
+            pressure = dofs(nn*nsd+ele)
             ! fully integration
             ! set up integration points and weights
             npt = int_number(nsd,nen,0)
@@ -302,7 +304,7 @@ contains
                 end if
                 vcr(ele) = vcr(ele) + Ja
                 ! compute the Kirchhoff stress
-                call Kirchhoffstress(nsd, intcoord, F, materialtype, materialprops, stress)
+                call Kirchhoffstress(nsd, intcoord, F, pressure, materialtype, materialprops, stress)
                 ! Cauchy stress
                 stress = stress/Ja
                 ! vectorize

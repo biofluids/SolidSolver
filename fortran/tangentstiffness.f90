@@ -15,20 +15,20 @@ contains
         use shapefunction
         use integration
         use material
-        real(8), dimension(nn*nsd), intent(in) :: dofs
+        real(8), dimension(nn*nsd+nel), intent(in) :: dofs
         real(8), dimension(nsd, nsd, nsd, nsd) :: C
         real(8), dimension(nsd, nen) :: elecoord
         real(8), dimension(nsd, nen) :: eledof
         real(8), dimension(nen, nsd) :: dNdx, dNdy
         real(8), dimension(nsd, nsd) :: stress
-        real(8), dimension(nen*nsd, nen*nsd) :: kint
+        real(8), dimension(nen*nsd+1, nen*nsd+1) :: kint
         real(8), dimension(nsd) :: xi, intcoord ! intcoord is the coordinates of the integration points, necessary for anisotropic models
         real(8), dimension(nen, nsd) :: dNdxi 
         real(8), dimension(nsd, nsd) :: dxdxi, dxidx, F, Finv, B, eye
         real(8), allocatable, dimension(:,:) :: xilist
         real(8), allocatable, dimension(:) :: weights
         integer :: ele,a,i,npt,j,row,intpt,l,d,k,col
-        real(8) :: det, Ja
+        real(8) :: det, Ja, pressure
         real(8), dimension(nsd) :: work ! for lapack inverse
         integer, dimension(nsd) :: ipiv ! for lapack inverse
         integer :: info, n1 ! for lapack inverse
@@ -67,6 +67,8 @@ contains
                     eledof(i,a) = dofs(nsd*(connect(a,ele)-1)+i)
                 end do
             end do
+            ! extract the pressure
+            pressure = dofs(nsd*nn+ele)
             ! initialize
             kint = 0.
             ! loop over integration points
@@ -105,9 +107,9 @@ contains
                 call DGETRI(n1,Finv,n1,ipiv,work,n1,info)
                 dNdy = matmul(dNdx, Finv)
                 ! compute the Kirchhoff stress
-                call Kirchhoffstress(nsd, intcoord, F, materialtype, materialprops, stress)
+                call Kirchhoffstress(nsd, intcoord, F, pressure, materialtype, materialprops, stress)
                 ! compute the material stiffness C_ijkl
-                call materialstiffness(nsd, intcoord, F, materialtype, materialprops, C)
+                call materialstiffness(nsd, intcoord, F, pressure, materialtype, materialprops, C)
                 ! compute the element internal force
                 do a = 1, nen
                     do i = 1, nsd
@@ -123,8 +125,15 @@ contains
                                 end do
                             end do
                         end do
+                        ! displacement + pressure term
+                        row = (a-1)*nsd + i
+                        col = nsd*nen + 1
+                        kint(row, col) = kint(row, col) + dNdy(a,i)*Ja*weights(intpt)*det
+                        kint(col, row) = kint(row, col)
                     end do
                 end do
+                ! pressure + pressure term
+                kint(nsd*nen+1, nsd*nen+1) = kint(nsd*nen+1, nsd*nen+1) - 1/materialprops(2)*weights(intpt)*det
             end do
             ! scatter the element kint into the global Kglo
             do a = 1, nen
@@ -136,8 +145,13 @@ contains
                             call addValueSymmetric(nonzeros, row, col, kint(nsd*(a-1)+i,nsd*(d-1)+k))
                         end do
                     end do
+                    col = nsd*nn + ele
+                    call addValueSymmetric(nonzeros, row, col, kint(nsd*(a-1)+i, nsd*nen+1))
                 end do
             end do
+            row = nn*nsd + ele
+            col = nn*nsd + ele
+            call addValueSymmetric(nonzeros, row, col, kint(nsd*nen+1, nsd*nen+1))
         end do
         deallocate(xilist)
         deallocate(weights)
@@ -150,9 +164,9 @@ contains
         use integration
         use face
         ! input argument
-        real(8), dimension(nn*nsd), intent(in) :: dofs
+        real(8), dimension(nn*nsd+nel), intent(in) :: dofs
         ! output
-        real(8), dimension(nn*nsd, nn*nsd) :: Kglo
+        real(8), dimension(nn*nsd+nel, nn*nsd+nel) :: Kglo
         ! Local variables
         real(8), allocatable, dimension(:,:) :: kext ! Element stiffness 
         ! nodelist

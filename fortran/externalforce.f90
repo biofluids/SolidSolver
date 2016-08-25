@@ -18,8 +18,8 @@ contains
         use shapefunction
         use integration
         
-        real(8), dimension(nn*nsd), intent(inout) :: Fext
-        real(8), dimension(nn*nsd), intent(in) :: dofs
+        real(8), dimension(nn*nsd+nel), intent(inout) :: Fext
+        real(8), dimension(nn*nsd+nel), intent(in) :: dofs
         integer :: j, i, ele, faceid, nfacenodes, a, npt, intpt, row
         integer, allocatable, dimension(:) :: nodelist
         real(8), allocatable, dimension(:,:) :: coord, xilist, dNdxi, eledof
@@ -112,7 +112,7 @@ contains
         use shapefunction
         use integration
         
-        real(8), dimension(nn*nsd), intent(inout) :: Fext
+        real(8), dimension(nn*nsd+nel), intent(inout) :: Fext
         integer :: j, i, ele, faceid, nfacenodes, a, npt, intpt, row
         integer, allocatable, dimension(:) :: nodelist
         real(8), allocatable, dimension(:,:) :: coord, xilist, dNdxi
@@ -203,9 +203,7 @@ contains
         use shapefunction
         use integration
         
-        implicit none
-        
-        real(8), dimension(nn*nsd), intent(inout) :: Fext
+        real(8), dimension(nn*nsd+nel), intent(inout) :: Fext
         integer :: ele, a, npt, i, intpt, row
         real(8), dimension(nsd,nen) :: elecoord
         real(8), dimension(nsd*nen) :: f

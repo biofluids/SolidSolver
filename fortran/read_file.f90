@@ -139,7 +139,7 @@ contains
         close(42)
         allocate(full_row_ind(full_no_nonzeros))
 
-        if (no_rows /= nn*nsd + 1) then
+        if (no_rows /= nn*nsd + nel + 1) then
             write(*, *) 'Wrong length of row_ptr in CRS input data!'
             stop
         end if

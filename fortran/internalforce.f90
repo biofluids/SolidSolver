@@ -7,20 +7,20 @@ contains
         use integration
         use material
 
-        real(8), dimension(nn*nsd), intent(in) :: dofs
-        real(8), dimension(nn*nsd), intent(inout) :: Fint
+        real(8), dimension(nn*nsd+nel), intent(in) :: dofs
+        real(8), dimension(nn*nsd+nel), intent(inout) :: Fint
         real(8), dimension(nsd,nen) :: elecoord
         real(8), dimension(nsd,nen) :: eledof
         real(8), dimension(nen,nsd) :: dNdx, dNdy
         real(8), dimension(nsd,nsd) :: stress
-        real(8), dimension(nen*nsd) :: fele
+        real(8), dimension(nen*nsd+1) :: fele
         real(8), dimension(nsd) :: xi, intcoord ! intcoord is the coordinates of the integration points, necessary for anisotropic models
         real(8), dimension(nen,nsd) :: dNdxi 
         real(8), dimension(nsd,nsd) :: dxdxi, dxidx, F, Finv, B, eye
         real(8), allocatable, dimension(:,:) :: xilist
         real(8), allocatable, dimension(:) :: weights
         integer :: ele,a,i,npt,j,row,intpt
-        real(8) :: det, Ja
+        real(8) :: det, Ja, pressure
         real(8), dimension(nsd) :: work ! for lapack inverse
         integer, dimension(nsd) :: ipiv ! for lapack inverse
         integer :: info, n1 ! for lapack inverse
@@ -59,6 +59,8 @@ contains
                     eledof(i,a) = dofs(nsd*(connect(a,ele)-1)+i)
                 end do
             end do
+            ! extract the element pressure
+            pressure = dofs(nsd*nn+ele)
             ! compute the internal force
             ! initialize
             fele = 0.
@@ -98,7 +100,7 @@ contains
                 call DGETRI(n1,Finv,n1,ipiv,work,n1,info)
                 dNdy = matmul(dNdx,Finv)
                 ! compute the Kirchhoff stress
-                call Kirchhoffstress(nsd, intcoord, F, materialtype, materialprops, stress)
+                call Kirchhoffstress(nsd, intcoord, F, pressure, materialtype, materialprops, stress)
                 ! compute the element internal force
                 do a=1,nen
                     do i=1,nsd
@@ -108,6 +110,7 @@ contains
                         end do
                     end do
                 end do
+                fele(nen*nsd+1) = fele(nen*nsd+1) + ((Ja-1)-pressure/materialprops(2))*weights(intpt)*det
             end do
             ! scatter the element internal force into the global internal force
             do a=1,nen
@@ -116,6 +119,9 @@ contains
                     Fint(row) = Fint(row) + fele(nsd*(a-1)+i);
                 end do
             end do
+            ! scatter the element pressure
+            row = nn*nsd + ele
+            Fint(row) = Fint(row) + fele(nsd*nen+1)
         end do
         
         deallocate(xilist)

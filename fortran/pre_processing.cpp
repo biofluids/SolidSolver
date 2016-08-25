@@ -752,9 +752,9 @@ void writeCRS_v1()
         }
         neighborNodes.push_back(my_neighborNodes);
         neighborElements.push_back(my_neighborElements);
-        no_nonzeros += my_neighborNodes.size()*nsd;
+        no_nonzeros += my_neighborNodes.size()*nsd + my_neighborElements.size();
     }
-    no_nonzeros = no_nonzeros*nsd; // For each node, every dof is identical.
+    no_nonzeros = no_nonzeros*nsd + nel*(nen*nsd + 1); // For each node, every dof is identical. Plus pressure terms.
     
     int count = 0; // the number of nonzeros
     std::vector<int> col_ind; // size = no_nonzeros
@@ -775,7 +775,30 @@ void writeCRS_v1()
                     count++;
                 }
             }
+            // Pressure terms
+            for (auto j : neighborElements[n])
+            {
+                col_ind.push_back(nn*nsd + j);
+                count++;
+            }
         }
+    }
+    // Last nel rows
+    for (int ele = 0; ele < nel; ++ele)
+    {
+        row_ptr.push_back(count);
+        // Put the nodes into a set in order to sort them
+        std::set<int> myNodes(connect[ele].begin(), connect[ele].end());
+        for (auto i : myNodes)
+        {
+            for (int j = 0; j < nsd; ++j)
+            {
+                col_ind.push_back(nsd*(i-1) + j);
+                count++;
+            }
+        }
+        col_ind.push_back(nn*nsd + ele);
+        count++;
     }
     row_ptr.push_back(count);
 
@@ -784,14 +807,14 @@ void writeCRS_v1()
     for (auto& i : row_ptr) i++;
 
     assert(count == no_nonzeros);
-    assert(row_ptr.size() == nsd*nn + 1);
+    assert(row_ptr.size() == nsd*nn + nel + 1);
     assert(col_ind.size() == no_nonzeros);
     assert(row_ptr[row_ptr.size()-1] == no_nonzeros + 1);
     
     std::ofstream ofs("CRS.bin");
     ofs.write(reinterpret_cast<char*>(&no_nonzeros), sizeof(int));
     ofs.write(reinterpret_cast<char*>(&col_ind[0]), no_nonzeros * sizeof(int));
-    int size_row_ptr = nsd*nn + 1;
+    int size_row_ptr = nsd*nn + nel + 1;
     ofs.write(reinterpret_cast<char*>(&size_row_ptr), sizeof(int));
     ofs.write(reinterpret_cast<char*>(&row_ptr[0]), size_row_ptr * sizeof(int));
     ofs.close();
@@ -817,8 +840,14 @@ void writeCRS_v2()
                         data.insert(Entry(row, col));
                     }
                 }
+                col = nsd*nn + ele;
+                data.insert(Entry(row, col));
+                data.insert(Entry(col, row));
             }
         }
+        row = nsd*nn + ele;
+        col = nsd*nn + ele;
+        data.insert(Entry(row, col));
     }
     
     std::vector<int> col_ind;

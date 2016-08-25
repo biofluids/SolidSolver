@@ -57,12 +57,12 @@ subroutine statics(filepath)
     real(8), dimension(bc_size) :: constraint
     character(80), intent(in) :: filepath
 
-    allocate(Fext(nn*nsd))
-    allocate(Fint(nn*nsd))
-    allocate(R(nn*nsd))
-    allocate(w(nn*nsd))
-    allocate(w1(nn*nsd))
-    allocate(dw(nn*nsd))
+    allocate(Fext(nn*nsd+nel))
+    allocate(Fint(nn*nsd+nel))
+    allocate(R(nn*nsd+nel))
+    allocate(w(nn*nsd+nel))
+    allocate(w1(nn*nsd+nel))
+    allocate(dw(nn*nsd+nel))
 
     ! initialize w
     w = 0.
@@ -108,11 +108,11 @@ subroutine statics(filepath)
                 R(row) = R(row) + penalty*constraint(i)
             end do
             ! solve
-            call ma57ds(nonzeros, nn*nsd, -R, dw)
+            call ma57ds(nonzeros, nn*nsd+nel, -R, dw)
             w = w + dw
             ! check convergence
             err1 = sqrt(dot_product(dw,dw)/dot_product(w,w))
-            err2 = sqrt(dot_product(R,R))/(nsd*nn)
+            err2 = sqrt(dot_product(R,R))/(nsd*nn+nel)
             write(*,'("Iteration number:",i8,5x,"Err1:",E12.4,5x,"Err2:",E12.4,5x,"Tolerance:",E12.4)') nit, err1, err2, tol
         end do
         if (nit == maxit) then
