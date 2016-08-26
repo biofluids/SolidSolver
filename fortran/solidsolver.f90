@@ -170,7 +170,7 @@ subroutine dynamics(filepath)
     allocate(vn1(nn*nsd))
     allocate(an(nn*nsd))
     allocate(an1(nn*nsd))
-    allocate(M(no_nonzeros))
+    allocate(M(nn*nsd))
 
     ! initialization
     un = 0.
@@ -196,18 +196,20 @@ subroutine dynamics(filepath)
     end if
 
     F = Fext
-    call ma57ds(M, nn*nsd, F, an) ! initial accerleration
+    do i = 1, nn*nsd
+        an(i) = F(i)/M(i) ! Mass is lumped
+    end do
 
     do step = 1, nsteps
-        un1 = un + dt*vn + 0.5*dt**2*(1 - 2*beta)*an
+        un1 = un + dt*vn + 0.5*dt**2*(1 - 2*beta)*an ! predict value for the displacement at next step
         err1 = 1.
         err2 = 1.
         nit = 0
         write(*,'(A, A, i5, 5x, A, e12.4, A)') repeat('=', 30), 'Step', step, 'Time', step*dt, repeat('=', 36)
-        do while (((err1 > tol) .or. (err2 > tol)) .and. (nit < maxit))
+        do while (((err1 > tol) .or. (err2 > tol)) .and. (nit < maxit)) ! this do-while-loop solves for un1 based on prediction
             nit = nit + 1
-            an1 = (un1 - (un + dt*vn + 0.5*dt**2*(1 - 2*beta)*an))/(beta*dt**2)
-            vn1 = vn + (1 - gamma)*dt*an + gamma*dt*an1
+            an1 = (un1 - (un + dt*vn + 0.5*dt**2*(1 - 2*beta)*an))/(beta*dt**2) ! accerleration at next step
+            vn1 = vn + (1 - gamma)*dt*an + gamma*dt*an1 ! velocity at next step
             call force_internal(un1, Fint)
             if (load_type == 1) then
                 call force_pressure(un1, Fext)
@@ -215,14 +217,12 @@ subroutine dynamics(filepath)
             F = Fext - Fint
             ! R = matmul(M, an1) - F
             do i = 1, nn*nsd
-                R(i) = 0.0d0
-                do j = 1, nn*nsd
-                    R(i) = R(i) + getValueSymmetric(M, i, j)*an1(j)
-                end do
-                R(i) = R(i) - F(i)
+                R(i) = M(i)*an1(i) - F(i)
             end do
             call tangent_internal(un1)
-            nonzeros = nonzeros + M/(beta*dt**2)
+            do i = 1, nn*nsd
+                call addValueSymmetric(nonzeros, i, i, M(i)/(beta*dt**2))
+            end do
             ! penalty
             do i = 1, bc_size
                 row = nsd*(bc_num(1, i) - 1) + bc_num(2, i)

@@ -2,11 +2,12 @@ module mass
     implicit none
 contains
     subroutine mass_matrix(mass)
+    ! Mass matrix is lumped.
         use read_file
         use shapefunction
         use integration
         
-        real(8), dimension(no_nonzeros), intent(inout) :: mass
+        real(8), dimension(nn*nsd), intent(inout) :: mass
         real(8), dimension(nen*nsd,nen*nsd) :: mele
         real(8), dimension(nsd,nen) :: elecoord
         real(8), dimension(nsd,nen) :: eledof
@@ -58,6 +59,7 @@ contains
                 do a = 1, nen
                     do b = 1, nen
                         do i = 1, nsd
+                            ! No cross coupling terms
                             row = nsd*(a-1) + i
                             col = nsd*(b-1) + i
                             mele(row,col) = mele(row,col) + N(a)*N(b)*rho*det*weights(intpt)
@@ -69,11 +71,8 @@ contains
             do a=1,nen
                 do i=1,nsd
                     row = nsd*(connect(a,ele)-1)+i
-                    do b=1,nen
-                        do k=1,nsd
-                            col = nsd*(connect(b,ele)-1)+k
-                            call addValueSymmetric(mass, row, col, mele(nsd*(a-1)+i,nsd*(b-1)+k))
-                        end do
+                    do j = 1, nen*nsd
+                        mass(row) = mass(row) + mele(nsd*(a-1)+i, j)
                     end do
                 end do
             end do
