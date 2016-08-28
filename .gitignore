@@ -51,7 +51,7 @@ key.txt
 CRS.bin
 .DS_Store
 main
-pre_processing
+pre
 
 # LaTex files
 *.aux
