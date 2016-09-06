@@ -6,6 +6,9 @@
 \usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
 								% TeX will automatically convert eps --> pdf in pdflatex		
 \usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{mathbbol}
 
 \title{A Brief Review on Biological Growth}
 \author{Jie Cheng}
@@ -14,7 +17,10 @@
 \begin{document}
 \maketitle
 
-\include{introduction}
+\input{./texfiles/defs.tex}
+\input{./texfiles/introduction}
+\input{./texfiles/kinematics}
+\input{./texfiles/constitutive}
 
 \clearpage
 \bibliographystyle{plain}

@@ -1,0 +1,134 @@
+\section{Constitutive equations}
+The elastic deformation can be described with the standard continuum mechanics. While an additional model is needed to characterize the growth deformation as the intermediate configuration is incompatible. In this section we consider a specific constitutive model and a growth model. We restrict the constitutive model to be isotropic. However the extension to anisotropic models should not pose any fundamental difficulty as the multiplicative decomposition approach remains the same. For instance \cite{Goktepe2} presents the application on the anisotropic model.
+
+\subsection{Elastic deformation}
+We use the compressible Neo-Hookean model in this work. The free energy is:
+\begin{equation}
+\Psi = \frac{1}{2}\mathrm{ln}^2 J_\rme + \frac{1}{2}\mu \left[ \bC_\rme : \bI - 3 - 2\mathrm{ln} J_\rme \right]
+\end{equation}
+where $\lambda$ and $\mu$ are material constants. The elastic second Piola-Kirchhoff stress $\bS_\rme$ and the elastic constitutive moduli $\bbC_\rme$ are derived in a standard way as following:
+\begin{equation} \label{eq:Se}
+\begin{split}
+\bS_\rme &= 2\frac{\partial \Psi}{\partial \bC_\rme} \\
+	&= 2\bigg[  \bigg( \frac{\lambda}{2} \bigg) \bigg( \frac{2\mathrm{ln}J_\rme}{J_\rme} \bigg)       \bigg( \frac{J_\rme}{2} \bC_\rme^{-1} \bigg) + \frac{\mu}{2} \bigg( \bI - \frac{2}{J_\rme} \frac{J_\rme}{2} \bC_\rme^{-1} \bigg) \bigg] \\
+	&= \left[ \lambda \mathrm{ln}J_\rme - \mu\right]\bC_\rme^{-1} + \mu\bI
+\end{split}
+\end{equation}
+where the identity ${\partial J_\rme}/{\partial \bC_\rme} = J_\rme \bC_\rme^{-1}/2$ is used.
+\begin{equation} \label{eq:Ce}
+\begin{split}
+\bbC_\rme &= 2\frac{\partial \bS_\rme}{\partial \bC_\rme} \\
+	&= 2\bigg[ (\lambda \mathrm{ln}J_\rme - \mu) \frac{\partial \bC_\rme^{-1}}{\partial \bC_\rme} + \bC_\rme \otimes \frac{\partial (\lambda \mathrm{ln}J_\rme - \mu)}{\partial \bC_\rme}\bigg] \\
+	&= 2\bigg[ (\mu - \lambda \mathrm{ln}J_\rme) \frac{1}{2}(\bC_\rme^{-1} \overline\otimes \bC_\rme^{-1} + \bC_\rme^{-1} \underline\otimes \bC_\rme^{-1}) + \bC_\rme^{-1} \otimes \bigg( \frac{\lambda}{J_\rme}\frac{J_\rme}{2} \bC_\rme^{-1} \bigg) \bigg] \\
+	&= (\mu - \lambda \mathrm{ln}J_\rme) (\bC_\rme^{-1} \overline\otimes \bC_\rme^{-1} + \bC_\rme^{-1} \underline\otimes \bC_\rme^{-1} ) + \lambda \bC_\rme^{-1} \otimes \bC_\rme^{-1}
+\end{split}
+\end{equation}
+Note that the equation $\partial\bC_\rme^{-1}/\partial\bC_\rme = -\frac{1}{2}(\bC_\rme^{-1} \overline\otimes \bC_\rme^{-1} + \bC_\rme^{-1} \underline\otimes \bC_\rme^{-1})$ is used, where the operator $\overline\otimes$ and $\underline\otimes$ are defined as $(\bA\overline\otimes\bB)_{ijkl} = {\bA}_{ik}{\bB}_{jl}$ and $(\bA\underline\otimes\bB)_{ijkl} = {\bA}_{il}{\bB}_{jk}$ respectively. For more details of the mathematics in continuum mechanics, please refer to \cite{Holzapfel}. 
+
+\subsection{Growth deformation}
+To characterize the growth deformation, we explicitly define the growth deformation tensor as the product of the identity tensor and a single scalar $\theta_\rmg$, which is identified as the isotropic stretch ratio due to volumetric mass growth.
+\begin{equation} \label{eq:Fg}
+\bF_\rmg = \theta_\rmg \bI
+\end{equation}
+It follows that $J_\rmg = \theta_\rmg ^ 3$. Therefore the grown density in Equation \ref{eq:grown} can be transformed into:
+\begin{equation}
+\grho = \theta_\rmg^3\rho_\rmg = \theta_\rmg^3\rho_0
+\end{equation}
+Notice $\rho_\rmg = \rho_0$ as we assume the density does not change during the growth deformation. Meanwhile, the grown velocity gradient in Equation \ref{eq:L} can be expressed as:
+\begin{equation}
+\bL_\rmg = \frac{\dot\theta}{\theta_\rmg}\bI
+\end{equation}
+Substituting Equation \ref{eq:Fg} into \ref{eq:massBalance3}, the mass source can be rewritten as:
+\begin{equation} \label{eq:massBalance4}
+R_0 = \dot{J}_\rmg \rho_0 = 3\rho_0 \theta_\rmg^2\dot\theta_\rmg
+\end{equation}
+Once the evolution of the stretch ratio is known, the mass source can be determined. There are different assumptions on the evolution of the stretch ratio. For instance \cite{Lubarda2} assumes the evolution of the stretch ratio is driven by the Piola-Kirchhoff stress $\bS_\rme$, while \cite{Goktepe2} and \cite{Himpel} uses the Mandel stress $\bM_\rme = \bC_\rme \cdot \bS_\rme$.
+We use the assumption in \cite{Goktepe2} that the growth process is driven by the Mandel stress and the stretch ratio in a discrete form:
+\begin{equation}
+\dot\theta_\rmg = k_\rmg(\theta_\rmg)\phi_\rmg(\bM_\rme)
+\end{equation}
+The growth process is activated only when the pressure, which is measured by the trace of the Mandel stress exceeds a physiological threshold level $M_\rme^{\mathrm{crit}}$:
+\begin{equation}
+\phi_\rmg = \mathrm{tr}(\bM_\rme) - M_\rme^{\mathrm{crit}} \quad \mathrm{with} \quad \frac{\partial \phi_\rmg}{\partial \theta_\rmg} = -\frac{1}{\theta_\rmg} \left[2\mathrm{tr}(\bM_\rme) + \bC_\rme : \bbC_\rme : \bC_\rme\right]
+\end{equation}
+Function $k_\rmg$ is used to prevent unbounded growth \cite{Lubarda2}:
+\begin{equation}
+k_\rmg = \frac{1}{\tau}\left( \frac{\theta_\mathrm{max} - \theta_\rmg}{\theta_\mathrm{max} - 1} \right)^\gamma
+\quad \mathrm{with} \quad 
+\frac{\partial k_\rmg}{\partial \theta_\rmg} = -\frac{\gamma}{\theta_\mathrm{max} - \theta\rmg}k_\rmg
+\end{equation}
+where $\tau$ and $\gamma$ are material constants.
+
+\subsection{Evaluation of stretch ratio, stress, and constitutive moduli}
+With all essential definitions introduced, next we discuss the evaluation of the stretch ratio, stress and constitutive moduli. To evaluate the stretch from its time derivative, we apply the implicit Euler backward scheme $\dot\theta_\rmg = (\theta_\rmg - \theta_\rmg^n)/\Delta t$, and evaluate the residual as:
+\begin{equation} \label{eq:residual}
+R = \theta_\rmg - \theta_\rmg^\mathrm{n} - \frac{1}{\tau}\left( \frac{\theta_\mathrm{max} - \theta_\rmg}{\theta_\mathrm{max} - 1} \right)^\gamma\left(\mathrm{tr}(\bM_\rme) - M_\rme^{\mathrm{crit}}\right)\Delta t
+\end{equation}
+To minimize the residual $R$, we linearize Equation \ref{eq:residual} for the tangent moduli $K$:
+\begin{equation} \label{eq:K}
+K = \frac{\partial R}{\partial \theta_\rmg} =  1 - \left( k_\rmg \frac{\partial \phi_\rmg}{\partial \theta_\rmg} + \phi_\rmg \frac{\partial k_\rmg}{\partial \theta_\rmg} \right)\Delta t
+\end{equation}
+In the local Newton iteration, where the deformation tensor $\bF$ is known, update the stretch ratio $\theta_\rmg$ with $\theta_\rmg \leftarrow \theta_\rmg - R/K$. The corresponding growth part of the deformation tensor $\bF_\rmg$ can be calculated with Equation \ref{eq:Fg}. Consequently the elastic part $\bF_\rme$ can be calculated with Equation \ref{eq:decomposition}. Then the elastic stress $\bS_\rme$ and elastic constitutive moduli $\bbC_\rme$ can be obtained with Equation \ref{eq:Se} and \ref{eq:Ce} respectively.
+
+As the last step, we need to evaluate the overall stress and constitutive moduli based on the elastic part so that the deformation tensor $\bF$ can be incremented and thus a closed loop can be formed. The second Piola-Kirchhoff stress $\bS$, which will be inserted to the momentum balance equation \ref{eq:momentumBalance} is evaluated as:
+\begin{equation}
+\begin{split}
+\bS &= 2\frac{\partial \Psi}{\partial \bC} \\
+	&= 2\frac{\partial \Psi}{\partial \bC_\rme} : \frac{\partial \bC_\rme}{\partial \bC}  \\
+	&= 2\frac{\partial \Psi}{\partial \bC_\rme} : \frac{\partial(\bF_\rmg^{-T} \bC \bF_\rmg^{-1})}
+	{\partial \bC} \\
+	&=  \bF_\rmg^{-1} \cdot 2\frac{\partial \Psi}{\partial \bC_\rme} \cdot \bF_{\rmg}^{-T} \\
+	&= \bF_\rmg^{-1} \cdot \bS_\rme \cdot \bF_\rmg^{-T}
+\end{split}
+\end{equation}
+When $\bF_\rmg = \theta_\rmg \bI$, it becomes:
+\begin{equation} \label{eq:S}
+\bS = \frac{1}{\theta_\rmg^{2}} \bS_\rme
+\end{equation}
+Its linearization with respect to the total right Cauchy-Green tensor, $\bbC$, which is used in the global Newton iteration, is evaluated with:
+\begin{equation} \label{eq:C}
+\begin{split}
+\bbC &= 2\frac{d\bS(\bF, \bF_\rmg)}{d\bC} \\
+	&= 2\frac{\partial\bS(\bF, \bF_\rmg)}{\partial\bC}\bigg|_{\bF_\rmg} + 2\bigg[ \frac{\partial\bS}{\partial\bF_\rmg} : \frac{\partial\bF_\rmg}{\partial\theta_\rmg} \bigg]\otimes \frac{\partial\theta_\rmg}{\partial\bC}\bigg|_{\bF}
+\end{split}
+\end{equation}
+The first term in Equation \ref{eq:C} is the pull back of the elastic moduli $\bbC_\rme$ onto the reference configuration:
+\begin{equation} \label{eq:part1}
+2\frac{\partial\bS(\bF, \bF_\rmg)}{\partial\bC}\bigg|_{\bF_\rmg} = 2\frac{\partial (\bF_\rmg^{-1} \cdot \bS_\rme \cdot \bF_\rmg^{-T})}{\partial \bC} = (\bF_\rmg^{-1} \overline\otimes \bF_\rmg^{-1}) : \bbC_\rme : (\bF_\rmg^{-T} \overline\otimes \bF_\rmg^{-T})
+\end{equation}
+Recall the assumption on the growth deformation tensor $\bF_\rmg$ in Equation \ref{eq:Fg}, Equation \ref{eq:part1} is rewritten as:
+\begin{equation} \label{eq:term1}
+2\frac{\partial\bS(\bF, \bF_\rmg)}{\partial\bC}\bigg|_{\bF_\rmg} = \frac{1}{\theta_\rmg^4}\bbC_\rme
+\end{equation}
+Since the growth deformation tensor $\bF_\rmg$ is a function of the stretch ratio $\theta_\rmg$ solely, the second and third term can be evaluated using Equation \ref{eq:S}:
+\begin{equation} \label{eq:term23}
+\begin{split}
+\frac{\partial\bS}{\partial\bF_\rmg} : \frac{\partial\bF_\rmg}{\partial\theta_\rmg}\bigg|_\bF &= \bigg( \frac{\partial\bS}{\partial\theta_\rmg} +  \frac{\partial\bS}{\partial\bS_\rme} \frac{d\bS_\rme}{d\bC_\rme} \frac{d\bC_\rme}{d\theta_\rmg} \bigg) \bigg|_\bF \\ 
+	&= -\frac{2}{\theta_\rmg^3}\bS_\rme + \frac{1}{\theta_\rmg^2} \bigg(\frac{1}{2}\bbC_\rme\bigg) : \bigg( -\frac{2}{\theta_\rmg^3}\bC \bigg) \\
+	&= -\frac{2}{\theta_\rmg^3}\bigg( \bS_\rme + \frac{1}{2}\bbC_\rme : \bC_\rme \bigg)
+\end{split}  
+\end{equation}
+Notice the specific relationship $\bC_\rme = \bC/\theta_\rmg^2$ is used. The fourth term is expressed as:
+\begin{equation} \label{eq:term4}
+\begin{split}
+\frac{\partial\theta_\rmg}{\partial\bC} &= \frac{\partial\theta_\rmg}{\partial\bC_\rme} : \frac{\partial\bC_\rme}{\partial\bC} \\
+	&= \frac{1}{\theta_\rmg^2} \bigg( \frac{k_\rmg}{K}\Delta t\bigg)\bigg(\frac{1}{2}\bC_\rme : \bbC_\rme + \bS_\rme \bigg)
+\end{split}
+\end{equation}
+Putting together Equations \ref{eq:term1}, \ref{eq:term23} and \ref{eq:term4}, Equation \ref{eq:C}, the overall constitutive moduli in total Lagrangian formulation, can be specified as:
+\begin{equation} \label{eq:C2}
+\bbC = \frac{1}{\theta_\rmg^4}\bbC_\rme - \frac{4}{\theta_\rmg^5}\frac{k_\rmg}{K}\Delta t\bigg(\bS_\rme + \frac{1}{2}\bbC_\rme : \bC_\rme \bigg) \otimes \bigg( \frac{1}{2} \bC_\rme : \bbC_\rme + \bS_\rme \bigg)
+\end{equation}
+Pushing forward to the updated Lagrangian formulation is straight-forward. The Kirchhoff stress and the Kirchhoff moduli are:
+\begin{equation} \label{eq:tau}
+\boldsymbol{\tau} = \bF \cdot \bS \cdot \bF^T
+\end{equation}
+\begin{equation} \label{eq:moduli}
+\bbc = (\bF \overline\otimes \bF) : \bbC : (\bF^T \overline\otimes \bF^T)
+\end{equation}
+
+
+
+
+
+
