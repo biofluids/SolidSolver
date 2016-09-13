@@ -1,6 +1,110 @@
 module material
     implicit none
 contains
+    subroutine nhstress(nsd, Fe, materialprops, Se, Tau)
+        integer, intent(in) :: nsd
+        real(8), dimension(nsd, nsd), intent(in) :: Fe
+        real(8), dimension(5), intent(in) :: materialprops
+        real(8), dimension(nsd, nsd), intent(inout) :: Se, Tau
+        real(8), dimension(nsd, nsd) :: Ce, Feinv, Ceinv, eye
+        real(8) :: mu, lambda, Je
+        real(8), dimension(nsd) :: work
+        integer(8), dimension(nsd) :: ipiv
+        integer :: info, i, j
+        external DGETRF
+        external DGETRI
+
+        do i = 1, nsd
+            do j = 1, nsd
+                if (i == j) then
+                    eye(i, j) = 1.0
+                else
+                    eye(i, j) = 0.0
+                end if
+            end do
+        end do
+
+        mu = materialprops(3)
+        lambda = materialprops(4)
+        if (nsd == 2) then
+            Je = (Fe(1,1)*Fe(2,2) - Fe(1,2)*Fe(2,1))
+        else if (nsd == 3) then
+            Je = Fe(1,1)*Fe(2,2)*Fe(3,3) - Fe(1,1)*Fe(3,2)*Fe(2,3) &
+                    - Fe(1,2)*Fe(2,1)*Fe(3,3) + Fe(1,2)*Fe(2,3)*Fe(3,1) &
+                    + Fe(1,3)*Fe(2,1)*Fe(3,2) - Fe(1,3)*Fe(2,2)*Fe(3,1)
+        end if
+        Feinv = Fe
+        call DGETRF(nsd, nsd, Feinv, nsd, ipiv, info)
+        call DGETRI(nsd, Feinv, nsd, ipiv, work, nsd, info)
+        Ceinv = matmul(Feinv, transpose(Feinv))
+
+        Se = 0.0
+        Tau = 0.0
+        Se = (lambda*log(Je) - mu)*Ceinv + mu*eye
+        Tau = (lambda*log(Je) - mu)*eye + mu*matmul(Fe, transpose(Fe))
+    end subroutine nhstress
+
+    subroutine nhmaterial(nsd, Fe, materialprops, mstiff_t, mstiff_u)
+        integer, intent(in) :: nsd
+        real(8), dimension(nsd, nsd), intent(in) :: Fe
+        real(8), dimension(5), intent(in) :: materialprops
+        real(8), dimension(nsd, nsd, nsd, nsd), intent(inout) :: mstiff_t, mstiff_u
+        real(8), dimension(nsd, nsd) :: eye, Feinv, Ceinv
+        real(8) :: mu, lambda, Je
+        integer :: i, j, k, l, info
+        real(8), dimension(nsd) :: work
+        integer(8), dimension(nsd) :: ipiv
+
+        do i = 1, nsd
+            do j = 1, nsd
+                if (i == j) then
+                    eye(i, j) = 1.0
+                else
+                    eye(i, j) = 0.0
+                end if
+            end do
+        end do
+
+        mu = materialprops(3)
+        lambda = materialprops(4)
+        if (nsd == 2) then
+            Je = (Fe(1,1)*Fe(2,2) - Fe(1,2)*Fe(2,1))
+        else if (nsd == 3) then
+            Je = Fe(1,1)*Fe(2,2)*Fe(3,3) - Fe(1,1)*Fe(3,2)*Fe(2,3) &
+                    - Fe(1,2)*Fe(2,1)*Fe(3,3) + Fe(1,2)*Fe(2,3)*Fe(3,1) &
+                    + Fe(1,3)*Fe(2,1)*Fe(3,2) - Fe(1,3)*Fe(2,2)*Fe(3,1)
+        end if
+        Feinv = Fe
+        call DGETRF(nsd, nsd, Feinv, nsd, ipiv, info)
+        call DGETRI(nsd, Feinv, nsd, ipiv, work, nsd, info)
+        Ceinv = matmul(Feinv, transpose(Feinv))
+
+        mstiff_t = 0.0
+        mstiff_u = 0.0
+
+        do i = 1, nsd
+            do j = 1, nsd
+                do k = 1, nsd
+                    do l = 1, nsd
+                        mstiff_t(i, j, k, l) = (mu - lambda*log(Je))*(Ceinv(i, k)*Ceinv(j, l) + Ceinv(i, l)*Ceinv(j, k)) &
+                            + lambda*(Ceinv(i, j)*Ceinv(k, l))
+                    end do
+                end do
+            end do
+        end do
+
+        do i = 1, nsd
+            do j = 1, nsd
+                do k = 1, nsd
+                    do l = 1, nsd
+                        mstiff_u(i, j, k, l) = (mu - lambda*log(Je))*(eye(i, k)*eye(j, l) + eye(i, l)*eye(j, k)) &
+                            + lambda*(eye(i, j)*eye(k, l))
+                    end do
+                end do
+            end do
+        end do
+    end subroutine nhmaterial
+
     subroutine Kirchhoffstress(nsd, intcoord, F, materialtype, materialprops, stress)
         ! Compute the Kirchhoff stress
         integer, intent(in) :: nsd, materialtype
