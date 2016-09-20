@@ -176,10 +176,12 @@ Growth model can be easily implemented within the existing nonlinear finite elem
 	\State compute the elastic tensor $\bF_\rme = \bF/\theta_\rmg$
 	\State compute the elastic right Cauchy-Green tensor $\bC_\rme = \bF_\rme^T\cdot\bF_\rme$
 	\State compute the elastic second Piola-Kirchhoff stress $\bS_\rme$ using Equation \ref{eq:Se}
-	\State compute the growth function $k_\rmg$ using Equation \ref{eq:stretchRatio3}
-	\State compute the residual $R$ using Equation \ref{eq:residual}
-	\State compute the tangent moduli $K$ using Equation \ref{eq:K}
-	\State update stretch ratio $\theta_\rmg \leftarrow \theta_\rmg - R/K$
+	\If{$\phi_g = \mathrm{tr}(\bM_\rme) - M_\rme^\mathrm{crit} \geq 0$} 
+		\State compute the growth function $k_\rmg$ using Equation \ref{eq:stretchRatio3}
+		\State compute the residual $R$ using Equation \ref{eq:residual}
+		\State compute the tangent moduli $K$ using Equation \ref{eq:K}
+		\State update stretch ratio $\theta_\rmg \leftarrow \theta_\rmg - R/K$
+	\EndIf
 	\EndWhile
 	\State compute the second Piola-Kirchhoff stress $\bS$ using Equation \ref{eq:S}
 	\State compute the Kirchhoff stress $\boldsymbol\tau$ using Equation \ref{eq:tau}
