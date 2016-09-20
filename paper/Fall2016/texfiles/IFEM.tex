@@ -1,0 +1,17 @@
+\section{Fluid-solid interaction}
+We use the Immersed Finite Element Method (IFEM) to account for the fluid-solid interaction happened in the growth of the biological tissues. IFEM is a non-boundary-fitted mesh method method that represents the background viscous fluid with an unstructured finite element mesh and nonlinear finite elements for the immersed deformable solid. The fluid domain is defined on a fixed Eulerian grid and the solid domain is constructed independently with a Lagrangian mesh. The interaction between the fluid and the solid is represented by a fluid-solid interaction force $\bold{f}^{FSI}$, and the force distribution and velocity interpolation on the fluid-solid interface are handled with the Reproducing Kernel Particle Method (RKPM). Since the fluid solver and the solid solver are independent, we can easily couple the solver for the growth model with any existing fluid solver. In this section we briefly review the IFEM algorithm.
+
+The governing equations for the entire computational domain $\Omega$ which includes the real $\Omega^f$ and the artificial fluid domains $\bar\Omega$, are the Navier-Stokes continuity and momentum equations for incompressible flows:
+\begin{subequations} \label{NS}
+\begin{align}
+\nabla \cdot \bv^f &= 0 \\
+\bar\rho (\bv_{, t}^f + \bv^f \cdot \nabla\bv^f) &= -\nabla p^f + \mu\nabla^2 \bv^f + \bold{f}^{FSI,f} + \bar\rho\bold{g} \quad in \quad \Omega 
+\end{align}
+\end{subequations}
+where $\rho^f$ and $\rho^s$ are the densities of the fluid and the solid, respectively. $\bar\rho$ is defined as $\bar\rho = \rho^f + (\rho^s - \rho^f)I(\bx)$. $\bold{g}$ is the external body force. Superscript $f$ represents fluid variables and $s$ for solid variables. The indicator function $I$ is used to identify the artificial fluid from the real fluid. It is set to $1$ in the artificial fluid domain and $0$ in the real fluid domain; and varies from $0$ to $1$ at and near the fluid-structure interface.
+
+The $\bold{f}^{FSI}$ is defined as the fluid-structure interaction force that represents the viscous effects due to the existence of the solid in the fluid domain. It is first evaluated in the solid domain as $\bold{f}^{FSI,s} = \nabla \cdot \boldsymbol{\sigma}^s - \nabla \cdot \boldsymbol{\sigma}^f$ in $\Omega^s$ and then distributed to the fluid $\bold{f}^{FSI,f}$.
+
+Here, $\boldsymbol\sigma^s$ is the solid stress evaluated based on the solid constitutive law as a function of the solid deformation; $\boldsymbol\sigma^f$ is the fluid stress interpolated onto the solid domain from the previous time solution. This interaction force is effectively subtract the artificial fluid's viscous force out of the solid's internal force. Once $\bold{f}^{FSI,f}$ is evaluated, it is then distributed onto the fluid domain as $\bold{f}^{FSI,f}$ using an interpolation function. Noting that $\bold{f}^{FSI,f}$ is a local force that only exists in the artificial fluid domain $\bar\Omega$. It is easy to notice that this equation only involves the solid stress, where the dynamics of the solid is entirely "controlled" by the fluid.
+
+Once the state variables, $\bv^f$ and $p$ are solved from Equation \ref{NS} for the entire computational domain, the solid velocity field $\bv^s$ is directly mapped from the fluid velocity field $\bv^f$.
