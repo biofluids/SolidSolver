@@ -27,7 +27,7 @@ q_i &= \left[ v_i^\mathrm{f} \phi(\bx - \bx^\mathrm{s}) \right]\Delta t \quad \m
 h_i &= \left[ \sigma_{ij}^\mathrm{f} \phi(\bx - \bx^\mathrm{s}) \right]n_j \quad \mathrm{on} \quad \Gamma^\mathrm{sh}
 \end{align}
 \end{subequations}
-Here $q_i$ and $h_i$ are the Dirichlet and Neumann boundary conditions on the solid boundary $\Gamma^\mathrm{sq}$ and $\Gamma^\mathrm{sh}$, respectively. $\Delta t$ is the time step size and $\bold{n}$ is the outward normal of the fluid-structure interface. The numerical algorithm can be described as:
+Here $q_i$ and $h_i$ are the Dirichlet and Neumann boundary conditions on the solid boundary $\Gamma^\mathrm{sq}$ and $\Gamma^\mathrm{sh}$, respectively. $\Delta t$ is the time step size and $\bold{n}$ is the outward normal of the fluid-structure interface. The numerical algorithm can be described with Algorithm \ref{IFEMalgo}. For more detailed derivation and applications, please refer to \cite{Lucy, Lucy2, Lucy3, Lucy4}.
 \begin{algorithm}
 	\caption{Algorithm for IFEM}  \label{IFEMalgo}
 	\begin{algorithmic}[1]
@@ -39,4 +39,3 @@ Here $q_i$ and $h_i$ are the Dirichlet and Neumann boundary conditions on the so
 	\State Interpolate fluid velocity and stress onto the solid boundary as its boundary condition using Equations \ref{interpolation} and go back to step \ref{first}
 	\end{algorithmic}
 \end{algorithm}
-
