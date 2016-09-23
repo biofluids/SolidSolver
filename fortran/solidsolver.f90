@@ -28,13 +28,13 @@ program solidsolver
     call timestamp()
     time_elapsed = dble(ct1-ct)/dble(ct_rate)
     if (time_elapsed < 60) then
-        write(*, '("Time elaspsed:", f12.2, 3x, "seconds")'), time_elapsed
+        write(*, '("Time elaspsed:", f12.2, 3x, "seconds")') time_elapsed
     else if (time_elapsed < 3600) then
         time_elapsed = time_elapsed/60
-        write(*,'("Time elapsed:", f12.2, 3x, "minutes")'), time_elapsed
+        write(*,'("Time elapsed:", f12.2, 3x, "minutes")') time_elapsed
     else 
         time_elapsed = time_elapsed/3600
-        write(*,'("Time elapsed:", f12.2, 3x, "hours")'), time_elapsed
+        write(*,'("Time elapsed:", f12.2, 3x, "hours")') time_elapsed
     end if
 
 end program solidsolver
@@ -159,6 +159,7 @@ subroutine dynamics(filepath)
     real(8) :: err1, err2, gamma, beta
     real(8), dimension(bc_size) :: constraint
     character(80), intent(in) :: filepath
+    integer, dimension(2) :: side
 
     allocate(Fext(nn*nsd))
     allocate(Fint(nn*nsd))
@@ -181,9 +182,11 @@ subroutine dynamics(filepath)
     an = 0.
     an1 = 0.
     constraint = 0.
-    gamma = 0.5
-    beta = 0.25
+    gamma = 0.5 + damp
+    beta = gamma/2
     step = 0
+    !side = [27, 53, 79, 105, 131, 157]
+    side = [2, 3]
 
     call write_results(filepath, un)
     call mass_matrix(M)
@@ -194,7 +197,8 @@ subroutine dynamics(filepath)
     else
         call force_pressure(un, Fext)
     end if
-
+    
+    Fext = 0.0 ! Don't apply load
     F = Fext
     do i = 1, nn*nsd
         an(i) = F(i)/M(i) ! Mass is lumped
@@ -227,6 +231,12 @@ subroutine dynamics(filepath)
             do i = 1, bc_size
                 row = nsd*(bc_num(1, i) - 1) + bc_num(2, i)
                 constraint(i) = un1(row) - bc_val(i)
+                call addValueSymmetric(nonzeros, row, row, penalty)
+                R(row) = R(row) + penalty*constraint(i)
+            end do
+            do i = 1, size(side)
+                row = nsd*(side(i) - 1) + 1
+                constraint(i) = un1(row) - (floor(step*dt/80+1))*0.1*1 ! 1 meter long So hard-coding
                 call addValueSymmetric(nonzeros, row, row, penalty)
                 R(row) = R(row) + penalty*constraint(i)
             end do
