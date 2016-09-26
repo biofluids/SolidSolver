@@ -211,7 +211,8 @@ contains
     end subroutine write_displacement
 
     subroutine write_stress(filepath,dofs)
-        use read_file, only: step, nsd, nn, coords, nel, nen, connect, materialtype, materialprops, share, nprint, isbinary
+        use read_file, only: step, nsd, nn, coords, nel, nen, connect, materialtype, &
+            materialprops, share, nprint, isbinary, growthFactor
         use shapefunction
         use integration
         use material
@@ -221,7 +222,8 @@ contains
         real(8), dimension(nsd,nen) :: elecoord
         real(8), dimension(nsd,nen) :: eledof
         real(8), dimension(nen,nsd) :: dNdx, dNdy
-        real(8), dimension(nsd,nsd) :: stress, Se
+        real(8), dimension(nsd,nsd) :: stress
+        real(8), dimension(nsd,nsd,nsd,nsd) :: C
         real(8), dimension(nen,nsd) :: dNdxi 
         real(8), dimension(nsd,nsd) :: dxdxi, dxidx, F, B, eye
         real(8), allocatable, dimension(:,:) :: xilist
@@ -299,7 +301,8 @@ contains
                             + F(1,3)*F(2,1)*F(3,2) - F(1,3)*F(2,2)*F(3,1)
                 end if
                 ! compute the Kirchhoff stress
-                call nhstress(nsd, F, materialprops, Se, stress)
+                !call nhstress(nsd, F, materialprops, Se, stress)
+                call growth(growthFactor(npt*(ele-1)+intpt), F, stress, C)
                 !call Kirchhoffstress(nsd, intcoord, F, materialtype, materialprops, stress)
                 ! Cauchy stress
                 stress = stress/Ja

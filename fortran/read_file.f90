@@ -8,6 +8,7 @@ module read_file
     integer, allocatable :: connect(:, :), bc_num(:, :), load_num(:, :)
     real(8), allocatable :: coords(:, :), bc_val(:), load_val(:, :)
     integer, allocatable :: share(:)
+    real(8), allocatable :: growthFactor(:)
 
     integer :: no_nonzeros
     integer, allocatable :: col_ind(:), row_ptr(:), row_ind(:)
@@ -67,6 +68,7 @@ contains
 
     subroutine read_mesh(nsd, nn, nel, nen, coords, connect, bc_size, bc_num, bc_val, &
         load_size, load_type, load_num, load_val, share)
+        use integration, only: int_number
         integer, intent(out) :: nsd, nen, nn, nel, bc_size, load_size, load_type
         integer, allocatable, intent(out) :: connect(:, :), bc_num(:, :), load_num(:, :)
         real(8), allocatable, intent(out) :: coords(:,:), bc_val(:), load_val(:, :)
@@ -115,6 +117,9 @@ contains
                 share(connect(j,i)) = share(connect(j,i)) + 1
             end do
         end do
+
+        allocate(growthFactor(nel*int_number(nsd, nen, 0)))
+        growthFactor = 0.0
 
         close(10)
     end subroutine read_mesh

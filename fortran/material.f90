@@ -1,18 +1,25 @@
 module material
     implicit none
 contains
-    subroutine nhstress(nsd, Fe, materialprops, Se, Tau)
-        integer, intent(in) :: nsd
-        real(8), dimension(nsd, nsd), intent(in) :: Fe
-        real(8), dimension(5), intent(in) :: materialprops
-        real(8), dimension(nsd, nsd), intent(inout) :: Se, Tau
-        real(8), dimension(nsd, nsd) :: Ce, Feinv, Ceinv, eye
-        real(8) :: mu, lambda, Je
+    subroutine growth(theta, F, stress, mstiff)
+        use read_file, only: nsd, dt, tol, materialprops
+        real(8), dimension(nsd, nsd), intent(inout) :: F, stress
+        real(8), intent(inout) :: theta
+        real(8), dimension(nsd, nsd, nsd, nsd), intent(inout) :: mstiff
+
+        real(8), dimension(nsd, nsd) :: Fe, Ce, Feinv, Ceinv, Se, Me, eye, left, right
+        real(8) :: mu, lambda, Je, phi, kg, theta_max, tau_g, gamma, theta_next
+        real(8) :: local_tangent, der1, der2, temp, residual
+        real(8), dimension(nsd, nsd, nsd, nsd) :: Le, Lg
         real(8), dimension(nsd) :: work
         integer(8), dimension(nsd) :: ipiv
-        integer :: info, i, j
+        integer :: info, i, j, k, l
         external DGETRF
         external DGETRI
+
+        theta_max = 1.3
+        tau_g = 1.0
+        gamma = 2.0
 
         do i = 1, nsd
             do j = 1, nsd
@@ -26,23 +33,98 @@ contains
 
         mu = materialprops(3)
         lambda = materialprops(4)
-        if (nsd == 2) then
-            Je = (Fe(1,1)*Fe(2,2) - Fe(1,2)*Fe(2,1))
-        else if (nsd == 3) then
-            Je = Fe(1,1)*Fe(2,2)*Fe(3,3) - Fe(1,1)*Fe(3,2)*Fe(2,3) &
-                    - Fe(1,2)*Fe(2,1)*Fe(3,3) + Fe(1,2)*Fe(2,3)*Fe(3,1) &
-                    + Fe(1,3)*Fe(2,1)*Fe(3,2) - Fe(1,3)*Fe(2,2)*Fe(3,1)
-        end if
-        Feinv = Fe
-        call DGETRF(nsd, nsd, Feinv, nsd, ipiv, info)
-        call DGETRI(nsd, Feinv, nsd, ipiv, work, nsd, info)
-        Ceinv = matmul(Feinv, transpose(Feinv))
+        residual = 1.0
 
-        Se = 0.0
-        Tau = 0.0
-        Se = (lambda*log(Je) - mu)*Ceinv + mu*eye
-        Tau = (lambda*log(Je) - mu)*eye + mu*matmul(Fe, transpose(Fe))
-    end subroutine nhstress
+        theta_next = theta
+        do while (residual > tol)
+            Fe = F/theta_next
+            Ce = matmul(transpose(Fe), Fe)
+            if (nsd == 2) then
+                Je = (Fe(1,1)*Fe(2,2) - Fe(1,2)*Fe(2,1))
+            else if (nsd == 3) then
+                Je = Fe(1,1)*Fe(2,2)*Fe(3,3) - Fe(1,1)*Fe(3,2)*Fe(2,3) &
+                        - Fe(1,2)*Fe(2,1)*Fe(3,3) + Fe(1,2)*Fe(2,3)*Fe(3,1) &
+                        + Fe(1,3)*Fe(2,1)*Fe(3,2) - Fe(1,3)*Fe(2,2)*Fe(3,1)
+            end if
+            Feinv = Fe
+            call DGETRF(nsd, nsd, Feinv, nsd, ipiv, info)
+            call DGETRI(nsd, Feinv, nsd, ipiv, work, nsd, info)
+            Ceinv = matmul(Feinv, transpose(Feinv))
+
+            Se = (lambda*log(Je) - mu)*Ceinv + mu*eye
+            Me = matmul(Ce, Se)
+            Le = 0.0 ! elastic constitutive moduli 2\partialSe/\partialCe
+            temp = 0.0 ! Ce:Le:Ce
+            do i = 1, nsd
+                do j = 1, nsd
+                    do k = 1, nsd
+                        do l = 1, nsd
+                            Le(i, j, k, l) = (mu - lambda*log(Je))*(Ceinv(i, k)*Ceinv(j, l) + Ceinv(i, l)*Ceinv(j, k)) &
+                                + lambda*(Ceinv(i, j)*Ceinv(k, l))
+                            temp = temp + Ce(i, j)*Le(i,j,k,l)*Ce(k, l)
+                        end do
+                    end do
+                end do
+            end do
+
+            phi = 0.0 ! phi = tr(Me) - Me_crit
+            do i = 1, nsd
+                phi = phi + Me(i, i)
+            end do
+
+            if (phi > 0.0) then
+                kg = 1.0/tau_g*((theta_max - theta_next)/(theta_max - 1.0))**gamma
+                residual = theta_next - theta - kg*phi*dt
+                der1 = -(2*phi + temp)/theta_next ! partial derivative of phi w.r.t. theta
+                der2 = -gamma*kg/(theta_max - theta_next)! partial derivative of k w.r.t. theta
+                local_tangent = 1 - (kg*der1 + phi*der2)*dt
+                theta_next = theta_next - residual/local_tangent
+            else if (residual > tol) then ! If phi is not greater than 0, theta_next won't be updated, the program may hang
+                write(*, *) "Negative or zero phi with large residual! Program will hang!"
+                exit
+            end if
+        end do
+
+        theta = theta_next
+
+        left = Se
+        right = Se
+        do i = 1, nsd
+            do j = 1, nsd
+                do k = 1, nsd
+                    do l = 1, nsd
+                        left(i, j) = left(i,j) + 0.5*Le(i, j, k, l)*Ce(k, l)
+                        right(i, j) = right(i, j) + 0.5*Ce(k, l)*Le(k, l, i, j)
+                    end do
+                end do
+            end do
+        end do
+
+        do i = 1, nsd
+            do j = 1, nsd
+                do k = 1, nsd
+                    do l = 1, nsd
+                        Lg(i, j, k, l) = Le(i,j,k,l)/theta**4 - 4*kg*dt/(local_tangent*theta**5)*left(i,j)*right(k,l) ! Lagrangian moduli
+                    end do
+                end do
+            end do
+        end do
+
+        stress = (lambda*log(Je) - mu)*eye + mu*matmul(Fe, transpose(Fe)) ! the final Kirchhoff stress
+        mstiff = 0.0
+        do i = 1, nsd
+            do j = 1, nsd
+                do k = 1, nsd
+                    do l = 1, nsd
+                        mstiff(i, j, k, l) = mstiff(i, j, k, l) + &
+                            F(i, k)*F(j, l)*Lg(i, j, k, l)*F(k, i)*F(l, j) ! the final Kirchhoff moduli
+                    end do
+                end do
+            end do
+        end do
+
+
+    end subroutine growth
 
     subroutine nhmaterial(nsd, Fe, materialprops, mstiff_t, mstiff_u)
         integer, intent(in) :: nsd

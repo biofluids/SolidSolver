@@ -2,7 +2,7 @@ module internalforce
     implicit none
 contains
     subroutine force_internal(dofs, Fint)
-        use read_file, only: nsd, nn, coords, nel, nen, connect, materialtype, materialprops
+        use read_file, only: nsd, nn, coords, nel, nen, connect, materialtype, materialprops, growthFactor
         use shapefunction
         use integration
         use material
@@ -12,7 +12,8 @@ contains
         real(8), dimension(nsd,nen) :: elecoord
         real(8), dimension(nsd,nen) :: eledof
         real(8), dimension(nen,nsd) :: dNdx, dNdy
-        real(8), dimension(nsd,nsd) :: stress, Se
+        real(8), dimension(nsd,nsd) :: stress
+        real(8), dimension(nsd,nsd,nsd,nsd) :: mstiff
         real(8), dimension(nen*nsd) :: fele
         real(8), dimension(nsd) :: xi, intcoord ! intcoord is the coordinates of the integration points, necessary for anisotropic models
         real(8), dimension(nen,nsd) :: dNdxi 
@@ -99,7 +100,8 @@ contains
                 dNdy = matmul(dNdx,Finv)
                 ! compute the Kirchhoff stress
                 !call Kirchhoffstress(nsd, intcoord, F, materialtype, materialprops, stress)
-                call nhstress(nsd, F, materialprops, Se, stress)
+                !call nhstress(nsd, F, materialprops, Se, stress)
+                call growth(growthFactor(npt*(ele-1)+intpt), F, stress, mstiff)
                 ! compute the element internal force
                 do a=1,nen
                     do i=1,nsd

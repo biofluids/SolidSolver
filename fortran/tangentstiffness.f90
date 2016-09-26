@@ -16,11 +16,11 @@ contains
         use integration
         use material
         real(8), dimension(nn*nsd), intent(in) :: dofs
-        real(8), dimension(nsd, nsd, nsd, nsd) :: C, C_t
+        real(8), dimension(nsd, nsd, nsd, nsd) :: C
         real(8), dimension(nsd, nen) :: elecoord
         real(8), dimension(nsd, nen) :: eledof
         real(8), dimension(nen, nsd) :: dNdx, dNdy
-        real(8), dimension(nsd, nsd) :: stress, Se
+        real(8), dimension(nsd, nsd) :: stress
         real(8), dimension(nen*nsd, nen*nsd) :: kint
         real(8), dimension(nsd) :: xi, intcoord ! intcoord is the coordinates of the integration points, necessary for anisotropic models
         real(8), dimension(nen, nsd) :: dNdxi 
@@ -106,10 +106,11 @@ contains
                 dNdy = matmul(dNdx, Finv)
                 ! compute the Kirchhoff stress
                 !call Kirchhoffstress(nsd, intcoord, F, materialtype, materialprops, stress)
-                call nhstress(nsd, F, materialprops, Se, stress)
+                !call nhstress(nsd, F, materialprops, Se, stress)
                 ! compute the material stiffness C_ijkl
                 !call materialstiffness(nsd, intcoord, F, materialtype, materialprops, C)
-                call nhmaterial(nsd, F, materialprops, C_t, C)
+                !call nhmaterial(nsd, F, materialprops, C_t, C)
+                call growth(growthFactor(npt*(ele-1)+intpt), F, stress, C)
                 ! compute the element internal force
                 do a = 1, nen
                     do i = 1, nsd
