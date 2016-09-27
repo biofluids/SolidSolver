@@ -72,7 +72,7 @@ contains
                 phi = phi + Me(i, i)
             end do
 
-            if (phi > 0.0) then
+            if (phi >= 0.0) then
                 kg = 1.0/tau_g*((theta_max - theta_next)/(theta_max - 1.0))**gamma
                 residual = theta_next - theta - kg*phi*dt
                 der1 = -(2*phi + temp)/theta_next ! partial derivative of phi w.r.t. theta
@@ -80,7 +80,7 @@ contains
                 local_tangent = 1 - (kg*der1 + phi*der2)*dt
                 theta_next = theta_next - residual/local_tangent
             else if (residual > tol) then ! If phi is not greater than 0, theta_next won't be updated, the program may hang
-                write(*, *) "Negative or zero phi with large residual! Program will hang!"
+                write(*, *) "Negative or zero phi with large residual! Program will hang! theta,phi = ", theta_next, phi
                 exit
             end if
         end do
