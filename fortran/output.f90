@@ -221,7 +221,8 @@ contains
         real(8), dimension(nsd,nen) :: elecoord
         real(8), dimension(nsd,nen) :: eledof
         real(8), dimension(nen,nsd) :: dNdx, dNdy
-        real(8), dimension(nsd,nsd) :: stress, Se
+        real(8), dimension(nsd,nsd) :: stress
+        real(8), dimension(nsd, nsd, nsd, nsd) :: mstiff
         real(8), dimension(nen,nsd) :: dNdxi 
         real(8), dimension(nsd,nsd) :: dxdxi, dxidx, F, B, eye
         real(8), allocatable, dimension(:,:) :: xilist
@@ -299,8 +300,7 @@ contains
                             + F(1,3)*F(2,1)*F(3,2) - F(1,3)*F(2,2)*F(3,1)
                 end if
                 ! compute the Kirchhoff stress
-                call nhstress(nsd, F, materialprops, Se, stress)
-                !call Kirchhoffstress(nsd, intcoord, F, materialtype, materialprops, stress)
+                call growth(F, stress, mstiff)
                 ! Cauchy stress
                 stress = stress/Ja
                 ! vectorize
