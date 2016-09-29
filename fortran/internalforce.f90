@@ -2,7 +2,7 @@ module internalforce
     implicit none
 contains
     subroutine force_internal(dofs, Fint)
-        use read_file, only: nsd, nn, coords, nel, nen, connect, materialtype, materialprops
+        use read_file, only: nsd, nn, coords, nel, nen, connect, materialtype, materialprops, growthFactor
         use shapefunction
         use integration
         use material
@@ -99,7 +99,7 @@ contains
                 call DGETRI(n1,Finv,n1,ipiv,work,n1,info)
                 dNdy = matmul(dNdx,Finv)
                 ! compute the Kirchhoff stress
-                call growth(F, stress, mstiff)
+                call growth(growthFactor(npt*(ele - 1)+intpt), F, stress, mstiff)
                 ! compute the element internal force
                 do a=1,nen
                     do i=1,nsd

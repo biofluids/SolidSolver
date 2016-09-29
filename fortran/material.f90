@@ -1,50 +1,115 @@
 module material
     implicit none
 contains
-    subroutine growth(Fe, stress, mstiff)
+    subroutine growth(theta, F, stress, mstiff)
         use read_file, only: nsd, dt, tol, materialprops, delta
-        real(8), dimension(nsd, nsd), intent(inout) :: Fe, stress
+        real(8), intent(inout) :: theta
+        real(8), dimension(nsd, nsd), intent(inout) :: F, stress
         real(8), dimension(nsd, nsd, nsd, nsd), intent(inout) :: mstiff 
 
-        real(8), dimension(nsd, nsd) :: Ce, Feinv, Ceinv, Se, Me
+        real(8), dimension(nsd, nsd) :: Fe, Ce, Feinv, Ceinv, Se, Me, left, right
         real(8), dimension(nsd, nsd, nsd, nsd) :: Le, Lg
-        real(8) :: mu, lambda, Je
+        real(8) :: mu, lambda, Je, theta_max, tau_g, gamma, theta_next, kg, phi
+        real(8) :: local_tangent, der1, der2, temp, residual
+        integer :: converged
 
         integer :: i, j, k, l, info, ii, jj, kk, ll
         real(8), dimension(nsd) :: work
         integer(8), dimension(nsd) :: ipiv
 
+        theta_max = 1.3
+        tau_g = 1.0
+        gamma = 2.0
+        residual = 1.0
         mu = materialprops(3)
         lambda = materialprops(4)
-        if (nsd == 2) then
-            Je = (Fe(1,1)*Fe(2,2) - Fe(1,2)*Fe(2,1))
-        else if (nsd == 3) then
-            Je = Fe(1,1)*Fe(2,2)*Fe(3,3) - Fe(1,1)*Fe(3,2)*Fe(2,3) &
-                    - Fe(1,2)*Fe(2,1)*Fe(3,3) + Fe(1,2)*Fe(2,3)*Fe(3,1) &
-                    + Fe(1,3)*Fe(2,1)*Fe(3,2) - Fe(1,3)*Fe(2,2)*Fe(3,1)
-        end if
-        Feinv = Fe
-        call DGETRF(nsd, nsd, Feinv, nsd, ipiv, info)
-        call DGETRI(nsd, Feinv, nsd, ipiv, work, nsd, info)
-        Ceinv = matmul(Feinv, transpose(Feinv))
+        
+        converged = 0
+        theta_next = theta
+        do while (residual > tol)
+            Fe = F/theta_next
+            Ce = matmul(transpose(Fe), Fe)
+            if (nsd == 2) then
+                Je = (Fe(1,1)*Fe(2,2) - Fe(1,2)*Fe(2,1))
+            else if (nsd == 3) then
+                Je = Fe(1,1)*Fe(2,2)*Fe(3,3) - Fe(1,1)*Fe(3,2)*Fe(2,3) &
+                        - Fe(1,2)*Fe(2,1)*Fe(3,3) + Fe(1,2)*Fe(2,3)*Fe(3,1) &
+                        + Fe(1,3)*Fe(2,1)*Fe(3,2) - Fe(1,3)*Fe(2,2)*Fe(3,1)
+            end if
+            Feinv = Fe
+            call DGETRF(nsd, nsd, Feinv, nsd, ipiv, info)
+            call DGETRI(nsd, Feinv, nsd, ipiv, work, nsd, info)
+            Ceinv = matmul(Feinv, transpose(Feinv))
 
-        Se = (lambda*log(Je) - mu)*Ceinv + mu*delta
-        stress = (lambda*log(Je) - mu)*delta + mu*matmul(Fe, transpose(Fe))
+            Se = (lambda*log(Je) - mu)*Ceinv + mu*delta
+            Me = matmul(Ce, Se)
+            phi = 0.0 ! phi = tr(Me) - Me_crit
+            do i = 1, nsd
+                phi = phi + Me(i, i)
+            end do
+            write(*, *) "current phi: ", phi
 
+            temp = 0.0 ! Ce:Le:Ce
+            do i = 1, nsd
+                do j = 1, nsd
+                    do k = 1, nsd
+                        do l = 1, nsd
+                            Le(i, j, k, l) = (mu - lambda*log(Je))*(Ceinv(i, k)*Ceinv(j, l) + Ceinv(i, l)*Ceinv(j, k)) &
+                                + lambda*(Ceinv(i, j)*Ceinv(k, l))
+                            temp = temp + Ce(i, j)*Le(i, j, k, l)*Ce(k, l)
+                            !mstiff(i, j, k, l) = (mu - lambda*log(Je))*(delta(i, k)*delta(j, l) + delta(i, l)*delta(j, k)) &
+                            !    + lambda*(delta(i, j)*delta(k, l))
+                        end do
+                    end do
+                end do
+            end do
+
+            if (phi > 0.0) then
+                kg = 1.0/tau_g*((theta_max - theta_next)/(theta_max - 1.0))**gamma
+                residual = theta_next - theta - kg*phi*dt
+                der1 = -(2*phi + temp)/theta_next ! partial derivative of phi w.r.t. theta
+                der2 = -gamma*kg/(theta_max - theta_next) ! partial derivative of k w.r.t. theta
+                local_tangent = 1 - (kg*der1 + phi*der2)*dt
+                theta_next = theta_next - residual/local_tangent
+                !write(*, *) "current theta: ", theta_next
+            else
+                !write(*, *) "Program will hang with theta = ", theta_next
+                exit
+            end if
+            write(*,*) "local iteration converged!"
+            converged = 1
+        end do
+        theta = theta_next
+
+        left = Se
+        right = Se
         do i = 1, nsd
             do j = 1, nsd
                 do k = 1, nsd
                     do l = 1, nsd
-                        Le(i, j, k, l) = (mu - lambda*log(Je))*(Ceinv(i, k)*Ceinv(j, l) + Ceinv(i, l)*Ceinv(j, k)) &
-                            + lambda*(Ceinv(i, j)*Ceinv(k, l))
-                        mstiff(i, j, k, l) = (mu - lambda*log(Je))*(delta(i, k)*delta(j, l) + delta(i, l)*delta(j, k)) &
-                            + lambda*(delta(i, j)*delta(k, l))
+                        left(i, j) = left(i, j) + 0.5*Le(i, j, k, l)*Ce(k, l)
+                        right(i, j) = right(i, j) + 0.5*Le(k, l, i, j)*Ce(k, l)
+                    end do
+                end do
+            end do
+        end do
+        do i = 1, nsd
+            do j = 1, nsd
+                do k = 1, nsd
+                    do l = 1, nsd
+                        Lg(i, j, k, l) = Le(i, j, k, l)/theta**4 &
+                            - 4*kg*dt/(local_tangent*theta**5)*left(i, j)*right(k, l)
                     end do
                 end do
             end do
         end do
 
-        Lg = 0.0
+        if (converged == 0) then
+            Lg = Le
+        end if
+
+        stress = (lambda*log(Je) - mu)*delta + mu*matmul(Fe, transpose(Fe))
+        mstiff = 0.0
         do i = 1, nsd
             do j = 1, nsd
                 do k = 1, nsd
@@ -53,8 +118,8 @@ contains
                             do jj = 1, nsd
                                 do kk = 1, nsd
                                     do ll = 1, nsd
-                                        Lg(i, j, k, l) = Lg(i, j, k, l) + & 
-                                            Fe(i, ii)*Fe(j, jj)*Le(ii,jj,kk,ll)*Fe(k,kk)*Fe(l,ll)
+                                        mstiff(i, j, k, l) = mstiff(i, j, k, l) + & 
+                                            F(i, ii)*F(j, jj)*Lg(ii,jj,kk,ll)*F(k,kk)*F(l,ll)
                                     end do
                                 end do
                             end do
@@ -63,8 +128,6 @@ contains
                 end do
             end do
         end do
-
-        mstiff = Lg
 
     end subroutine growth
 

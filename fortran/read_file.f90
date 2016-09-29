@@ -129,7 +129,7 @@ contains
             end do
         end do
 
-        allocate(growthFactor(int_number(nsd, nen, 0)))
+        allocate(growthFactor(nel*(int_number(nsd, nen, 0))))
         growthFactor = 1.0
 
     end subroutine read_mesh

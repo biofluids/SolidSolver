@@ -211,7 +211,8 @@ contains
     end subroutine write_displacement
 
     subroutine write_stress(filepath,dofs)
-        use read_file, only: step, nsd, nn, coords, nel, nen, connect, materialtype, materialprops, share, nprint, isbinary
+        use read_file, only: step, nsd, nn, coords, nel, nen, connect, &
+            materialtype, materialprops, share, nprint, isbinary, growthFactor
         use shapefunction
         use integration
         use material
@@ -300,7 +301,7 @@ contains
                             + F(1,3)*F(2,1)*F(3,2) - F(1,3)*F(2,2)*F(3,1)
                 end if
                 ! compute the Kirchhoff stress
-                call growth(F, stress, mstiff)
+                call growth(growthFactor(npt*(ele - 1)+intpt), F, stress, mstiff)
                 ! Cauchy stress
                 stress = stress/Ja
                 ! vectorize
