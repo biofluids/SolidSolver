@@ -27,7 +27,7 @@ contains
         write(10,'("model:",12x,"solid.geo******",12x,"change_coords_only",/)')
         write(10,'("VARIABLE",/)') 
         write(10,'("vector per node:",12x,"displacement",12x,"solid.dis******")')
-        write(10,'("scalar per node:",12x,"growth",12x,"solid.growth******")')
+        write(10,'("scalar per node:",12x,"growth",12x,"solid.grow******")')
         write(10,'("tensor symm per node:",12x,"stress",12x,"solid.sig******",/)')
         write(10,'("TIME",/)')
         write(10,'("time set:",12x,i10)') 1
