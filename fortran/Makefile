@@ -13,6 +13,9 @@ main: $(OBJECTS)
 pre: pre_processing.cpp
 	$(CPP) pre_processing.cpp -o pre -std=c++11
 
+read_file.o: read_file.f90 integration.mod
+	$(FC) -c read_file.f90
+
 symmetric_solver.o: symmetric_solver.f90 read_file.mod
 	$(FC) -c symmetric_solver.f90
 
