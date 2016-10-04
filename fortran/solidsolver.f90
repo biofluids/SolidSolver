@@ -159,7 +159,7 @@ subroutine dynamics(filepath)
     real(8) :: err1, err2, gamma, beta
     real(8), dimension(bc_size) :: constraint
     character(80), intent(in) :: filepath
-    integer, dimension(2) :: side
+    integer, dimension(4) :: side
 
     allocate(Fext(nn*nsd))
     allocate(Fint(nn*nsd))
@@ -186,7 +186,7 @@ subroutine dynamics(filepath)
     beta = gamma/2
     step = 0
     !side = [27, 53, 79, 105, 131, 157]
-    side = [2, 3]
+    side = [1, 2, 3, 4]
 
     call write_results(filepath, un)
     call mass_matrix(M)
@@ -214,6 +214,7 @@ subroutine dynamics(filepath)
             nit = nit + 1
             an1 = (un1 - (un + dt*vn + 0.5*dt**2*(1 - 2*beta)*an))/(beta*dt**2) ! accerleration at next step
             vn1 = vn + (1 - gamma)*dt*an + gamma*dt*an1 ! velocity at next step
+            call tangent_internal(un1) ! call tangent internal first because it triggers growth
             call force_internal(un1, Fint)
             if (load_type == 1) then
                 call force_pressure(un1, Fext)
@@ -223,7 +224,6 @@ subroutine dynamics(filepath)
             do i = 1, nn*nsd
                 R(i) = M(i)*an1(i) - F(i)
             end do
-            call tangent_internal(un1)
             do i = 1, nn*nsd
                 call addValueSymmetric(nonzeros, i, i, M(i)/(beta*dt**2))
             end do

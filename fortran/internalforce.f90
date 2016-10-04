@@ -13,7 +13,6 @@ contains
         real(8), dimension(nsd,nen) :: eledof
         real(8), dimension(nen,nsd) :: dNdx, dNdy
         real(8), dimension(nsd,nsd) :: stress
-        real(8), dimension(nsd, nsd, nsd, nsd) :: mstiff
         real(8), dimension(nen*nsd) :: fele
         real(8), dimension(nsd) :: xi, intcoord ! intcoord is the coordinates of the integration points, necessary for anisotropic models
         real(8), dimension(nen,nsd) :: dNdxi 
@@ -99,7 +98,7 @@ contains
                 call DGETRI(n1,Finv,n1,ipiv,work,n1,info)
                 dNdy = matmul(dNdx,Finv)
                 ! compute the Kirchhoff stress
-                call growth(growthFactor(npt*(ele - 1)+intpt), F, stress, mstiff)
+                call getStress(growthFactor(npt*(ele - 1)+intpt), F, stress)
                 ! compute the element internal force
                 do a=1,nen
                     do i=1,nsd

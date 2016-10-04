@@ -27,6 +27,7 @@ contains
         write(10,'("model:",12x,"solid.geo******",12x,"change_coords_only",/)')
         write(10,'("VARIABLE",/)') 
         write(10,'("vector per node:",12x,"displacement",12x,"solid.dis******")')
+        write(10,'("scalar per node:",12x,"growth",12x,"solid.growth******")')
         write(10,'("tensor symm per node:",12x,"stress",12x,"solid.sig******",/)')
         write(10,'("TIME",/)')
         write(10,'("time set:",12x,i10)') 1
@@ -217,13 +218,12 @@ contains
         use integration
         use material
         real(8), dimension(nn*nsd), intent(in) :: dofs
-        character(80) :: filepath, filename, buffer
+        character(80) :: filepath, filename, buffer, filename2
         character(6) :: temp
         real(8), dimension(nsd,nen) :: elecoord
         real(8), dimension(nsd,nen) :: eledof
         real(8), dimension(nen,nsd) :: dNdx, dNdy
         real(8), dimension(nsd,nsd) :: stress
-        real(8), dimension(nsd, nsd, nsd, nsd) :: mstiff
         real(8), dimension(nen,nsd) :: dNdxi 
         real(8), dimension(nsd,nsd) :: dxdxi, dxidx, F, B, eye
         real(8), allocatable, dimension(:,:) :: xilist
@@ -236,9 +236,12 @@ contains
         
         real(8), dimension(6) :: temp_sigma, sigma
         real(8), dimension(6,nn) :: sum_sigma ! the sigma of a particular node added by elements
+        real(8), dimension(nn) :: sum_growth! the growth factor of a particular node added by elements
+        real(8) :: temp_growth, avg_growth
 
         write(temp,'(i6.6)') step/nprint
         filename = trim(filepath)//'solid.sig'//trim(temp)
+        filename2 = trim(filepath)//'solid.grow'//trim(temp)
         
         n1 = nsd
         ! square matrix
@@ -252,11 +255,8 @@ contains
             end do
         end do
         ! initialize
-        do i=1,6
-            do j=1,nn
-                sum_sigma(i,j) = 0.
-            end do
-        end do
+        sum_sigma = 0.
+        sum_growth = 0.
         ! allocate
         npt = int_number(nsd,nen,0)
         allocate(xilist(nsd,npt))
@@ -274,9 +274,8 @@ contains
             npt = int_number(nsd,nen,0)
             xilist = int_points(nsd,nen,npt)
             ! initialize
-            do i=1,6
-                temp_sigma(i) = 0.
-            end do
+            temp_sigma = 0.
+            temp_growth = 0.
             ! loop over integration points
             do intpt=1,npt
                 xi = xilist(:,intpt)
@@ -301,7 +300,7 @@ contains
                             + F(1,3)*F(2,1)*F(3,2) - F(1,3)*F(2,2)*F(3,1)
                 end if
                 ! compute the Kirchhoff stress
-                call growth(growthFactor(npt*(ele - 1)+intpt), F, stress, mstiff)
+                call getStress(growthFactor(npt*(ele-1)+intpt), F, stress)
                 ! Cauchy stress
                 stress = stress/Ja
                 ! vectorize
@@ -312,15 +311,19 @@ contains
                 end if
                 ! average the stress
                 temp_sigma = temp_sigma + sigma
+                temp_growth = temp_growth + growthFactor(npt*(ele-1)+intpt)
             end do
             sigma = temp_sigma/npt ! average sigma in this element
+            avg_growth = temp_growth/npt
             do a=1,nen
                 sum_sigma(:,connect(a,ele)) = sum_sigma(:,connect(a,ele)) + sigma
+                sum_growth(connect(a,ele)) = sum_growth(connect(a,ele)) + avg_growth
             end do
         end do
         ! sigma per node
         do i=1,nn
             sum_sigma(:,i) = sum_sigma(:,i)/dble(share(i))
+            sum_growth(i) = sum_growth(i)/dble(share(i))
         end do
         ! write to file
         if (isbinary == 1) then
@@ -337,6 +340,19 @@ contains
                 write(11) sngl(sum_sigma(i,:))
             end do
             close(11)
+
+            open(unit=13,file=trim(filename2),form='unformatted')
+            buffer = 'This is a scalar per node file for growth factor'
+            write(13) buffer
+            buffer = 'part'
+            write(13) buffer
+            i = 1
+            write(13) i
+            buffer = 'coordinates'
+            write(13) buffer
+            write(13) sngl(sum_growth(:))
+            close(13)
+
         else
             open(unit=10,file=trim(filename),form='FORMATTED')
             write(10,'(A)') 'This is a symm tensor per node file for stress'
@@ -349,6 +365,16 @@ contains
                 end do
             end do
             close(10)
+
+            open(unit=14,file=trim(filename2),form='FORMATTED')
+            write(14,'(A)') 'This is a scalar per node file for growth factor'
+            write(14,'(A)') 'part'
+            write(14,'(i10)') 1
+            write(14,'(A)') 'coordinates'
+            do i=1,nn
+                write(14,'(e12.5)') sum_growth(i)
+            end do
+            close(14)
         end if
         deallocate(xilist)
     end subroutine write_stress
