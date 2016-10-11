@@ -87,35 +87,45 @@ contains
                 end do
             end do
 
-            if (phi > 0.0) then
+            if (phi >= 0.0) then
                 kg = 1.0/tau_g*((theta_max - theta_next)/(theta_max - 1.0))**gamma
                 residual = theta_next - theta - kg*phi*dt
                 der1 = -(2*phi + temp)/theta_next ! partial derivative of phi w.r.t. theta
                 der2 = -gamma*kg/(theta_max - theta_next) ! partial derivative of k w.r.t. theta
                 local_tangent = 1 - (kg*der1 + phi*der2)*dt
                 theta_next = theta_next - residual/local_tangent
+                write(*,*) "Converged!", phi, theta_next
             else
+                write(*,*) "Not converged!", phi, theta_next
                 converge = 0
                 exit
             end if
         end do
-        if (converge == 1) then
-            theta = theta_next
-        end if
 
-        left = Se
-        right = Se
-        do i = 1, nsd
-            do j = 1, nsd
-                do k = 1, nsd
-                    do l = 1, nsd
-                        left(i, j) = left(i, j) + 0.5*Le(i, j, k, l)*Ce(k, l)
-                        right(i, j) = right(i, j) + 0.5*Le(k, l, i, j)*Ce(k, l)
+        theta = theta_next
+        Fe = F/theta_next
+        if (nsd == 2) then
+            Je = (Fe(1,1)*Fe(2,2) - Fe(1,2)*Fe(2,1))
+        else if (nsd == 3) then
+            Je = Fe(1,1)*Fe(2,2)*Fe(3,3) - Fe(1,1)*Fe(3,2)*Fe(2,3) &
+                    - Fe(1,2)*Fe(2,1)*Fe(3,3) + Fe(1,2)*Fe(2,3)*Fe(3,1) &
+                    + Fe(1,3)*Fe(2,1)*Fe(3,2) - Fe(1,3)*Fe(2,2)*Fe(3,1)
+        end if
+        if (converge == 1) then
+            ! update theta, stress, moduli
+            Se = (lambda*log(Je) - mu)*Ceinv + mu*delta
+            left = Se
+            right = Se
+            do i = 1, nsd
+                do j = 1, nsd
+                    do k = 1, nsd
+                        do l = 1, nsd
+                            left(i, j) = left(i, j) + 0.5*Le(i, j, k, l)*Ce(k, l)
+                            right(i, j) = right(i, j) + 0.5*Le(k, l, i, j)*Ce(k, l)
+                        end do
                     end do
                 end do
             end do
-        end do
-        if (converge == 1) then
             do i = 1, nsd
                 do j = 1, nsd
                     do k = 1, nsd

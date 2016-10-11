@@ -12,7 +12,7 @@ program solidsolver
     integer :: ct, ct_rate, ct_max, ct1
     real(8) :: time_elapsed  
     call timestamp()
-    filepath = '/Users/Jie/Documents/SolidResults/'
+    filepath = '/Users/jiecheng/Documents/SolidResults/'
     call system_clock(ct,ct_rate,ct_max)
     call read_input(mode, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, &
         materialtype, materialprops, gravity, isbinary, penalty)
