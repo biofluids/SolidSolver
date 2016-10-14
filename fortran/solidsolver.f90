@@ -17,7 +17,7 @@ program solidsolver
     call read_input(mode, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, &
         materialtype, materialprops, gravity, isbinary, penalty)
     call read_mesh(nsd, nn, nel, nen, coords, connect, bc_size, bc_num, bc_val, &
-        load_size, load_type, load_num, load_val, share, growthFactor)
+        load_size, load_type, load_num, load_val, share, growthFactor, kg, local_tangent)
     call read_CRS(no_nonzeros, col_ind, row_ind, nonzeros, row_ptr)
     if (mode == 0) then 
         call statics(filepath)

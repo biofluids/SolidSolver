@@ -53,84 +53,37 @@ contains
         end do
     end subroutine update
 
-    subroutine growth(theta, F, stress, mstiff)
-        use read_file, only: nsd, dt, tol, materialprops, delta, pre_step, step
-        real(8), intent(inout) :: theta
+    subroutine getModuli(theta, F, stress, mstiff, kg, local_tangent)
+        use read_file, only: nsd, dt, tol, materialprops, delta
+        real(8), intent(in) :: theta, kg, local_tangent
         real(8), dimension(nsd, nsd), intent(in) :: F
         real(8), dimension(nsd, nsd), intent(inout) :: stress
         real(8), dimension(nsd, nsd, nsd, nsd), intent(inout) :: mstiff 
 
         real(8), dimension(nsd, nsd) :: Fe, Ce, Feinv, Ceinv, Se, Me, left, right
         real(8), dimension(nsd, nsd, nsd, nsd) :: Le, Lg
-        real(8) :: mu, lambda, Je, theta_max, tau_g, gamma, theta_next, kg, phi
-        real(8) :: local_tangent, der1, der2, temp, residual
+        real(8) :: mu, lambda, Je, phi, temp
+        integer :: i, j, k, l, ii, jj, kk, ll
 
-        integer :: i, j, k, l, info, ii, jj, kk, ll, updated
-        real(8), dimension(nsd) :: work
-        integer(8), dimension(nsd) :: ipiv
-
-        updated = 1
-        theta_max = 1.3
-        tau_g = 1.0
-        gamma = 2.0
-        kg = 0.0
-        local_tangent = 1.0
         mu = materialprops(3)
         lambda = materialprops(4)
         
-        theta_next = theta
-        call update(F, theta_next, Fe, Feinv, Je, Ce, Ceinv, Se, Me, phi)
-        if (phi > 0.0) then
-            ! local Newton iteration
-            residual = 1.0
-            do while (abs(residual) > 1d-3)
-                temp = 0.0 ! Ce:Le:Ce
-                do i = 1, nsd
-                    do j = 1, nsd
-                        do k = 1, nsd
-                            do l = 1, nsd
-                                Le(i, j, k, l) = (mu - lambda*log(Je))*(Ceinv(i, k)*Ceinv(j, l) + Ceinv(i, l)*Ceinv(j, k)) &
-                                    + lambda*(Ceinv(i, j)*Ceinv(k, l))
-                                temp = temp + Ce(i, j)*Le(i, j, k, l)*Ce(k, l)
-                                !mstiff(i, j, k, l) = (mu - lambda*log(Je))*(delta(i, k)*delta(j, l) + delta(i, l)*delta(j, k)) &
-                                !    + lambda*(delta(i, j)*delta(k, l))
-                            end do
-                        end do
-                    end do
-                end do
-                kg = 1.0/tau_g*((theta_max - theta_next)/(theta_max - 1.0))**gamma
-                residual = theta_next - theta - kg*phi*dt
-                der1 = -(2*phi + temp)/theta_next ! partial derivative of phi w.r.t. theta
-                der2 = -gamma*kg/(theta_max - theta_next) ! partial derivative of k w.r.t. theta
-                local_tangent = 1 - (kg*der1 + phi*der2)*dt
-                theta_next = theta_next - residual/local_tangent
-                call update(F, theta_next, Fe, Feinv, Je, Ce, Ceinv, Se, Me, phi)
-            end do
-            ! modify only at a new timestep
-            if (step /= pre_step) then
-                theta = theta_next
-            end if
-            updated = 1
-            write(*,*) "Converged!", theta_next
-        else if (phi == 0.0) then
-            updated = 0
-            do i = 1, nsd
-                do j = 1, nsd
-                    do k = 1, nsd
-                        do l = 1, nsd
-                            Le(i, j, k, l) = (mu - lambda*log(Je))*(Ceinv(i, k)*Ceinv(j, l) + Ceinv(i, l)*Ceinv(j, k)) &
-                                + lambda*(Ceinv(i, j)*Ceinv(k, l))
-                        end do
+        call update(F, theta, Fe, Feinv, Je, Ce, Ceinv, Se, Me, phi)
+        temp = 0.0 ! Ce:Le:Ce
+        do i = 1, nsd
+            do j = 1, nsd
+                do k = 1, nsd
+                    do l = 1, nsd
+                        Le(i, j, k, l) = (mu - lambda*log(Je))*(Ceinv(i, k)*Ceinv(j, l) + Ceinv(i, l)*Ceinv(j, k)) &
+                            + lambda*(Ceinv(i, j)*Ceinv(k, l))
+                        temp = temp + Ce(i, j)*Le(i, j, k, l)*Ce(k, l)
                     end do
                 end do
             end do
+        end do
+        if (phi == 0.0) then
+            Lg = Le
         else
-            write(*, *) "Atrophy occured, stopping the program!", theta_next
-            stop
-        end if
-
-        if (updated == 1) then
-            ! update theta, stress, moduli
             left = Se
             right = Se
             do i = 1, nsd
@@ -153,8 +106,6 @@ contains
                     end do
                 end do
             end do
-        else
-            Lg = Le
         end if
 
         stress = (lambda*log(Je) - mu)*delta + mu*matmul(Fe, transpose(Fe))
@@ -177,6 +128,60 @@ contains
                 end do
             end do
         end do
+
+    end subroutine getModuli
+
+    subroutine growth(theta, F, kg, local_tangent)
+        use read_file, only: nsd, dt, tol, materialprops, delta
+        real(8), intent(inout) :: theta
+        real(8), dimension(nsd, nsd), intent(in) :: F
+        real(8), intent(inout) :: kg, local_tangent
+
+        real(8), dimension(nsd, nsd) :: Fe, Ce, Feinv, Ceinv, Se, Me, left, right
+        real(8), dimension(nsd, nsd, nsd, nsd) :: Le, Lg
+        real(8) :: mu, lambda, Je, theta_max, tau_g, gamma, theta_next, phi, temp
+        real(8) :: der1, der2, residual
+        integer :: i, j, k, l, info, ii, jj, kk, ll 
+
+        theta_max = 1.3
+        tau_g = 1.0
+        gamma = 2.0
+        mu = materialprops(3)
+        lambda = materialprops(4)
+        
+        theta_next = theta
+        call update(F, theta_next, Fe, Feinv, Je, Ce, Ceinv, Se, Me, phi)
+        if (phi > 0.0) then
+            ! local Newton iteration
+            residual = 1.0
+            do while (abs(residual) > 1d-3)
+                do i = 1, nsd
+                    do j = 1, nsd
+                        do k = 1, nsd
+                            do l = 1, nsd
+                                Le(i, j, k, l) = (mu - lambda*log(Je))*(Ceinv(i, k)*Ceinv(j, l) + Ceinv(i, l)*Ceinv(j, k)) &
+                                    + lambda*(Ceinv(i, j)*Ceinv(k, l))
+                                !mstiff(i, j, k, l) = (mu - lambda*log(Je))*(delta(i, k)*delta(j, l) + delta(i, l)*delta(j, k)) &
+                                !    + lambda*(delta(i, j)*delta(k, l))
+                                temp = temp + Ce(i, j)*Le(i, j, k, l)*Ce(k, l)
+                            end do
+                        end do
+                    end do
+                end do
+                kg = 1.0/tau_g*((theta_max - theta_next)/(theta_max - 1.0))**gamma
+                residual = theta_next - theta - kg*phi*dt
+                der1 = -(2*phi + temp)/theta_next ! partial derivative of phi w.r.t. theta
+                der2 = -gamma*kg/(theta_max - theta_next) ! partial derivative of k w.r.t. theta
+                local_tangent = 1 - (kg*der1 + phi*der2)*dt
+                theta_next = theta_next - residual/local_tangent
+                call update(F, theta_next, Fe, Feinv, Je, Ce, Ceinv, Se, Me, phi)
+            end do
+            theta = theta_next
+            write(*,*) "Converged!", theta_next
+        else if (phi < 0.0) then
+            write(*, *) "Atrophy occured, stopping the program!", theta_next
+            stop
+        end if
 
     end subroutine growth
 

@@ -37,6 +37,7 @@ contains
         external DGETRI
         n1 = nsd
         
+
         ! square matrix
         do i=1,nsd
             do j=1,nsd
@@ -105,7 +106,8 @@ contains
                 call DGETRI(n1,Finv,n1,ipiv,work,n1,info)
                 dNdy = matmul(dNdx, Finv)
                 ! compute the Kirchhoff stress and the material stiffness C
-                call growth(growthFactor(npt*(ele - 1)+intpt), F, stress, C)
+                call getModuli(growthFactor(npt*(ele - 1)+intpt), F, stress, C, &
+                    kg(npt*(ele-1)+intpt), local_tangent(npt*(ele-1)+intpt))
                 ! compute the element internal force
                 do a = 1, nen
                     do i = 1, nsd
