@@ -204,6 +204,7 @@ subroutine dynamics(filepath)
         an(i) = F(i)/M(i) ! Mass is lumped
     end do
 
+    pre_step = 0
     do step = 1, nsteps
         un1 = un + dt*vn + 0.5*dt**2*(1 - 2*beta)*an ! predict value for the displacement at next step
         err1 = 1.
@@ -215,6 +216,7 @@ subroutine dynamics(filepath)
             an1 = (un1 - (un + dt*vn + 0.5*dt**2*(1 - 2*beta)*an))/(beta*dt**2) ! accerleration at next step
             vn1 = vn + (1 - gamma)*dt*an + gamma*dt*an1 ! velocity at next step
             call tangent_internal(un1) ! call tangent internal first because it triggers growth
+            pre_step = step
             call force_internal(un1, Fint)
             if (load_type == 1) then
                 call force_pressure(un1, Fext)

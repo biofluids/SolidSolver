@@ -1,7 +1,7 @@
 module read_file
     implicit none
 
-    integer :: mode, maxit, nsteps, nprint, step, isbinary, materialtype
+    integer :: mode, maxit, nsteps, nprint, step, isbinary, materialtype, pre_step
     real(8) :: firststep, adjust, tol, dt, damp, penalty
     real(8) :: materialprops(5), gravity(3)
     integer :: nsd, nen, nn, nel, bc_size, load_size, load_type

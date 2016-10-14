@@ -23,8 +23,38 @@ contains
         stress = (lambda*log(Je) - mu)*delta + mu*matmul(Fe, transpose(Fe))
     end subroutine getStress
 
+    subroutine update(F, theta_next, Fe, Feinv, Je, Ce, Ceinv, Se, Me, phi)
+        use read_file, only: nsd, delta, materialprops
+        real(8), intent(in) :: theta_next
+        real(8), intent(inout) :: Je, phi
+        real(8), dimension(nsd, nsd), intent(in) :: F
+        real(8), dimension(nsd, nsd), intent(inout) :: Fe, Feinv, Ce, Ceinv, Se, Me
+        real(8), dimension(nsd) :: work
+        integer(8), dimension(nsd) :: ipiv
+        integer :: i, info
+        Fe = F/theta_next
+        Ce = matmul(transpose(Fe), Fe)
+        if (nsd == 2) then
+            Je = (Fe(1,1)*Fe(2,2) - Fe(1,2)*Fe(2,1))
+        else if (nsd == 3) then
+            Je = Fe(1,1)*Fe(2,2)*Fe(3,3) - Fe(1,1)*Fe(3,2)*Fe(2,3) &
+                    - Fe(1,2)*Fe(2,1)*Fe(3,3) + Fe(1,2)*Fe(2,3)*Fe(3,1) &
+                    + Fe(1,3)*Fe(2,1)*Fe(3,2) - Fe(1,3)*Fe(2,2)*Fe(3,1)
+        end if
+        Feinv = Fe
+        call DGETRF(nsd, nsd, Feinv, nsd, ipiv, info)
+        call DGETRI(nsd, Feinv, nsd, ipiv, work, nsd, info)
+        Ceinv = matmul(Feinv, transpose(Feinv))
+        Se = (materialprops(3)*log(Je) - materialprops(4))*Ceinv + materialprops(4)*delta
+        Me = matmul(Ce, Se)
+        phi = 0.0 ! phi = tr(Me) - Me_crit
+        do i = 1, nsd
+            phi = phi + Me(i, i)
+        end do
+    end subroutine update
+
     subroutine growth(theta, F, stress, mstiff)
-        use read_file, only: nsd, dt, tol, materialprops, delta
+        use read_file, only: nsd, dt, tol, materialprops, delta, pre_step, step
         real(8), intent(inout) :: theta
         real(8), dimension(nsd, nsd), intent(in) :: F
         real(8), dimension(nsd, nsd), intent(inout) :: stress
@@ -35,85 +65,72 @@ contains
         real(8) :: mu, lambda, Je, theta_max, tau_g, gamma, theta_next, kg, phi
         real(8) :: local_tangent, der1, der2, temp, residual
 
-        integer :: i, j, k, l, info, ii, jj, kk, ll, converge
+        integer :: i, j, k, l, info, ii, jj, kk, ll, updated
         real(8), dimension(nsd) :: work
         integer(8), dimension(nsd) :: ipiv
 
-        converge = 1
+        updated = 1
         theta_max = 1.3
         tau_g = 1.0
         gamma = 2.0
-        residual = 1.0
         kg = 0.0
         local_tangent = 1.0
         mu = materialprops(3)
         lambda = materialprops(4)
         
         theta_next = theta
-        do while (abs(residual) > tol)
-            Fe = F/theta_next
-            Ce = matmul(transpose(Fe), Fe)
-            if (nsd == 2) then
-                Je = (Fe(1,1)*Fe(2,2) - Fe(1,2)*Fe(2,1))
-            else if (nsd == 3) then
-                Je = Fe(1,1)*Fe(2,2)*Fe(3,3) - Fe(1,1)*Fe(3,2)*Fe(2,3) &
-                        - Fe(1,2)*Fe(2,1)*Fe(3,3) + Fe(1,2)*Fe(2,3)*Fe(3,1) &
-                        + Fe(1,3)*Fe(2,1)*Fe(3,2) - Fe(1,3)*Fe(2,2)*Fe(3,1)
-            end if
-            Feinv = Fe
-            call DGETRF(nsd, nsd, Feinv, nsd, ipiv, info)
-            call DGETRI(nsd, Feinv, nsd, ipiv, work, nsd, info)
-            Ceinv = matmul(Feinv, transpose(Feinv))
-
-            Se = (lambda*log(Je) - mu)*Ceinv + mu*delta
-            Me = matmul(Ce, Se)
-            phi = 0.0 ! phi = tr(Me) - Me_crit
-            do i = 1, nsd
-                phi = phi + Me(i, i)
-            end do
-
-            temp = 0.0 ! Ce:Le:Ce
-            do i = 1, nsd
-                do j = 1, nsd
-                    do k = 1, nsd
-                        do l = 1, nsd
-                            Le(i, j, k, l) = (mu - lambda*log(Je))*(Ceinv(i, k)*Ceinv(j, l) + Ceinv(i, l)*Ceinv(j, k)) &
-                                + lambda*(Ceinv(i, j)*Ceinv(k, l))
-                            temp = temp + Ce(i, j)*Le(i, j, k, l)*Ce(k, l)
-                            !mstiff(i, j, k, l) = (mu - lambda*log(Je))*(delta(i, k)*delta(j, l) + delta(i, l)*delta(j, k)) &
-                            !    + lambda*(delta(i, j)*delta(k, l))
+        call update(F, theta_next, Fe, Feinv, Je, Ce, Ceinv, Se, Me, phi)
+        if (phi > 0.0) then
+            ! local Newton iteration
+            residual = 1.0
+            do while (abs(residual) > 1d-3)
+                temp = 0.0 ! Ce:Le:Ce
+                do i = 1, nsd
+                    do j = 1, nsd
+                        do k = 1, nsd
+                            do l = 1, nsd
+                                Le(i, j, k, l) = (mu - lambda*log(Je))*(Ceinv(i, k)*Ceinv(j, l) + Ceinv(i, l)*Ceinv(j, k)) &
+                                    + lambda*(Ceinv(i, j)*Ceinv(k, l))
+                                temp = temp + Ce(i, j)*Le(i, j, k, l)*Ce(k, l)
+                                !mstiff(i, j, k, l) = (mu - lambda*log(Je))*(delta(i, k)*delta(j, l) + delta(i, l)*delta(j, k)) &
+                                !    + lambda*(delta(i, j)*delta(k, l))
+                            end do
                         end do
                     end do
                 end do
-            end do
-
-            if (phi >= 0.0) then
                 kg = 1.0/tau_g*((theta_max - theta_next)/(theta_max - 1.0))**gamma
                 residual = theta_next - theta - kg*phi*dt
                 der1 = -(2*phi + temp)/theta_next ! partial derivative of phi w.r.t. theta
                 der2 = -gamma*kg/(theta_max - theta_next) ! partial derivative of k w.r.t. theta
                 local_tangent = 1 - (kg*der1 + phi*der2)*dt
                 theta_next = theta_next - residual/local_tangent
-                write(*,*) "Converged!", phi, theta_next
-            else
-                write(*,*) "Not converged!", phi, theta_next
-                converge = 0
-                exit
+                call update(F, theta_next, Fe, Feinv, Je, Ce, Ceinv, Se, Me, phi)
+            end do
+            ! modify only at a new timestep
+            if (step /= pre_step) then
+                theta = theta_next
             end if
-        end do
-
-        theta = theta_next
-        Fe = F/theta_next
-        if (nsd == 2) then
-            Je = (Fe(1,1)*Fe(2,2) - Fe(1,2)*Fe(2,1))
-        else if (nsd == 3) then
-            Je = Fe(1,1)*Fe(2,2)*Fe(3,3) - Fe(1,1)*Fe(3,2)*Fe(2,3) &
-                    - Fe(1,2)*Fe(2,1)*Fe(3,3) + Fe(1,2)*Fe(2,3)*Fe(3,1) &
-                    + Fe(1,3)*Fe(2,1)*Fe(3,2) - Fe(1,3)*Fe(2,2)*Fe(3,1)
+            updated = 1
+            write(*,*) "Converged!", theta_next
+        else if (phi == 0.0) then
+            updated = 0
+            do i = 1, nsd
+                do j = 1, nsd
+                    do k = 1, nsd
+                        do l = 1, nsd
+                            Le(i, j, k, l) = (mu - lambda*log(Je))*(Ceinv(i, k)*Ceinv(j, l) + Ceinv(i, l)*Ceinv(j, k)) &
+                                + lambda*(Ceinv(i, j)*Ceinv(k, l))
+                        end do
+                    end do
+                end do
+            end do
+        else
+            write(*, *) "Atrophy occured, stopping the program!", theta_next
+            stop
         end if
-        if (converge == 1) then
+
+        if (updated == 1) then
             ! update theta, stress, moduli
-            Se = (lambda*log(Je) - mu)*Ceinv + mu*delta
             left = Se
             right = Se
             do i = 1, nsd
