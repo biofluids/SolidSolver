@@ -53,22 +53,64 @@ contains
         end do
     end subroutine update
 
-    subroutine getModuli(theta, F, stress, mstiff, kg, local_tangent)
-        use read_file, only: nsd, dt, tol, materialprops, delta
-        real(8), intent(in) :: theta, kg, local_tangent
+    subroutine theta_update(theta_pre, theta, F, stress, mstiff)
+        use read_file, only: nsd, dt, tol, materialprops, delta, step, pre_step
+        real(8), intent(inout) :: theta, theta_pre
         real(8), dimension(nsd, nsd), intent(in) :: F
         real(8), dimension(nsd, nsd), intent(inout) :: stress
-        real(8), dimension(nsd, nsd, nsd, nsd), intent(inout) :: mstiff 
+        real(8), dimension(nsd, nsd, nsd, nsd), intent(inout) :: mstiff
 
+        real(8) :: kg, local_tangent
         real(8), dimension(nsd, nsd) :: Fe, Ce, Feinv, Ceinv, Se, Me, left, right
         real(8), dimension(nsd, nsd, nsd, nsd) :: Le, Lg
-        real(8) :: mu, lambda, Je, phi, temp
-        integer :: i, j, k, l, ii, jj, kk, ll
-
+        real(8) :: mu, lambda, Je, theta_max, tau_g, gamma, theta_next, phi, temp
+        real(8) :: der1, der2, residual, theta_increment
+        integer :: i, j, k, l, info, ii, jj, kk, ll, flag
+        
+        theta_max = 1.3
+        tau_g = 1.0
+        gamma = 2.0
         mu = materialprops(3)
         lambda = materialprops(4)
         
+        theta_increment = 1.0
+        theta = theta_pre
+        ! local Newton iteration
+        residual = 1.0
+        do while (residual > tol)
+            call update(F, theta, Fe, Feinv, Je, Ce, Ceinv, Se, Me, phi)
+            if (phi < 0.0) then
+                theta = theta_pre
+                exit
+            end if
+            flag = 1
+            temp = 0.0
+            do i = 1, nsd
+                do j = 1, nsd
+                    do k = 1, nsd
+                        do l = 1, nsd
+                            Le(i, j, k, l) = (mu - lambda*log(Je))*(Ceinv(i, k)*Ceinv(j, l) + Ceinv(i, l)*Ceinv(j, k)) &
+                                + lambda*(Ceinv(i, j)*Ceinv(k, l))
+                            temp = temp + Ce(i, j)*Le(i, j, k, l)*Ce(k, l)
+                        end do
+                    end do
+                end do
+            end do
+            kg = 1.0/tau_g*((theta_max - theta)/(theta_max - 1.0))**gamma
+            residual = theta - theta_pre - kg*phi*dt
+            der1 = -(2*phi + temp)/theta ! partial derivative of phi w.r.t. theta
+            der2 = -gamma*kg/(theta_max - theta) ! partial derivative of k w.r.t. theta
+            local_tangent = 1 - (kg*der1 + phi*der2)*dt
+            theta_increment = -residual/local_tangent
+            theta = theta + theta_increment
+            ! what if the increment results in negative phi?
+        end do
+
         call update(F, theta, Fe, Feinv, Je, Ce, Ceinv, Se, Me, phi)
+        if (phi < 0.0) then
+            theta = theta_pre
+            call update(F, theta, Fe, Feinv, Je, Ce, Ceinv, Se, Me, phi)
+        end if
         temp = 0.0 ! Ce:Le:Ce
         do i = 1, nsd
             do j = 1, nsd
@@ -81,7 +123,7 @@ contains
                 end do
             end do
         end do
-        if (phi == 0.0) then
+        if (.true.) then
             Lg = Le
         else
             left = Se
@@ -129,61 +171,7 @@ contains
             end do
         end do
 
-    end subroutine getModuli
-
-    subroutine growth(theta, F, kg, local_tangent)
-        use read_file, only: nsd, dt, tol, materialprops, delta
-        real(8), intent(inout) :: theta
-        real(8), dimension(nsd, nsd), intent(in) :: F
-        real(8), intent(inout) :: kg, local_tangent
-
-        real(8), dimension(nsd, nsd) :: Fe, Ce, Feinv, Ceinv, Se, Me, left, right
-        real(8), dimension(nsd, nsd, nsd, nsd) :: Le, Lg
-        real(8) :: mu, lambda, Je, theta_max, tau_g, gamma, theta_next, phi, temp
-        real(8) :: der1, der2, residual
-        integer :: i, j, k, l, info, ii, jj, kk, ll 
-
-        theta_max = 1.3
-        tau_g = 1.0
-        gamma = 2.0
-        mu = materialprops(3)
-        lambda = materialprops(4)
-        
-        theta_next = theta
-        call update(F, theta_next, Fe, Feinv, Je, Ce, Ceinv, Se, Me, phi)
-        if (phi > 0.0) then
-            ! local Newton iteration
-            residual = 1.0
-            do while (abs(residual) > 1d-3)
-                do i = 1, nsd
-                    do j = 1, nsd
-                        do k = 1, nsd
-                            do l = 1, nsd
-                                Le(i, j, k, l) = (mu - lambda*log(Je))*(Ceinv(i, k)*Ceinv(j, l) + Ceinv(i, l)*Ceinv(j, k)) &
-                                    + lambda*(Ceinv(i, j)*Ceinv(k, l))
-                                !mstiff(i, j, k, l) = (mu - lambda*log(Je))*(delta(i, k)*delta(j, l) + delta(i, l)*delta(j, k)) &
-                                !    + lambda*(delta(i, j)*delta(k, l))
-                                temp = temp + Ce(i, j)*Le(i, j, k, l)*Ce(k, l)
-                            end do
-                        end do
-                    end do
-                end do
-                kg = 1.0/tau_g*((theta_max - theta_next)/(theta_max - 1.0))**gamma
-                residual = theta_next - theta - kg*phi*dt
-                der1 = -(2*phi + temp)/theta_next ! partial derivative of phi w.r.t. theta
-                der2 = -gamma*kg/(theta_max - theta_next) ! partial derivative of k w.r.t. theta
-                local_tangent = 1 - (kg*der1 + phi*der2)*dt
-                theta_next = theta_next - residual/local_tangent
-                call update(F, theta_next, Fe, Feinv, Je, Ce, Ceinv, Se, Me, phi)
-            end do
-            theta = theta_next
-            write(*,*) "Converged!", theta_next
-        else if (phi < 0.0) then
-            write(*, *) "Atrophy occured, stopping the program!", theta_next
-            stop
-        end if
-
-    end subroutine growth
+   end subroutine theta_update
 
     subroutine Kirchhoffstress(nsd, intcoord, F, materialtype, materialprops, stress)
         ! Compute the Kirchhoff stress

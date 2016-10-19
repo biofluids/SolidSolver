@@ -11,7 +11,7 @@ module read_file
 
     integer :: no_nonzeros
     integer, allocatable :: col_ind(:), row_ptr(:), row_ind(:)
-    real(8), allocatable :: nonzeros(:), growthFactor(:), kg(:), local_tangent(:)
+    real(8), allocatable :: nonzeros(:), pre_growthFactor(:), growthFactor(:), growthKg(:), growthTangent(:)
 
     save
 contains
@@ -66,11 +66,12 @@ contains
     end subroutine read_input
 
     subroutine read_mesh(nsd, nn, nel, nen, coords, connect, bc_size, bc_num, bc_val, &
-        load_size, load_type, load_num, load_val, share, growthFactor, kg, local_tangent)
+        load_size, load_type, load_num, load_val, share, pre_growthFactor, growthFactor, growthKg, growthTangent)
         use integration, only: int_number
         integer, intent(out) :: nsd, nen, nn, nel, bc_size, load_size, load_type
         integer, allocatable, intent(out) :: connect(:, :), bc_num(:, :), load_num(:, :)
-        real(8), allocatable, intent(out) :: coords(:,:), bc_val(:), load_val(:, :), growthFactor(:)
+        real(8), allocatable, intent(out) :: coords(:,:), bc_val(:), load_val(:, :), &
+            pre_growthFactor(:), growthFactor(:), growthKg(:), growthTangent(:)
         integer, allocatable :: share(:)
         integer :: i, j, temp
 
@@ -129,12 +130,14 @@ contains
             end do
         end do
 
+        allocate(pre_growthFactor(nel*(int_number(nsd, nen, 0))))
+        pre_growthFactor = 1.0
         allocate(growthFactor(nel*(int_number(nsd, nen, 0))))
         growthFactor = 1.0
-        allocate(kg(nel*(int_number(nsd, nen, 0))))
-        kg = 0.0
-        allocate(local_tangent(nel*(int_number(nsd, nen, 0))))
-        local_tangent = 1.0
+        allocate(growthKg(nel*(int_number(nsd, nen, 0))))
+        growthKg = 0.0
+        allocate(growthTangent(nel*(int_number(nsd, nen, 0))))
+        growthTangent = 1.0
 
     end subroutine read_mesh
 

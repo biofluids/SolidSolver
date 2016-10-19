@@ -12,12 +12,12 @@ program solidsolver
     integer :: ct, ct_rate, ct_max, ct1
     real(8) :: time_elapsed  
     call timestamp()
-    filepath = '/Users/jiecheng/Documents/SolidResults/'
+    filepath = '/Users/Jie/Documents/SolidResults/'
     call system_clock(ct,ct_rate,ct_max)
     call read_input(mode, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, &
         materialtype, materialprops, gravity, isbinary, penalty)
     call read_mesh(nsd, nn, nel, nen, coords, connect, bc_size, bc_num, bc_val, &
-        load_size, load_type, load_num, load_val, share, growthFactor, kg, local_tangent)
+        load_size, load_type, load_num, load_val, share, pre_growthFactor,growthFactor, growthKg, growthTangent)
     call read_CRS(no_nonzeros, col_ind, row_ind, nonzeros, row_ptr)
     if (mode == 0) then 
         call statics(filepath)
@@ -206,6 +206,7 @@ subroutine dynamics(filepath)
 
     pre_step = 0
     do step = 1, nsteps
+        write(*,*) growthFactor
         un1 = un + dt*vn + 0.5*dt**2*(1 - 2*beta)*an ! predict value for the displacement at next step
         err1 = 1.
         err2 = 1.
@@ -260,6 +261,7 @@ subroutine dynamics(filepath)
         if (MOD(step, nprint) == 0) then
             call write_results(filepath, un)
         end if
+        pre_growthFactor = growthFactor
     end do
     write(*,*) repeat("=", 95)
 

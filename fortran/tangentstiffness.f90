@@ -106,8 +106,7 @@ contains
                 call DGETRI(n1,Finv,n1,ipiv,work,n1,info)
                 dNdy = matmul(dNdx, Finv)
                 ! compute the Kirchhoff stress and the material stiffness C
-                call getModuli(growthFactor(npt*(ele - 1)+intpt), F, stress, C, &
-                    kg(npt*(ele-1)+intpt), local_tangent(npt*(ele-1)+intpt))
+                call theta_update(pre_growthFactor(npt*(ele-1)+intpt), growthFactor(npt*(ele-1)+intpt), F, stress, C)
                 ! compute the element internal force
                 do a = 1, nen
                     do i = 1, nsd
