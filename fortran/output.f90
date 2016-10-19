@@ -218,7 +218,7 @@ contains
         use integration
         use material
         real(8), dimension(nn*nsd), intent(in) :: dofs
-        character(80) :: filepath, filename, buffer, filename2
+        character(80) :: filepath, filename, buffer, filename2, filename3
         character(6) :: temp
         real(8), dimension(nsd,nen) :: elecoord
         real(8), dimension(nsd,nen) :: eledof
@@ -228,7 +228,7 @@ contains
         real(8), dimension(nsd,nsd) :: dxdxi, dxidx, F, B, eye
         real(8), allocatable, dimension(:,:) :: xilist
         integer :: ele,a,i,npt,j,intpt
-        real(8) :: Ja
+        real(8) :: Ja, rho
         real(8), dimension(nsd) :: xi, intcoord ! intcoord is the coordinates of the integration points, necessary for anisotropic models
         real(8), dimension(nsd) :: work ! for lapack inverse
         integer, dimension(nsd) :: ipiv ! for lapack inverse
@@ -236,13 +236,15 @@ contains
         
         real(8), dimension(6) :: temp_sigma, sigma
         real(8), dimension(6,nn) :: sum_sigma ! the sigma of a particular node added by elements
-        real(8), dimension(nn) :: sum_growth! the growth factor of a particular node added by elements
-        real(8) :: temp_growth, avg_growth
+        real(8), dimension(nn) :: sum_growth, sum_Ja, density! the growth factor of a particular node added by elements
+        real(8) :: temp_growth, avg_growth, temp_Ja, avg_Ja
 
         write(temp,'(i6.6)') step/nprint
         filename = trim(filepath)//'solid.sig'//trim(temp)
         filename2 = trim(filepath)//'solid.grow'//trim(temp)
+        filename3 = trim(filepath)//'solid.den'//trim(temp)
         
+        rho = materialprops(1)
         n1 = nsd
         ! square matrix
         do i=1,nsd
@@ -257,6 +259,7 @@ contains
         ! initialize
         sum_sigma = 0.
         sum_growth = 0.
+        sum_Ja = 0.
         ! allocate
         npt = int_number(nsd,nen,0)
         allocate(xilist(nsd,npt))
@@ -276,6 +279,7 @@ contains
             ! initialize
             temp_sigma = 0.
             temp_growth = 0.
+            temp_Ja = 0.
             ! loop over integration points
             do intpt=1,npt
                 xi = xilist(:,intpt)
@@ -312,18 +316,23 @@ contains
                 ! average the stress
                 temp_sigma = temp_sigma + sigma
                 temp_growth = temp_growth + growthFactor(npt*(ele-1)+intpt)
+                temp_Ja = temp_Ja + Ja
             end do
             sigma = temp_sigma/npt ! average sigma in this element
             avg_growth = temp_growth/npt
+            avg_Ja = temp_Ja/npt
             do a=1,nen
                 sum_sigma(:,connect(a,ele)) = sum_sigma(:,connect(a,ele)) + sigma
                 sum_growth(connect(a,ele)) = sum_growth(connect(a,ele)) + avg_growth
+                sum_Ja(connect(a,ele)) = sum_Ja(connect(a,ele)) + avg_Ja
             end do
         end do
         ! sigma per node
         do i=1,nn
             sum_sigma(:,i) = sum_sigma(:,i)/dble(share(i))
             sum_growth(i) = sum_growth(i)/dble(share(i))
+            sum_Ja(i) = sum_Ja(i)/dble(share(i))
+            density(i) = rho*sum_growth(i)**3.0/sum_Ja(i)
         end do
         ! write to file
         if (isbinary == 1) then
@@ -353,6 +362,18 @@ contains
             write(13) sngl(sum_growth(:))
             close(13)
 
+            open(unit=13,file=trim(filename3),form='unformatted')
+            buffer = 'This is a scalar per node file for density'
+            write(13) buffer
+            buffer = 'part'
+            write(13) buffer
+            i = 1
+            write(13) i
+            buffer = 'coordinates'
+            write(13) buffer
+            write(13) sngl(density(:))
+            close(13)
+
         else
             open(unit=10,file=trim(filename),form='FORMATTED')
             write(10,'(A)') 'This is a symm tensor per node file for stress'
@@ -373,6 +394,16 @@ contains
             write(14,'(A)') 'coordinates'
             do i=1,nn
                 write(14,'(e12.5)') sum_growth(i)
+            end do
+            close(14)
+
+            open(unit=14,file=trim(filename3),form='FORMATTED')
+            write(14,'(A)') 'This is a scalar per node file for growth factor'
+            write(14,'(A)') 'part'
+            write(14,'(i10)') 1
+            write(14,'(A)') 'coordinates'
+            do i=1,nn
+                write(14,'(e12.5)') density(i)
             end do
             close(14)
         end if
