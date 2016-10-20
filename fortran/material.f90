@@ -54,7 +54,7 @@ contains
     end subroutine update
 
     subroutine theta_update(theta_pre, theta, F, stress, mstiff)
-        use read_file, only: nsd, dt, tol, materialprops, delta, step, pre_step
+        use read_file, only: nsd, dt, tol, materialprops, delta, step 
         real(8), intent(inout) :: theta, theta_pre
         real(8), dimension(nsd, nsd), intent(in) :: F
         real(8), dimension(nsd, nsd), intent(inout) :: stress
@@ -65,7 +65,7 @@ contains
         real(8), dimension(nsd, nsd, nsd, nsd) :: Le, Lg
         real(8) :: mu, lambda, Je, theta_max, tau_g, gamma, theta_next, phi, temp
         real(8) :: der1, der2, residual, theta_increment
-        integer :: i, j, k, l, info, ii, jj, kk, ll, flag
+        integer :: i, j, k, l, info, ii, jj, kk, ll
         
         theta_max = 1.3
         tau_g = 1.0
@@ -83,7 +83,6 @@ contains
                 theta = theta_pre
                 exit
             end if
-            flag = 1
             temp = 0.0
             do i = 1, nsd
                 do j = 1, nsd
@@ -103,13 +102,14 @@ contains
             local_tangent = 1 - (kg*der1 + phi*der2)*dt
             theta_increment = -residual/local_tangent
             theta = theta + theta_increment
-            ! what if the increment results in negative phi?
         end do
 
         call update(F, theta, Fe, Feinv, Je, Ce, Ceinv, Se, Me, phi)
         if (phi < 0.0) then
             theta = theta_pre
             call update(F, theta, Fe, Feinv, Je, Ce, Ceinv, Se, Me, phi)
+            kg = 0.0
+            local_tangent = 1.0
         end if
         temp = 0.0 ! Ce:Le:Ce
         do i = 1, nsd
@@ -123,32 +123,28 @@ contains
                 end do
             end do
         end do
-        if (.true.) then
-            Lg = Le
-        else
-            left = Se
-            right = Se
-            do i = 1, nsd
-                do j = 1, nsd
-                    do k = 1, nsd
-                        do l = 1, nsd
-                            left(i, j) = left(i, j) + 0.5*Le(i, j, k, l)*Ce(k, l)
-                            right(i, j) = right(i, j) + 0.5*Le(k, l, i, j)*Ce(k, l)
-                        end do
+        left = Se
+        right = Se
+        do i = 1, nsd
+            do j = 1, nsd
+                do k = 1, nsd
+                    do l = 1, nsd
+                        left(i, j) = left(i, j) + 0.5*Le(i, j, k, l)*Ce(k, l)
+                        right(i, j) = right(i, j) + 0.5*Le(k, l, i, j)*Ce(k, l)
                     end do
                 end do
             end do
-            do i = 1, nsd
-                do j = 1, nsd
-                    do k = 1, nsd
-                        do l = 1, nsd
-                            Lg(i, j, k, l) = Le(i, j, k, l)/theta**4 &
-                                - 4*kg*dt/(local_tangent*theta**5)*left(i, j)*right(k, l)
-                        end do
+        end do
+        do i = 1, nsd
+            do j = 1, nsd
+                do k = 1, nsd
+                    do l = 1, nsd
+                        Lg(i, j, k, l) = Le(i, j, k, l)/theta**4 &
+                            - 4*kg*dt/(local_tangent*theta**5)*left(i, j)*right(k, l)
                     end do
                 end do
             end do
-        end if
+        end do
 
         stress = (lambda*log(Je) - mu)*delta + mu*matmul(Fe, transpose(Fe))
         mstiff = 0.0

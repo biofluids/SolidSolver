@@ -28,6 +28,7 @@ contains
         write(10,'("VARIABLE",/)') 
         write(10,'("vector per node:",12x,"displacement",12x,"solid.dis******")')
         write(10,'("scalar per node:",12x,"growth",12x,"solid.grow******")')
+        write(10,'("scalar per node:",12x,"density",12x,"solid.den******")')
         write(10,'("tensor symm per node:",12x,"stress",12x,"solid.sig******",/)')
         write(10,'("TIME",/)')
         write(10,'("time set:",12x,i10)') 1

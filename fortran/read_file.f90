@@ -1,7 +1,7 @@
 module read_file
     implicit none
 
-    integer :: mode, maxit, nsteps, nprint, step, isbinary, materialtype, pre_step
+    integer :: mode, maxit, nsteps, nprint, step, isbinary, materialtype
     real(8) :: firststep, adjust, tol, dt, damp, penalty
     real(8) :: materialprops(5), gravity(3)
     integer :: nsd, nen, nn, nel, bc_size, load_size, load_type
@@ -11,7 +11,7 @@ module read_file
 
     integer :: no_nonzeros
     integer, allocatable :: col_ind(:), row_ptr(:), row_ind(:)
-    real(8), allocatable :: nonzeros(:), pre_growthFactor(:), growthFactor(:), growthKg(:), growthTangent(:)
+    real(8), allocatable :: nonzeros(:), growthFactor(:), pre_growthFactor(:)
 
     save
 contains
@@ -66,12 +66,12 @@ contains
     end subroutine read_input
 
     subroutine read_mesh(nsd, nn, nel, nen, coords, connect, bc_size, bc_num, bc_val, &
-        load_size, load_type, load_num, load_val, share, pre_growthFactor, growthFactor, growthKg, growthTangent)
+        load_size, load_type, load_num, load_val, share, pre_growthFactor, growthFactor)
         use integration, only: int_number
         integer, intent(out) :: nsd, nen, nn, nel, bc_size, load_size, load_type
         integer, allocatable, intent(out) :: connect(:, :), bc_num(:, :), load_num(:, :)
         real(8), allocatable, intent(out) :: coords(:,:), bc_val(:), load_val(:, :), &
-            pre_growthFactor(:), growthFactor(:), growthKg(:), growthTangent(:)
+            pre_growthFactor(:), growthFactor(:)
         integer, allocatable :: share(:)
         integer :: i, j, temp
 
@@ -134,10 +134,6 @@ contains
         pre_growthFactor = 1.0
         allocate(growthFactor(nel*(int_number(nsd, nen, 0))))
         growthFactor = 1.0
-        allocate(growthKg(nel*(int_number(nsd, nen, 0))))
-        growthKg = 0.0
-        allocate(growthTangent(nel*(int_number(nsd, nen, 0))))
-        growthTangent = 1.0
 
     end subroutine read_mesh
 

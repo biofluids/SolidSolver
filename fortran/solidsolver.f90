@@ -17,7 +17,7 @@ program solidsolver
     call read_input(mode, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, &
         materialtype, materialprops, gravity, isbinary, penalty)
     call read_mesh(nsd, nn, nel, nen, coords, connect, bc_size, bc_num, bc_val, &
-        load_size, load_type, load_num, load_val, share, pre_growthFactor,growthFactor, growthKg, growthTangent)
+        load_size, load_type, load_num, load_val, share, pre_growthFactor,growthFactor)
     call read_CRS(no_nonzeros, col_ind, row_ind, nonzeros, row_ptr)
     if (mode == 0) then 
         call statics(filepath)
@@ -204,7 +204,6 @@ subroutine dynamics(filepath)
         an(i) = F(i)/M(i) ! Mass is lumped
     end do
 
-    pre_step = 0
     do step = 1, nsteps
         write(*,*) growthFactor
         un1 = un + dt*vn + 0.5*dt**2*(1 - 2*beta)*an ! predict value for the displacement at next step
@@ -217,7 +216,6 @@ subroutine dynamics(filepath)
             an1 = (un1 - (un + dt*vn + 0.5*dt**2*(1 - 2*beta)*an))/(beta*dt**2) ! accerleration at next step
             vn1 = vn + (1 - gamma)*dt*an + gamma*dt*an1 ! velocity at next step
             call tangent_internal(un1) ! call tangent internal first because it triggers growth
-            pre_step = step
             call force_internal(un1, Fint)
             if (load_type == 1) then
                 call force_pressure(un1, Fext)
