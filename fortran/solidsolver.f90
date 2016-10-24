@@ -28,13 +28,13 @@ program solidsolver
     call timestamp()
     time_elapsed = dble(ct1-ct)/dble(ct_rate)
     if (time_elapsed < 60) then
-        write(*, '("Time elaspsed:", f12.2, 3x, "seconds")'), time_elapsed
+        write(*, '("Time elaspsed:", f12.2, 3x, "seconds")') time_elapsed
     else if (time_elapsed < 3600) then
         time_elapsed = time_elapsed/60
-        write(*,'("Time elapsed:", f12.2, 3x, "minutes")'), time_elapsed
+        write(*,'("Time elapsed:", f12.2, 3x, "minutes")') time_elapsed
     else 
         time_elapsed = time_elapsed/3600
-        write(*,'("Time elapsed:", f12.2, 3x, "hours")'), time_elapsed
+        write(*,'("Time elapsed:", f12.2, 3x, "hours")') time_elapsed
     end if
 
 end program solidsolver
