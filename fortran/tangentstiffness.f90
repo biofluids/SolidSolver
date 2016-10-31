@@ -107,6 +107,7 @@ contains
                 dNdy = matmul(dNdx, Finv)
                 ! compute the Kirchhoff stress and the material stiffness C
                 call theta_update(pre_growthFactor(npt*(ele-1)+intpt), growthFactor(npt*(ele-1)+intpt), F, stress, C)
+                !call getStiffness(growthFactor(npt*(ele-1)+intpt), F, stress, C)
                 ! compute the element internal force
                 do a = 1, nen
                     do i = 1, nsd
