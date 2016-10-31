@@ -16,7 +16,7 @@ contains
         real(8), allocatable, dimension(:) :: weights
         real(8), dimension(nen) :: N
         integer :: ele,a,b,i,j,npt,k,intpt,row,col
-        real(8) :: det, rho
+        real(8) :: det, rho, theta
         real(8), dimension(nsd) :: xi
         real(8), dimension(nen,nsd) :: dNdxi 
         
@@ -62,7 +62,8 @@ contains
                             ! No cross coupling terms
                             row = nsd*(a-1) + i
                             col = nsd*(b-1) + i
-                            mele(row,col) = mele(row,col) + N(a)*N(b)*rho*det*weights(intpt)
+                            theta = growthFactor(npt*(ele-1)+intpt)
+                            mele(row,col) = mele(row,col) + N(a)*N(b)*rho*det*weights(intpt)*theta**3
                         end do
                     end do
                 end do

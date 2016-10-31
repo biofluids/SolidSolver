@@ -17,7 +17,7 @@ program solidsolver
     call read_input(mode, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, &
         materialtype, materialprops, gravity, isbinary, penalty)
     call read_mesh(nsd, nn, nel, nen, coords, connect, bc_size, bc_num, bc_val, &
-        load_size, load_type, load_num, load_val, share)
+        load_size, load_type, load_num, load_val, share, pre_growthFactor,growthFactor)
     call read_CRS(no_nonzeros, col_ind, row_ind, nonzeros, row_ptr)
     if (mode == 0) then 
         call statics(filepath)
@@ -159,7 +159,7 @@ subroutine dynamics(filepath)
     real(8) :: err1, err2, gamma, beta
     real(8), dimension(bc_size) :: constraint
     character(80), intent(in) :: filepath
-    integer, dimension(2) :: side
+    integer, dimension(4) :: side
 
     allocate(Fext(nn*nsd))
     allocate(Fint(nn*nsd))
@@ -186,7 +186,7 @@ subroutine dynamics(filepath)
     beta = gamma/2
     step = 0
     !side = [27, 53, 79, 105, 131, 157]
-    side = [2, 3]
+    side = [1, 2, 3, 4]
 
     call write_results(filepath, un)
     call mass_matrix(M)
@@ -205,6 +205,7 @@ subroutine dynamics(filepath)
     end do
 
     do step = 1, nsteps
+        write(*,*) growthFactor
         un1 = un + dt*vn + 0.5*dt**2*(1 - 2*beta)*an ! predict value for the displacement at next step
         err1 = 1.
         err2 = 1.
@@ -214,6 +215,7 @@ subroutine dynamics(filepath)
             nit = nit + 1
             an1 = (un1 - (un + dt*vn + 0.5*dt**2*(1 - 2*beta)*an))/(beta*dt**2) ! accerleration at next step
             vn1 = vn + (1 - gamma)*dt*an + gamma*dt*an1 ! velocity at next step
+            call tangent_internal(un1) ! call tangent internal first because it triggers growth
             call force_internal(un1, Fint)
             if (load_type == 1) then
                 call force_pressure(un1, Fext)
@@ -223,7 +225,6 @@ subroutine dynamics(filepath)
             do i = 1, nn*nsd
                 R(i) = M(i)*an1(i) - F(i)
             end do
-            call tangent_internal(un1)
             do i = 1, nn*nsd
                 call addValueSymmetric(nonzeros, i, i, M(i)/(beta*dt**2))
             end do
@@ -258,6 +259,7 @@ subroutine dynamics(filepath)
         if (MOD(step, nprint) == 0) then
             call write_results(filepath, un)
         end if
+        pre_growthFactor = growthFactor
     end do
     write(*,*) repeat("=", 95)
 

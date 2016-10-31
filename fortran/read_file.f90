@@ -6,13 +6,12 @@ module read_file
     real(8) :: materialprops(5), gravity(3)
     integer :: nsd, nen, nn, nel, bc_size, load_size, load_type
     integer, allocatable :: connect(:, :), bc_num(:, :), load_num(:, :)
-    real(8), allocatable :: coords(:, :), bc_val(:), load_val(:, :)
+    real(8), allocatable :: coords(:, :), bc_val(:), load_val(:, :), delta(:, :)
     integer, allocatable :: share(:)
-    real(8), allocatable :: growthFactor(:)
 
     integer :: no_nonzeros
     integer, allocatable :: col_ind(:), row_ptr(:), row_ind(:)
-    real(8), allocatable :: nonzeros(:)
+    real(8), allocatable :: nonzeros(:), growthFactor(:), pre_growthFactor(:)
 
     save
 contains
@@ -67,11 +66,12 @@ contains
     end subroutine read_input
 
     subroutine read_mesh(nsd, nn, nel, nen, coords, connect, bc_size, bc_num, bc_val, &
-        load_size, load_type, load_num, load_val, share)
+        load_size, load_type, load_num, load_val, share, pre_growthFactor, growthFactor)
         use integration, only: int_number
         integer, intent(out) :: nsd, nen, nn, nel, bc_size, load_size, load_type
         integer, allocatable, intent(out) :: connect(:, :), bc_num(:, :), load_num(:, :)
-        real(8), allocatable, intent(out) :: coords(:,:), bc_val(:), load_val(:, :)
+        real(8), allocatable, intent(out) :: coords(:,:), bc_val(:), load_val(:, :), &
+            pre_growthFactor(:), growthFactor(:)
         integer, allocatable :: share(:)
         integer :: i, j, temp
 
@@ -117,11 +117,24 @@ contains
                 share(connect(j,i)) = share(connect(j,i)) + 1
             end do
         end do
+        close(10)
 
-        allocate(growthFactor(nel*int_number(nsd, nen, 0)))
+        allocate(delta(nsd, nsd))
+        do i = 1, nsd
+            do j = 1, nsd
+                if (i == j) then
+                    delta(i, j) = 1.0
+                else
+                    delta(i, j) = 0.0
+                end if
+            end do
+        end do
+
+        allocate(pre_growthFactor(nel*(int_number(nsd, nen, 0))))
+        pre_growthFactor = 1.0
+        allocate(growthFactor(nel*(int_number(nsd, nen, 0))))
         growthFactor = 1.0
 
-        close(10)
     end subroutine read_mesh
 
     subroutine read_CRS(no_nonzeros, col_ind, row_ind, nonzeros, row_ptr)

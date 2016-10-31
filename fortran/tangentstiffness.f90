@@ -37,6 +37,7 @@ contains
         external DGETRI
         n1 = nsd
         
+
         ! square matrix
         do i=1,nsd
             do j=1,nsd
@@ -104,13 +105,8 @@ contains
                 call DGETRF(n1,n1,Finv,n1,ipiv,info)
                 call DGETRI(n1,Finv,n1,ipiv,work,n1,info)
                 dNdy = matmul(dNdx, Finv)
-                ! compute the Kirchhoff stress
-                !call Kirchhoffstress(nsd, intcoord, F, materialtype, materialprops, stress)
-                !call nhstress(nsd, F, materialprops, Se, stress)
-                ! compute the material stiffness C_ijkl
-                !call materialstiffness(nsd, intcoord, F, materialtype, materialprops, C)
-                !call nhmaterial(nsd, F, materialprops, C_t, C)
-                call growth(growthFactor(npt*(ele-1)+intpt), F, stress, C)
+                ! compute the Kirchhoff stress and the material stiffness C
+                call theta_update(pre_growthFactor(npt*(ele-1)+intpt), growthFactor(npt*(ele-1)+intpt), F, stress, C)
                 ! compute the element internal force
                 do a = 1, nen
                     do i = 1, nsd
