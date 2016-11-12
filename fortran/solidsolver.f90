@@ -23,6 +23,8 @@ program solidsolver
         call statics(filepath)
     else if (mode == 1) then
         call dynamics(filepath)
+    else if (mode == 2) then
+        call evaluate_stress_from_disp(filepath)
     end if
     call system_clock(ct1)
     call timestamp()
@@ -326,3 +328,36 @@ subroutine timestamp ( )
 
     return
 end subroutine timestamp
+
+subroutine evaluate_stress_from_disp(filepath)
+    use read_file
+    use output
+
+    implicit none
+
+    real(8), allocatable, dimension(:) :: w
+    character(80), intent(in) :: filepath
+
+    allocate(w(nn*nsd))
+
+    ! write_results uses the following global variables
+    ! in a static case, they should be specified manually
+    nprint = 1
+    nsteps = 1
+    dt = 1.
+    step = 0
+
+    ! initialize w
+    w = 0.
+    call write_results(filepath,w)
+
+    ! Instead of solving for displacment, simply read it
+    ! put your code here
+
+    ! set step to nprint so that case file will not be rewritten
+    step = nprint
+    call write_results(filepath, w)
+
+    deallocate(w)
+end subroutine evaluate_stress_from_disp
+
