@@ -40,6 +40,7 @@ The linear momentum balance, compared to the original form, contains an addition
 \begin{equation} \label{eq:momentum}
 \dot{\bar{\rho}}_0 \bv + {\bar{\rho}}_0\dot{\bv} = \nabla_\bX \cdot \bold{P} + {\bar{\rho}}_0\bold{b}
 \end{equation}
+The existing models are quasi-static such that the velocity and acceleration are assumed to be $0$ in the momentum equation, therefore the left-hand side of Equation \ref{eq:momentum} becomes $\bold{0}$. Although this assumption is reasonable because the solid growth happens very slowly, it fails to reflect the fact that the growth is immersed in fluid environment and the solid deformation is constantly disturbed by fluid flow. The numerical framework in this project is novel as we directly implement a dynamic model.
 
 The balance of entropy is built on the assumption that the temperature $\theta$ remains constant, which is reasonable for living biological tissues. The local form of the dissipation inequality is written as:
 \begin{equation} \label{eq:entropy}
