@@ -192,7 +192,7 @@ subroutine dynamics(filepath)
     end do
 
     call write_results(filepath, un)
-    call mass_matrix(M)
+    !call mass_matrix(M)
 
     ! If the external load is traction, then the external force doesn't change
     if (load_type /= 1) then
@@ -203,20 +203,20 @@ subroutine dynamics(filepath)
     end if
     
     F = Fext
-    do i = 1, nn*nsd
-        an(i) = F(i)/M(i) ! Mass is lumped
-    end do
+    !do i = 1, nn*nsd
+    !    an(i) = F(i)/M(i) ! Mass is lumped
+    !end do
 
     do step = 1, nsteps
-        un1 = un + dt*vn + 0.5*dt**2*(1 - 2*beta)*an ! predict value for the displacement at next step
+        !un1 = un + dt*vn + 0.5*dt**2*(1 - 2*beta)*an ! predict value for the displacement at next step
         err1 = 1.
         err2 = 1.
         nit = 0
         write(*,'(A, A, i5, 5x, A, e12.4, A)') repeat('=', 30), 'Step', step, 'Time', step*dt, repeat('=', 36)
         do while (((err1 > tol) .or. (err2 > tol)) .and. (nit < maxit)) ! this do-while-loop solves for un1 based on prediction
             nit = nit + 1
-            an1 = (un1 - (un + dt*vn + 0.5*dt**2*(1 - 2*beta)*an))/(beta*dt**2) ! accerleration at next step
-            vn1 = vn + (1 - gamma)*dt*an + gamma*dt*an1 ! velocity at next step
+            !an1 = (un1 - (un + dt*vn + 0.5*dt**2*(1 - 2*beta)*an))/(beta*dt**2) ! accerleration at next step
+            !vn1 = vn + (1 - gamma)*dt*an + gamma*dt*an1 ! velocity at next step
             call tangent_internal(un1) ! call tangent internal first because it triggers growth
             call force_internal(un1, Fint)
             if (load_type == 1) then
@@ -226,11 +226,12 @@ subroutine dynamics(filepath)
             F = Fext - Fint
             ! R = matmul(M, an1) - F
             do i = 1, nn*nsd
-                R(i) = M(i)*an1(i) - F(i)
+                !R(i) = M(i)*an1(i) - F(i)
+                R(i) = - F(i)
             end do
-            do i = 1, nn*nsd
-                call addValueSymmetric(nonzeros, i, i, M(i)/(beta*dt**2))
-            end do
+            !do i = 1, nn*nsd
+            !    call addValueSymmetric(nonzeros, i, i, M(i)/(beta*dt**2))
+            !end do
             ! penalty
             do i = 1, bc_size
                 row = nsd*(bc_num(1, i) - 1) + bc_num(2, i)
@@ -288,7 +289,7 @@ subroutine radial_displacement(rad, z)
     real(8), intent(in) :: z
     real(8), intent(inout) :: rad
     real(8) :: tolerance, ur
-    ur = 0.125/2
+    ur = 0.125
     tolerance = 1d-4
     if (abs(z-0.6) < tolerance) then
         rad = ur
