@@ -78,22 +78,37 @@ Dr. Zhang was the original developer of the immersed finite element method (IFEM
 \subsection{Growth Modeling}
 The groundwork of growth modeling has been laid down recently. The key idea of the kinematics of the growth model is the multiplicative decomposition of deformation into an elastic part and a growth part, where an incompatible intermediate configuration is introduced. In the recent work of Dr. Zhang's group, the stand-alone growth of solid tissues is simulated. In this work, the mass increase is achieved through the mass source inside the solid material, which is governed by a given linear function. The growth is assumed to be isotropic thus can be represented by a scalar evaluated at every integration point called growth factor. The governing function is designed such that it is only activated when the hydrostatic pressure exceeds a certain criterion. In addition, the speed of growth decreases with the growth factor to avoid unbounded growth.
 
-As a preliminary result, two sets of numerical experiments are performed. As shown in Figure \ref{fig:growth_results}, the first experiment is the simple uniaxial stretching of soft biomaterial described in \cite{Himpel}. In this case the stretching is enforced steppedly to observe the response of the biomaterial and the recovery of biological equilibrium. The other one is the numerical simulation of the stent application in a cylindrical vessel, where the stent is simulated as prescribed displacements of the vessel. The growth stimulated by the mechanical loading is observed and agrees with the clinical experience.
+As a preliminary result, two sets of numerical experiments are performed. As shown in Figure \ref{fig:growth_results}, the first experiment is the simple uniaxial stretching of soft biomaterial described in \cite{Himpel}. In this case the stretching is enforced steppedly to observe the response of the biomaterial and the recovery of biological equilibrium. It can be observed that the growth factor changes with the mechanical load, with a few steps lagging, which reflects the nature of growth. Interestingly, before the growth factor reaches its maximum, the stress and density increase/decrease sharply each time the mechanical load changes, but then recover to the original state gradually. After the maximum is reached, the equilibrium is broken. This reveals the tissues tend to maintain biological equilibrium under mechanical load by growing. After the growth reaches its limit, the new grown mass will not be able to ``eat up" the stress, therefore the stress will not recover and consequently the density changes.
+
+The other one is the numerical simulation of the stent application in a cylindrical vessel, where the stent is simulated as prescribed displacements of the vessel. As shown in Fig \ref{fig:growth_stent}, the vessel grows gradually after the stent is put into it, maximum growth factor is observed in the area where stent is applied, indicating the restenosis. The simulation result agrees with the clinical experience.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{./figs/stretch.jpg}
+	\label{fig:uniaxial}
+	\caption{Uniaxial stretching test with growth. The stretch is applied steppedly. The stress and density always recover to the initial values before the maximum growth factor is reached, which is known as biological equilibrium.}
+	\label{fig:growth_results}
+\end{figure}
 
 \begin{figure}[H]
 	\centering
 	\begin{subfigure}
 		\centering
-		\includegraphics[width=0.45\textwidth]{./figs/uniaxial.jpg}
-		\label{fig:uniaxial}
+		\includegraphics[width=0.3\textwidth, height=0.3\textheight]{./figs/step1.jpg}
+		\label{fig:step1}
 	\end{subfigure}
 	\begin{subfigure}
 		\centering
-		\includegraphics[width=0.45\textwidth]{./figs/stent.jpg}
-		\label{fig:stent}
+		\includegraphics[width=0.3\textwidth, height=0.3\textheight]{./figs/step5.jpg}
+		\label{fig:step5}
 	\end{subfigure}
-	\caption{(a) Uniaxial stretching test with growth. The stretch is applied steppedly. The stress and density always recover to the initial values before the maximum growth factor is reached, which is known as biological equilibrium. (b) The stent application. Maximum growth factor is observed in the area where stent is applied, indicating the restenosis. The stent is applied in one time step, corresponding to half an hour in reality. Therefore it can be predicted from the growth factor profile that the restenosis would form in ?.}
-	\label{fig:growth_results}
+	\begin{subfigure}
+		\centering
+		\includegraphics[width=0.3\textwidth, height=0.3\textheight]{./figs/step15.jpg}
+		\label{fig:step15}
+	\end{subfigure}
+	\caption{(a) beginning of the growth (b) during the growth (c) after the growth}
+	\label{fig:growth_stent}
 \end{figure}
 
 \section{PROPOSED WORK - 6 pages}
