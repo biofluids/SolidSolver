@@ -73,7 +73,13 @@ As a fundamental feature of life, growth is an extremely complex phenomenon. Mul
 \subsection{Framework for Fluid-Structure Interactions}
 Our objects of interest such as tumor cells, and blood vessels are immersed in fluid, which makes it more than fitting to adopt the concepts of the immersed finite element method (IFEM). Using a conventional boundary-fitted technique is challenging as they would require prohibitive amount of time for mesh updating and interface tracking. The IFEM, on the contrary, is a non-boundary-fitted approach where the background is represented with fixed Eulerian grid and the objects represented with Lagrangian mesh are freely moving on top of the fixed grid. Proper coupling schemes are also developed to link the independent domains. Since most objects immersed in the microenvironment are solid objects that occupy volumes and have their physical material representations, the IFEM shows tremendous advantage in that regard. Furthermore, the growth of tissue involves large deformation and mass change, which pose extra difficulty to the conventional boundary-fitted technique as the coupling is essentially ``one-way"  from fluid to solid, which tends to diverge after a few steps.
 
-Dr. Zhang was the original developer of the immersed finite element method (IFEM) \cite{Zhang}. After thorough verification of 2-D and 3-D fluid-structure interaction problems over the years \cite{Zhang,Zhang2,Zhang3,Zhang4,Zhang5,Zhang6,Zhang7,Zhang8} , it has since been successfully applied to applications in biomedical engineering fields involving highly complex systems \cite{Zhang9,Zhang10,Zhang11,Zhang12,Zhang13,Zhang14,Zhang15,Zhang18}.
+Dr. Zhang was the original developer of the immersed finite element method (IFEM) \cite{Zhang}. After thorough verification of 2-D and 3-D fluid-structure interaction problems over the years \cite{Zhang,Zhang2,Zhang3,Zhang4,Zhang5,Zhang6,Zhang7,Zhang8} , it has since been successfully applied to applications in biomedical engineering fields involving highly complex systems \cite{Zhang9,Zhang10,Zhang11,Zhang12,Zhang13,Zhang14,Zhang15,Zhang18}. In \cite{Zhang10}, the real stent deployment in the artery with a realistic stent structure is simulated, and the fluid-structure interaction is carefully analyzed. Fig \ref{fig:IFEM_stent} presents the magnitude and profile of the velocity in the transverse plane during the transient analysis on the deformation of the stent during its deployment \cite{Zhang10}. It demonstrates a uniform velocity distribution in the direction of expansion, illustrating how well the IFEM model simulates the expansion mechanism. Therefore IFEM is expected to be a powerful tool that can be used in growth modeling. 
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{./figs/IFEM_stent.jpg}
+	\caption{Velocity profile in the longitudinal direction during stent expansion at different time steps}
+	\label{fig:IFEM_stent}
+\end{figure}
 
 \subsection{Growth Modeling}
 The groundwork of growth modeling has been laid down recently. The key idea of the kinematics of the growth model is the multiplicative decomposition of deformation into an elastic part and a growth part, where an incompatible intermediate configuration is introduced. In the recent work of Dr. Zhang's group, the stand-alone growth of solid tissues is simulated. In this work, the mass increase is achieved through the mass source inside the solid material, which is governed by a given linear function. The growth is assumed to be isotropic thus can be represented by a scalar evaluated at every integration point called growth factor. The governing function is designed such that it is only activated when the hydrostatic pressure exceeds a certain criterion. In addition, the speed of growth decreases with the growth factor to avoid unbounded growth.
@@ -85,7 +91,6 @@ The other one is the numerical simulation of the stent application in a cylindri
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.8\textwidth]{./figs/stretch.jpg}
-	\label{fig:uniaxial}
 	\caption{Uniaxial stretching test with growth. The stretch is applied steppedly. The stress and density always recover to the initial values before the maximum growth factor is reached, which is known as biological equilibrium.}
 	\label{fig:growth_results}
 \end{figure}
@@ -94,20 +99,20 @@ The other one is the numerical simulation of the stent application in a cylindri
 	\centering
 	\begin{subfigure}
 		\centering
-		\includegraphics[width=0.3\textwidth, height=0.3\textheight]{./figs/step1.jpg}
+		\includegraphics[height=0.25\textheight]{./figs/step1.jpg}
 		\label{fig:step1}
 	\end{subfigure}
 	\begin{subfigure}
 		\centering
-		\includegraphics[width=0.3\textwidth, height=0.3\textheight]{./figs/step5.jpg}
+		\includegraphics[height=0.25\textheight]{./figs/step5.jpg}
 		\label{fig:step5}
 	\end{subfigure}
 	\begin{subfigure}
 		\centering
-		\includegraphics[width=0.3\textwidth, height=0.3\textheight]{./figs/step15.jpg}
+		\includegraphics[height=0.25\textheight]{./figs/step15.jpg}
 		\label{fig:step15}
 	\end{subfigure}
-	\caption{(a) beginning of the growth (b) during the growth (c) after the growth}
+	\caption{The growth factor distribution in a vessel with stent (a) beginning of the growth (b) during the growth (c) after the growth}
 	\label{fig:growth_stent}
 \end{figure}
 
