@@ -1,0 +1,72 @@
+%
+%\documentclass[Proceedings]{ascelike}
+\documentclass{article}[12pt]
+%
+% Feb. 14, 2013
+%
+% Some useful packages...
+%
+\usepackage{graphicx}
+%\usepackage{subfigure}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsbsy}
+\usepackage{setspace}
+\usepackage{fullpage}
+\usepackage{cite}
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage{appendix}
+\usepackage{bbm}
+\usepackage{booktabs}
+\usepackage{multirow}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{authblk}
+
+%\usepackage{lineno}
+\doublespacing
+%\linenumbers
+%\usepackage{times}^\mathrm{s}
+%
+%
+% Place hyperlinks within the pdf file (works only with pdflatex, not latex)
+% \usepackage[colorlinks=true,citecolor=red,linkcolor=black]{hyperref}
+%
+%
+% NOTE: Don't include the \NameTag{<your name>} if you have selected 
+%       the NoPageNumbers option: this leads to an inconsistency and
+%       a warning, and the NameTag is ignored.
+%\NameTag{Zhang, Nov. 7, 2013}
+%
+%
+\input texFiles/defs
+\begin{document}
+
+% You will need to make the title all-caps
+\title{A General Approach to Derive Stress and Elasticity Tensors for Hyperelastic Isotropic and Anisotropic Biomaterials}
+\author[1]{Jie Cheng}
+\author[1]{Lucy T. Zhang\thanks{zhanglucy@rpi.edu}}
+\affil[1]{Department of Mechanical Aerospace and Nuclear Engineering, Rensselaer Polytechnic Institute, Troy, NY 12180, USA}
+
+
+\maketitle
+\input texFiles/abstract
+\textbf{Keywords: \textit{hyperelastic models; anisotropy; Mooney-Rivlin; Yeoh; Holzapfel-Gasser-Ogden; mixed formulation}}
+\input texFiles/introduction
+\input texFiles/formulations
+\input texFiles/experiments
+\input texFiles/conclusion
+\input texFiles/appendix
+
+\bibliography{references}
+\bibliographystyle{unsrt}
+%\bibliographystyle{apalike}
+\clearpage
+\input tables/tables
+\end{document}
+
+
+
