@@ -1,13 +1,9 @@
-%
-%\documentclass[Proceedings]{ascelike}
-\documentclass{article}[12pt]
-%
-% Feb. 14, 2013
-%
-% Some useful packages...
-%
+\documentclass[10.5pt, a4paper, twocolumn]{article}
+\usepackage[affil-it]{authblk}
+\usepackage{etoolbox}
+\usepackage{lmodern}
+
 \usepackage{graphicx}
-%\usepackage{subfigure}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
@@ -22,39 +18,42 @@
 \usepackage{booktabs}
 \usepackage{multirow}
 
+\usepackage{mathtools, cuted}
+
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage{authblk}
+\usepackage{titlesec}
+\titleformat*{\section}{\normalsize\bfseries}
+\titleformat*{\subsection}{\normalsize\bfseries}
+\titleformat*{\subsubsection}{\normalsize\bfseries}
 
-%\usepackage{lineno}
-\doublespacing
-%\linenumbers
-%\usepackage{times}^\mathrm{s}
-%
-%
-% Place hyperlinks within the pdf file (works only with pdflatex, not latex)
-% \usepackage[colorlinks=true,citecolor=red,linkcolor=black]{hyperref}
-%
-%
-% NOTE: Don't include the \NameTag{<your name>} if you have selected 
-%       the NoPageNumbers option: this leads to an inconsistency and
-%       a warning, and the NameTag is ignored.
-%\NameTag{Zhang, Nov. 7, 2013}
-%
-%
 \input texFiles/defs
+\makeatletter
+\patchcmd{\@maketitle}{\LARGE \@title}{\fontsize{16}{19.2}\selectfont\@title}{}{}
+\makeatother
+
+\renewcommand\Authfont{\fontsize{12}{14.4}\selectfont}
+\renewcommand\Affilfont{\fontsize{8}{9.6}\itshape}
+\renewenvironment{abstract}
+  {\small\quotation
+  {\bfseries\noindent{\normalsize\abstractname}\par\nobreak\smallskip}}
+  {\endquotation}
+  
+\title{\textbf{A General Approach to Derive Stress and Elasticity Tensors for Hyperelastic Isotropic and Anisotropic Biomaterials}}
+\author[a]{Jie Cheng}
+\author[a]{Lucy T. Zhang\thanks{Corresponding author. E-mail address: zhanglucy@rpi.edu}}
+\affil[a]{Department of Mechanical Aerospace and Nuclear Engineering, Rensselaer Polytechnic Institute, Troy, NY 12180, USA}
+\date{}
+\pagenumbering{gobble}
+
 \begin{document}
-
-% You will need to make the title all-caps
-\title{A General Approach to Derive Stress and Elasticity Tensors for Hyperelastic Isotropic and Anisotropic Biomaterials}
-\author[1]{Jie Cheng}
-\author[1]{Lucy T. Zhang\thanks{zhanglucy@rpi.edu}}
-\affil[1]{Department of Mechanical Aerospace and Nuclear Engineering, Rensselaer Polytechnic Institute, Troy, NY 12180, USA}
-
-
-\maketitle
-\input texFiles/abstract
-\textbf{Keywords: \textit{hyperelastic models; anisotropy; Mooney-Rivlin; Yeoh; Holzapfel-Gasser-Ogden; mixed formulation}}
+\twocolumn[
+    \begin{@twocolumnfalse}
+         \maketitle
+	 \input texFiles/abstract
+     \end{@twocolumnfalse}
+]
+\bigskip
 \input texFiles/introduction
 \input texFiles/formulations
 \input texFiles/experiments
@@ -62,7 +61,7 @@
 \input texFiles/appendix
 
 \bibliography{references}
-\bibliographystyle{unsrt}
+\bibliographystyle{vancouver}
 %\bibliographystyle{apalike}
 \clearpage
 \input tables/tables
