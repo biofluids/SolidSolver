@@ -12,7 +12,7 @@ program solidsolver
     integer :: ct, ct_rate, ct_max, ct1
     real(8) :: time_elapsed  
     call timestamp()
-    filepath = '/Users/Jie/Documents/SolidResults/'
+    filepath = '/Users/jiecheng/Documents/SolidResults/'
     call system_clock(ct,ct_rate,ct_max)
     call read_input(mode, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, &
         materialtype, materialprops, gravity, isbinary, penalty)
@@ -156,10 +156,11 @@ subroutine dynamics(filepath)
 
     integer :: i, nit, row, col, j, k
     real(8), allocatable, dimension(:) :: Fext, Fint, F, R, un, un1, vn, vn1, an, an1, du, M
-    real(8) :: err1, err2, gamma, beta
+    real(8) :: err1, err2, gamma, beta, rad
     real(8), dimension(bc_size) :: constraint
     character(80), intent(in) :: filepath
-    integer, dimension(4) :: side
+    integer, dimension(117) :: stent
+    real(8) :: stent_constraint
 
     allocate(Fext(nn*nsd))
     allocate(Fint(nn*nsd))
@@ -185,49 +186,52 @@ subroutine dynamics(filepath)
     gamma = 0.5 + damp
     beta = gamma/2
     step = 0
-    !side = [27, 53, 79, 105, 131, 157]
-    side = [1, 2, 3, 4]
+
+    do i = 1, 117
+        stent(i) = i + 1443
+    end do
 
     call write_results(filepath, un)
-    call mass_matrix(M)
+    !call mass_matrix(M)
 
     ! If the external load is traction, then the external force doesn't change
     if (load_type /= 1) then
         call force_traction(Fext)
     else
-        call force_pressure(un, Fext)
+        !call force_pressure(un, Fext)
+        Fext = 0.0
     end if
     
-    Fext = 0.0 ! Don't apply load
     F = Fext
-    do i = 1, nn*nsd
-        an(i) = F(i)/M(i) ! Mass is lumped
-    end do
+    !do i = 1, nn*nsd
+    !    an(i) = F(i)/M(i) ! Mass is lumped
+    !end do
 
     do step = 1, nsteps
-        write(*,*) growthFactor
-        un1 = un + dt*vn + 0.5*dt**2*(1 - 2*beta)*an ! predict value for the displacement at next step
+        !un1 = un + dt*vn + 0.5*dt**2*(1 - 2*beta)*an ! predict value for the displacement at next step
         err1 = 1.
         err2 = 1.
         nit = 0
         write(*,'(A, A, i5, 5x, A, e12.4, A)') repeat('=', 30), 'Step', step, 'Time', step*dt, repeat('=', 36)
         do while (((err1 > tol) .or. (err2 > tol)) .and. (nit < maxit)) ! this do-while-loop solves for un1 based on prediction
             nit = nit + 1
-            an1 = (un1 - (un + dt*vn + 0.5*dt**2*(1 - 2*beta)*an))/(beta*dt**2) ! accerleration at next step
-            vn1 = vn + (1 - gamma)*dt*an + gamma*dt*an1 ! velocity at next step
+            !an1 = (un1 - (un + dt*vn + 0.5*dt**2*(1 - 2*beta)*an))/(beta*dt**2) ! accerleration at next step
+            !vn1 = vn + (1 - gamma)*dt*an + gamma*dt*an1 ! velocity at next step
             call tangent_internal(un1) ! call tangent internal first because it triggers growth
             call force_internal(un1, Fint)
             if (load_type == 1) then
-                call force_pressure(un1, Fext)
+                !call force_pressure(un1, Fext)
+                Fext = 0.0
             end if
             F = Fext - Fint
             ! R = matmul(M, an1) - F
             do i = 1, nn*nsd
-                R(i) = M(i)*an1(i) - F(i)
+                !R(i) = M(i)*an1(i) - F(i)
+                R(i) = - F(i)
             end do
-            do i = 1, nn*nsd
-                call addValueSymmetric(nonzeros, i, i, M(i)/(beta*dt**2))
-            end do
+            !do i = 1, nn*nsd
+            !    call addValueSymmetric(nonzeros, i, i, M(i)/(beta*dt**2))
+            !end do
             ! penalty
             do i = 1, bc_size
                 row = nsd*(bc_num(1, i) - 1) + bc_num(2, i)
@@ -235,11 +239,16 @@ subroutine dynamics(filepath)
                 call addValueSymmetric(nonzeros, row, row, penalty)
                 R(row) = R(row) + penalty*constraint(i)
             end do
-            do i = 1, size(side)
-                row = nsd*(side(i) - 1) + 1
-                constraint(i) = un1(row) - (floor(step*dt/80+1))*0.1*1 ! 1 meter long So hard-coding
+            do i = 1, size(stent)
+                call radial_displacement(rad, coords(3,stent(i)))
+                row = nsd*(stent(i)-1) + 1 ! ux
+                stent_constraint = un1(row) - coords(1,stent(i))/0.5*rad
                 call addValueSymmetric(nonzeros, row, row, penalty)
-                R(row) = R(row) + penalty*constraint(i)
+                R(row) = R(row) + penalty*stent_constraint
+                row = nsd*(stent(i)-1) + 2 ! uy
+                stent_constraint = un1(row) - coords(2,stent(i))/0.5*rad
+                call addValueSymmetric(nonzeros, row, row, penalty)
+                R(row) = R(row) + penalty*stent_constraint
             end do
             ! solve
             call ma57ds(nonzeros, nn*nsd, -R, du)
@@ -274,7 +283,37 @@ subroutine dynamics(filepath)
     deallocate(an)
     deallocate(an1)
     deallocate(M)
-end subroutine dynamics 
+end subroutine dynamics
+
+subroutine radial_displacement(rad, z)
+    real(8), intent(in) :: z
+    real(8), intent(inout) :: rad
+    real(8) :: tolerance, ur
+    ur = 0.125
+    tolerance = 1d-4
+    if (abs(z-0.6) < tolerance) then
+        rad = ur
+    else if (abs(z-0.7) < tolerance) then
+        rad = 1.5*ur
+    else if (abs(z-0.8) < tolerance) then
+        rad = 2.0*ur
+    else if (abs(z-0.9) < tolerance) then
+        rad = 2.0*ur
+    else if (abs(z-1.0) < tolerance) then
+        rad = 2.0*ur
+    else if (abs(z-1.1) < tolerance) then
+        rad = 2.0*ur
+    else if (abs(z-1.2) < tolerance) then
+        rad = 2.0*ur
+    else if (abs(z-1.3) < tolerance) then
+        rad = 1.5*ur
+    else if (abs(z-1.4) < tolerance) then
+        rad = ur
+    else
+        write(*,*) "Error in function radial"
+        stop
+    end if
+end subroutine radial_displacement
 
 subroutine timestamp ( )
 ! *****************************************************************************

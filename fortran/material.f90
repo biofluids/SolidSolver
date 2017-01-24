@@ -1,6 +1,59 @@
 module material
     implicit none
 contains
+    subroutine getStiffness(theta, F, stress, mstiff)
+        use read_file, only: nsd, materialprops, delta
+        real(8), intent(inout) :: theta
+        real(8), dimension(nsd, nsd), intent(in) :: F
+        real(8), dimension(nsd, nsd), intent(inout) :: stress
+        real(8), dimension(nsd, nsd, nsd, nsd), intent(inout) :: mstiff
+
+        real(8), dimension(nsd, nsd) :: Fe, Ce, Feinv, Ceinv, Se, Me
+        real(8), dimension(nsd, nsd, nsd, nsd) :: Le, Lg
+        real(8) :: mu, lambda, Je, phi
+        integer :: i, j, k, l, info, ii, jj, kk, ll
+
+        mu = materialprops(3)
+        lambda = materialprops(4)
+        theta = 1.0
+
+        call update(F, theta, Fe, Feinv, Je, Ce, Ceinv, Se, Me, phi)
+
+        do i = 1, nsd
+            do j = 1, nsd
+                do k = 1, nsd
+                    do l = 1, nsd
+                        Le(i, j, k, l) = (mu - lambda*log(Je))*(Ceinv(i, k)*Ceinv(j, l) + Ceinv(i, l)*Ceinv(j, k)) &
+                            + lambda*(Ceinv(i, j)*Ceinv(k, l))
+                    end do
+                end do
+            end do
+        end do
+        Lg = Le/theta**4
+
+        stress = (lambda*log(Je) - mu)*delta + mu*matmul(Fe, transpose(Fe))
+        mstiff = 0.0
+        do i = 1, nsd
+            do j = 1, nsd
+                do k = 1, nsd
+                    do l = 1, nsd
+                        do ii = 1, nsd
+                            do jj = 1, nsd
+                                do kk = 1, nsd
+                                    do ll = 1, nsd
+                                        mstiff(i, j, k, l) = mstiff(i, j, k, l) + &
+                                            F(i, ii)*F(j, jj)*Lg(ii,jj,kk,ll)*F(k,kk)*F(l,ll)
+                                    end do
+                                end do
+                            end do
+                        end do
+                    end do
+                end do
+            end do
+        end do
+
+    end subroutine getStiffness
+
     subroutine getStress(theta, F, stress)
         use read_file, only: nsd, materialprops, delta
         real(8), intent(in) :: theta
@@ -63,7 +116,7 @@ contains
         real(8) :: kg, local_tangent
         real(8), dimension(nsd, nsd) :: Fe, Ce, Feinv, Ceinv, Se, Me, left, right
         real(8), dimension(nsd, nsd, nsd, nsd) :: Le, Lg
-        real(8) :: mu, lambda, Je, theta_max, tau_g, gamma, theta_next, phi, temp
+        real(8) :: mu, lambda, Je, theta_max, tau_g, gamma, phi, temp
         real(8) :: der1, der2, residual, theta_increment
         integer :: i, j, k, l, info, ii, jj, kk, ll
         
