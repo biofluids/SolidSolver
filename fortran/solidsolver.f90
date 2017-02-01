@@ -12,7 +12,7 @@ program solidsolver
     integer :: ct, ct_rate, ct_max, ct1
     real(8) :: time_elapsed  
     call timestamp()
-    filepath = '/Users/jiecheng/Documents/SolidResults/'
+    filepath = '/Users/Jie/Documents/SolidResults/'
     call system_clock(ct,ct_rate,ct_max)
     call read_input(mode, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, &
         materialtype, materialprops, gravity, isbinary, penalty)
@@ -187,10 +187,6 @@ subroutine dynamics(filepath)
     beta = gamma/2
     step = 0
 
-    do i = 1, 117
-        stent(i) = i + 1443
-    end do
-
     call write_results(filepath, un)
     !call mass_matrix(M)
 
@@ -198,8 +194,7 @@ subroutine dynamics(filepath)
     if (load_type /= 1) then
         call force_traction(Fext)
     else
-        !call force_pressure(un, Fext)
-        Fext = 0.0
+        call force_pressure(un, Fext)
     end if
     
     F = Fext
@@ -220,8 +215,7 @@ subroutine dynamics(filepath)
             call tangent_internal(un1) ! call tangent internal first because it triggers growth
             call force_internal(un1, Fint)
             if (load_type == 1) then
-                !call force_pressure(un1, Fext)
-                Fext = 0.0
+                call force_pressure(un1, Fext)
             end if
             F = Fext - Fint
             ! R = matmul(M, an1) - F
@@ -238,17 +232,6 @@ subroutine dynamics(filepath)
                 constraint(i) = un1(row) - bc_val(i)
                 call addValueSymmetric(nonzeros, row, row, penalty)
                 R(row) = R(row) + penalty*constraint(i)
-            end do
-            do i = 1, size(stent)
-                call radial_displacement(rad, coords(3,stent(i)))
-                row = nsd*(stent(i)-1) + 1 ! ux
-                stent_constraint = un1(row) - coords(1,stent(i))/0.5*rad
-                call addValueSymmetric(nonzeros, row, row, penalty)
-                R(row) = R(row) + penalty*stent_constraint
-                row = nsd*(stent(i)-1) + 2 ! uy
-                stent_constraint = un1(row) - coords(2,stent(i))/0.5*rad
-                call addValueSymmetric(nonzeros, row, row, penalty)
-                R(row) = R(row) + penalty*stent_constraint
             end do
             ! solve
             call ma57ds(nonzeros, nn*nsd, -R, du)

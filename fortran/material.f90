@@ -100,7 +100,7 @@ contains
         Ceinv = matmul(Feinv, transpose(Feinv))
         Se = (materialprops(3)*log(Je) - materialprops(4))*Ceinv + materialprops(4)*delta
         Me = matmul(Ce, Se)
-        phi = 0.0 ! phi = tr(Me) - Me_crit
+        phi = -1.2d4 ! phi = tr(Me) - Me_crit
         do i = 1, nsd
             phi = phi + Me(i, i)
         end do
@@ -118,9 +118,9 @@ contains
         real(8), dimension(nsd, nsd, nsd, nsd) :: Le, Lg
         real(8) :: mu, lambda, Je, theta_max, tau_g, gamma, phi, temp
         real(8) :: der1, der2, residual, theta_increment
-        integer :: i, j, k, l, info, ii, jj, kk, ll
+        integer :: i, j, k, l, ii, jj, kk, ll, cnt
         
-        theta_max = 1.3
+        theta_max = 1.5
         tau_g = 1.0
         gamma = 2.0
         mu = materialprops(3)
@@ -128,9 +128,10 @@ contains
         
         theta_increment = 1.0
         theta = theta_pre
+
+        cnt = 0
         ! local Newton iteration
-        residual = 1.0
-        do while (residual > tol)
+        do 
             call update(F, theta, Fe, Feinv, Je, Ce, Ceinv, Se, Me, phi)
             if (phi < 0.0) then
                 theta = theta_pre
@@ -155,15 +156,19 @@ contains
             local_tangent = 1 - (kg*der1 + phi*der2)*dt
             theta_increment = -residual/local_tangent
             theta = theta + theta_increment
+            cnt = cnt + 1
+            if (residual < tol) then
+                exit
+            else if (theta > theta_max) then
+                theta = theta_max
+                call update(F, theta, Fe, Feinv, Je, Ce, Ceinv, Se, Me, phi)
+                exit
+            else if (cnt == 1000) then
+                write(*,*) "exceeded max theta iterations!"
+                stop
+            end if
         end do
 
-        call update(F, theta, Fe, Feinv, Je, Ce, Ceinv, Se, Me, phi)
-        if (phi < 0.0) then
-            theta = theta_pre
-            call update(F, theta, Fe, Feinv, Je, Ce, Ceinv, Se, Me, phi)
-            kg = 0.0
-            local_tangent = 1.0
-        end if
         temp = 0.0 ! Ce:Le:Ce
         do i = 1, nsd
             do j = 1, nsd
@@ -176,6 +181,7 @@ contains
                 end do
             end do
         end do
+
         left = Se
         right = Se
         do i = 1, nsd
@@ -188,12 +194,13 @@ contains
                 end do
             end do
         end do
+
         do i = 1, nsd
             do j = 1, nsd
                 do k = 1, nsd
                     do l = 1, nsd
-                        Lg(i, j, k, l) = Le(i, j, k, l)/theta**4 &
-                            - 4*kg*dt/(local_tangent*theta**5)*left(i, j)*right(k, l)
+                        Lg(i, j, k, l) = Le(i, j, k, l)/theta**4 !&
+                            !- 4*kg*dt/(local_tangent*theta**5)*left(i, j)*right(k, l)
                     end do
                 end do
             end do
