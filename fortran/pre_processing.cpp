@@ -75,8 +75,6 @@ std::vector<Set> sets;
 std::vector<Surface> surfaces;
 
 void trim(std::string& s);
-int no_facenodes(int nsd, int nen);
-std::vector<int> facenodes(int nsd, int nen, int face);
 std::string getProcessInfo(int argc, char* argv[]);
 void getCoordsAndConnect(const std::string& filename);
 void getSetInfo(const std::string& filename);
@@ -116,104 +114,6 @@ void trim(std::string& s)
     p = s.find_last_not_of(" \t\r");
     if (std::string::npos != p)
         s.erase(p+1);
-}
-
-// Helper function to return the number of nodes on a face
-int no_facenodes(int nsd, int nen) 
-{
-    int n = 0;
-    if (nsd == 2) 
-    {
-        n = 2;
-    } 
-    else if (nsd == 3) 
-    {
-        if (nen == 4) 
-        {
-            n = 3;
-        } 
-        else if (nen == 8) 
-        {
-            n = 4;
-        }
-    }
-    return n;
-}
-
-// Helper function to return a vector of the numbers of nodes on a face
-std::vector<int> facenodes(int nsd, int nen, int face) 
-{
-    std::vector<int> list(no_facenodes(nsd,nen),0);
-    int i3 [] = {2, 3, 1};
-    int i4 [] = {2, 3, 4, 1};
-    if (nsd == 2) 
-    {
-        if (nen == 3) 
-        {
-            int temp [] = {face, i3[face-1]};
-            list.assign(temp, temp + 2);
-        } 
-        else if (nen == 4) 
-        {
-            int temp [] = {face, i4[face-1]};
-            list.assign(temp, temp + 2);
-        }
-    } 
-    else if (nsd == 3) 
-    {
-        if (nen == 4) 
-        {
-            if (face == 1) 
-            {
-                int temp [] = {1, 2, 3};
-                list.assign(temp, temp + 3);
-            } 
-            else if (face == 2) 
-            {
-                int temp [] = {1, 4, 2};
-                list.assign(temp, temp + 3);
-            } 
-            else if (face == 3) 
-            {
-                int temp [] = {2, 4, 3};
-                list.assign(temp, temp + 3);
-            } 
-            else if (face == 4) 
-            {
-                int temp [] = {3, 4, 1};
-                list.assign(temp, temp + 3);
-            }
-        } 
-        else if (nen == 8) 
-        {
-            if (face == 2) 
-            {
-                int temp [] = {1, 2, 3, 4};
-                list.assign(temp, temp + 4);
-            } 
-            else if (face == 3) 
-            {
-                int temp [] = {5, 8, 7, 6};
-                list.assign(temp, temp + 4);
-            } 
-            else if (face == 4)
-            {
-                int temp [] = {1, 5, 6, 2};
-                list.assign(temp, temp + 4);
-            } 
-            else if (face == 5) 
-            {
-                int temp [] = {2, 6, 7, 3};
-                list.assign(temp, temp + 4);
-            } 
-            else if (face == 6) 
-            {
-                int temp [] = {4, 8, 5, 1};
-                list.assign(temp, temp + 4);
-            }
-        }
-    }
-    return list;
 }
 
 std::string getProcessInfo(int argc, char* argv[])
