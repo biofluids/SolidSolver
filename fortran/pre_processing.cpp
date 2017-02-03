@@ -456,11 +456,7 @@ void getSurfaceInfo(const std::string& filename)
         if (!buffer.compare(0, 20, "*Elset, elset=_Surf-")) 
         {
             Surface new_surface;
-            std::string temp;
-            std::ostringstream convert;
-            convert << surfaces.size() + 1;
-            temp = convert.str();
-            new_surface.name = "Surf-" + temp;
+            new_surface.name = "Surf-" + buffer.substr(20, 1); // assuming the surface number is single digit
             int count = 0;
             for (int i = 0; i < buffer.size(); ++i) 
             {
@@ -558,6 +554,8 @@ void setBcAndLoads()
     {
         std::cout << "Input name of the surface, the three components of traction, separated by space." << std::endl;
         std::cout << "For example, Surf-1, 1., 0., 0." << std::endl;
+        std::string name;
+        std::vector<double> traction;
         while (std::cin >> buffer) 
         {
             if (buffer == "stop") 
@@ -565,18 +563,21 @@ void setBcAndLoads()
                 break;
             }
             bool found = false;
+            name = buffer;
             for (int i = 0; i < surfaces.size(); ++i) 
             {
-                if (surfaces[i].name == buffer) 
+                if (surfaces[i].name == name)
                 {
-                    found = true;
-                    for (int j = 0; j < 3; ++j) 
+                    if (!found)
                     {
-                        std::cin >> buffer;
-                        double temp = atof(buffer.c_str());
-                        surfaces[i].traction.push_back(temp);
+                        for (int j = 0; j < nsd; ++j)
+                        {
+                            std::cin >> buffer;
+                            traction.push_back(atof(buffer.c_str()));
+                        }
+                        found = true;
                     }
-                    break;
+                    surfaces[i].traction = traction;
                 }
             }
             if (!found) 
@@ -589,21 +590,27 @@ void setBcAndLoads()
     {
         std::cout << "Input name of the surface, the value of pressure, separated by space." << std::endl;
         std::cout << "For example, Surf-1, 1000." << std::endl;
+        double pressure;
+        std::string name;
         while (std::cin >> buffer) 
         {
             if (buffer == "stop") 
             {
                 break;
             }
+            name = buffer;
             bool found = false;
             for (int i = 0; i < surfaces.size(); ++i) 
             {
-                if (surfaces[i].name == buffer) 
+                if (surfaces[i].name == name) 
                 {
-                    found = true;
-                    std::cin >> buffer;
-                    surfaces[i].pressure = atof(buffer.c_str());
-                    break;
+                    if (!found)
+                    {
+                        std::cin >> buffer;
+                        pressure = atof(buffer.c_str());
+                        found = true;
+                    }
+                    surfaces[i].pressure = pressure;
                 }
             }
             if (!found) 
