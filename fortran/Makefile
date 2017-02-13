@@ -8,7 +8,7 @@ FC = gfortran
 CPP = g++
 
 main: $(OBJECTS)
-	$(FC) -o main $(OBJECTS) $(LIBS)
+	$(FC) -o main $(OBJECTS) $(LIBS) -lblas
 
 pre: pre_processing.cpp
 	$(CPP) pre_processing.cpp -o pre -std=c++11
