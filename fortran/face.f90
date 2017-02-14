@@ -55,13 +55,13 @@ contains
         else if (nsd == 3) then
             if (nen == 4) then
                 if (face == 1) then
-                    face_nodes = [1,2,3]
+                    face_nodes = [2,3,4]
                 else if (face == 2) then
-                    face_nodes = [1,4,2]
-                else if (face == 3) then
-                    face_nodes = [2,4,3]
-                else if (face == 4) then
                     face_nodes = [3,4,1]
+                else if (face == 3) then
+                    face_nodes = [4,1,2]
+                else if (face == 4) then
+                    face_nodes = [1,2,3]
                 end if
             else if (nen == 8) then
                 if (face == 1) then

@@ -10,7 +10,7 @@ contains
         end if
         call write_geometry(filepath,dofs)
         call write_displacement(filepath,dofs)
-        call write_stress(filepath,dofs)
+        call write_stress(filepath)
     end subroutine write_results
 
     subroutine write_case(filepath)
@@ -210,116 +210,15 @@ contains
         end if
     end subroutine write_displacement
 
-    subroutine write_stress(filepath,dofs)
-        use read_file, only: step, nsd, nn, coords, nel, nen, connect, materialtype, materialprops, share, nprint, isbinary
-        use shapefunction
-        use integration
-        use material
-        real(8), dimension(nn*nsd), intent(in) :: dofs
+    subroutine write_stress(filepath)
+        use read_file, only: step, nn, nprint, isbinary, nodeStress
         character(80) :: filepath, filename, buffer
         character(6) :: temp
-        real(8), dimension(nsd,nen) :: elecoord
-        real(8), dimension(nsd,nen) :: eledof
-        real(8), dimension(nen,nsd) :: dNdx, dNdy
-        real(8), dimension(nsd,nsd) :: stress
-        real(8), dimension(nen,nsd) :: dNdxi 
-        real(8), dimension(nsd,nsd) :: dxdxi, dxidx, F, B, eye
-        real(8), allocatable, dimension(:,:) :: xilist
-        integer :: ele,a,i,npt,j,intpt
-        real(8) :: Ja
-        real(8), dimension(nsd) :: xi, intcoord ! intcoord is the coordinates of the integration points, necessary for anisotropic models
-        real(8), dimension(nsd) :: work ! for lapack inverse
-        integer, dimension(nsd) :: ipiv ! for lapack inverse
-        integer :: info, n1 ! for lapack inverse
-        
-        real(8), dimension(6) :: temp_sigma, sigma
-        real(8), dimension(6,nn) :: sum_sigma ! the sigma of a particular node added by elements
+        integer :: i, j
 
         write(temp,'(i6.6)') step/nprint
         filename = trim(filepath)//'solid.sig'//trim(temp)
-        
-        n1 = nsd
-        ! square matrix
-        do i=1,nsd
-            do j=1,nsd
-                if(i==j) then
-                    eye(i,j) = 1.
-                else
-                    eye(i,j) = 0.
-                end if
-            end do
-        end do
-        ! initialize
-        do i=1,6
-            do j=1,nn
-                sum_sigma(i,j) = 0.
-            end do
-        end do
-        ! allocate
-        npt = int_number(nsd,nen,0)
-        allocate(xilist(nsd,npt))
-        ! loop over elements
-        do ele=1,nel
-            ! extract coords of nodes, and dofs for the element
-            do a=1,nen
-                elecoord(:,a) = coords(:,connect(a,ele))
-                do i=1,nsd
-                    eledof(i,a) = dofs(nsd*(connect(a,ele)-1)+i)
-                end do
-            end do
-            ! fully integration
-            ! set up integration points and weights
-            npt = int_number(nsd,nen,0)
-            xilist = int_points(nsd,nen,npt)
-            ! initialize
-            do i=1,6
-                temp_sigma(i) = 0.
-            end do
-            ! loop over integration points
-            do intpt=1,npt
-                xi = xilist(:,intpt)
-                intcoord = matmul(elecoord,sf(nen,nsd,xi))
-                dNdxi = sfder(nen,nsd,xi)
-                ! set up the jacobian matrix
-                dxdxi = matmul(elecoord,dNdxi)
-                ! inverse matrix and determinant
-                dxidx = dxdxi
-                call DGETRF(n1,n1,dxidx,n1,ipiv,info)
-                call DGETRI(n1,dxidx,n1,ipiv,work,n1,info)
-                ! compute dNdx
-                dNdx = matmul(dNdxi,dxidx)
-                ! deformation gradient, F_ij = delta_ij + dU_i/dx_j
-                F = eye + matmul(eledof,dNdx)
-                !B = matmul(F,transpose(F))
-                if (nsd == 2) then
-                    Ja = F(1,1)*F(2,2) - F(1,2)*F(2,1)
-                else if (nsd == 3) then
-                    Ja = F(1,1)*F(2,2)*F(3,3) - F(1,1)*F(3,2)*F(2,3) &
-                            - F(1,2)*F(2,1)*F(3,3) + F(1,2)*F(2,3)*F(3,1) &
-                            + F(1,3)*F(2,1)*F(3,2) - F(1,3)*F(2,2)*F(3,1)
-                end if
-                ! compute the Kirchhoff stress
-                call Kirchhoffstress(nsd, intcoord, F, materialtype, materialprops, stress)
-                ! Cauchy stress
-                stress = stress/Ja
-                ! vectorize
-                if (nsd==2) then
-                    sigma = [stress(1,1),stress(2,2),dble(0.),stress(1,2),dble(0.),dble(0.)]
-                else
-                    sigma = [stress(1,1),stress(2,2),stress(3,3),stress(1,2),stress(1,3),stress(2,3)]
-                end if
-                ! average the stress
-                temp_sigma = temp_sigma + sigma
-            end do
-            sigma = temp_sigma/npt ! average sigma in this element
-            do a=1,nen
-                sum_sigma(:,connect(a,ele)) = sum_sigma(:,connect(a,ele)) + sigma
-            end do
-        end do
-        ! sigma per node
-        do i=1,nn
-            sum_sigma(:,i) = sum_sigma(:,i)/dble(share(i))
-        end do
+
         ! write to file
         if (isbinary == 1) then
             open(unit=11,file=trim(filename),form='unformatted')
@@ -332,7 +231,7 @@ contains
             buffer = 'coordinates'
             write(11) buffer
             do i = 1, 6
-                write(11) sngl(sum_sigma(i,:))
+                write(11) sngl(nodeStress(i,:))
             end do
             close(11)
         else
@@ -343,11 +242,10 @@ contains
             write(10,'(A)') 'coordinates'
             do i=1,6
                 do j=1,nn
-                    write(10,'(e12.5)') sum_sigma(i,j)
+                    write(10,'(e12.5)') nodeStress(i,j)
                 end do
             end do
             close(10)
         end if
-        deallocate(xilist)
     end subroutine write_stress
 end module output
