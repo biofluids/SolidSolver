@@ -26,8 +26,8 @@ contains
         else if (nsd == 3) then
             if (nen == 4) then
                 sf(1) = xi(1);
-                sf(2) = xi(2);
-                sf(3) = xi(3);
+                sf(2) = xi(3);
+                sf(3) = xi(2);
                 sf(4) = 1.-xi(1)-xi(2)-xi(3);
             else if (nen == 8) then
                 sf(1) = (1.-xi(1))*(1.-xi(2))*(1.-xi(3))/8.;

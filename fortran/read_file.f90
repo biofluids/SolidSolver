@@ -13,7 +13,6 @@ module read_file
     integer, allocatable :: col_ind(:), row_ptr(:), row_ind(:)
     real(8), allocatable :: nonzeros(:)
 
-    real(8), allocatable :: nodeStress(:, :)
     save
 contains
     subroutine read_input(mode, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, &
@@ -117,7 +116,6 @@ contains
             end do
         end do
 
-        allocate(nodeStress(6, nn))
         close(10)
     end subroutine read_mesh
 

@@ -2,8 +2,7 @@ module internalforce
     implicit none
 contains
     subroutine force_internal(dofs, Fint)
-        use read_file, only: nsd, nn, coords, nel, nen, connect, &
-            materialtype, materialprops, nodeStress, share
+        use read_file, only: nsd, nn, coords, nel, nen, connect, materialtype, materialprops
         use shapefunction
         use integration
         use material
@@ -25,14 +24,11 @@ contains
         real(8), dimension(nsd) :: work ! for lapack inverse
         integer, dimension(nsd) :: ipiv ! for lapack inverse
         integer :: info, n1 ! for lapack inverse
-        real(8), dimension(6) :: eleStress, intStress
         
         external DGETRF
         external DGETRI
         n1 = nsd
         
-        nodeStress = 0.0
-
         ! square matrix
         do i=1,nsd
             do j=1,nsd
@@ -56,7 +52,6 @@ contains
         
         ! loop over elements
         do ele=1,nel
-            eleStress = 0.0
             ! extract coords of nodes, and dofs for the element
             do a=1,nen
                 elecoord(:,a) = coords(:,connect(a,ele))
@@ -69,7 +64,6 @@ contains
             fele = 0.
             ! loop over integration points
             do intpt=1,npt
-                intStress = 0.0
                 xi = xilist(:,intpt)
                 intcoord = matmul(elecoord,sf(nen,nsd,xi))
                 dNdxi = sfder(nen,nsd,xi)
@@ -105,13 +99,6 @@ contains
                 dNdy = matmul(dNdx,Finv)
                 ! compute the Kirchhoff stress
                 call Kirchhoffstress(nsd, intcoord, F, materialtype, materialprops, stress)
-                if (nsd == 2) then
-                    intStress = [stress(1,1), stress(2,2), dble(0.), stress(1,2), dble(0.), dble(0.)]
-                else
-                    intStress = [stress(1,1), stress(2,2), stress(3,3), stress(1,2), stress(1,3), stress(2,3)]
-                end if
-                intStress = intStress/Ja
-                eleStress = eleStress + intStress
                 ! compute the element internal force
                 do a=1,nen
                     do i=1,nsd
@@ -122,20 +109,15 @@ contains
                     end do
                 end do
             end do
-            eleStress = eleStress/npt
             ! scatter the element internal force into the global internal force
             do a=1,nen
-                nodeStress(:,connect(a,ele)) = nodeStress(:,connect(a,ele)) + eleStress
                 do i=1,nsd
                     row = nsd*(connect(a,ele)-1) + i;
                     Fint(row) = Fint(row) + fele(nsd*(a-1)+i);
                 end do
             end do
         end do
-        ! averaging the node stress
-        do i = 1, nn
-            nodeStress(:, i) = nodeStress(:, i)/dble(share(i))
-        end do
+        
         deallocate(xilist)
         deallocate(weights)
     end subroutine force_internal
