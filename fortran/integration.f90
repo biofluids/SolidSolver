@@ -100,7 +100,7 @@ contains
                 if (npt == 1) then
                     int_points = reshape([0., 0.],shape(int_points))
                 else if (npt == 4) then
-                    int_points = reshape([-temp,-temp,temp,-temp,-temp,temp,temp,temp],shape(int_points))
+                    int_points = reshape([-temp,-temp,temp,-temp,temp,temp,-temp,temp],shape(int_points))
                 end if
             end if
         else if (nsd == 3) then

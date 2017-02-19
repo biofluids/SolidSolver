@@ -6,9 +6,10 @@ MODULES = read_file.mod integration.mod face.mod shapefunction.mod material.mod 
           tangentstiffness.mod symmetric_solver.mod output.mod mass.mod
 FC = gfortran
 CPP = g++
+FLAG = -lblas
 
 main: $(OBJECTS)
-	$(FC) -o main $(OBJECTS) $(LIBS) -lblas
+	$(FC) -o main $(OBJECTS) $(LIBS) $(FLAG)
 
 pre: pre_processing.cpp
 	$(CPP) pre_processing.cpp -o pre -std=c++11
