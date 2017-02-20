@@ -13,6 +13,8 @@ module read_file
     integer, allocatable :: col_ind(:), row_ptr(:), row_ind(:)
     real(8), allocatable :: nonzeros(:)
 
+    real(8), allocatable :: fsi_solid(:,:)
+
     save
 contains
     subroutine read_input(mode, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, &
@@ -115,6 +117,9 @@ contains
                 share(connect(j,i)) = share(connect(j,i)) + 1
             end do
         end do
+
+        allocate(fsi_solid(nsd, nn))
+        fsi_solid = 0.0
 
         close(10)
     end subroutine read_mesh
