@@ -2,7 +2,7 @@ module internalforce
     implicit none
 contains
     subroutine force_internal(dofs, Fint)
-        use read_file, only: nsd, nn, coords, nel, nen, connect, materialtype, materialprops, fsi_solid, share
+        use read_file, only: nsd, nn, coords, nel, nen, connect, materialtype, materialprops, share
         use shapefunction
         use integration
         use material
@@ -25,8 +25,6 @@ contains
         integer, dimension(nsd) :: ipiv ! for lapack inverse
         integer :: info, n1 ! for lapack inverse
 
-        real(8), dimension(nsd) :: eleFsi
-        
         external DGETRF
         external DGETRI
         n1 = nsd
@@ -44,7 +42,6 @@ contains
         
         ! initialize Fint
         Fint = 0.
-        fsi_solid = 0.
         
         ! allocate
         npt = int_number(nsd,nen,0)
@@ -55,7 +52,6 @@ contains
         
         ! loop over elements
         do ele=1,nel
-            eleFsi = 0.0
             ! extract coords of nodes, and dofs for the element
             do a=1,nen
                 elecoord(:,a) = coords(:,connect(a,ele))
@@ -112,21 +108,13 @@ contains
                         end do
                     end do
                 end do
-                do j = 1, nsd
-                    eleFsi = eleFsi + stress(:,j)/Ja*dNdy(intpt,j)
-                end do
             end do
-            eleFsi = eleFsi/npt
             ! scatter the element internal force into the global internal force
             do a=1,nen
                 do i=1,nsd
                     row = nsd*(connect(a,ele)-1) + i;
                     Fint(row) = Fint(row) + fele(nsd*(a-1)+i);
                 end do
-                fsi_solid(:, connect(a,ele)) = fsi_solid(:, connect(a,ele)) + eleFsi(:)
-            end do
-            do i = 1, nn
-                fsi_solid = fsi_solid/share(i)
             end do
         end do
         

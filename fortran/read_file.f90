@@ -13,7 +13,7 @@ module read_file
     integer, allocatable :: col_ind(:), row_ptr(:), row_ind(:)
     real(8), allocatable :: nonzeros(:)
 
-    real(8), allocatable :: fsi_solid(:,:)
+    real(8), allocatable :: fsi_solid(:)
 
     save
 contains
@@ -118,7 +118,7 @@ contains
             end do
         end do
 
-        allocate(fsi_solid(nsd, nn))
+        allocate(fsi_solid(nsd*nn))
         fsi_solid = 0.0
 
         close(10)

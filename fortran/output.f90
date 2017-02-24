@@ -219,16 +219,12 @@ contains
         real(8), dimension(3, nn) :: fsi
         integer :: i, j
 
+        fsi = 0.0
         do i = 1, nsd
             do j = 1, nn
-                fsi(i, j) = fsi_solid(i, j)
+                fsi(i, j) = fsi_solid((j-1)*nsd+i)
             end do
         end do
-        if (nsd == 2) then
-            do i = 1, nn
-                fsi(3, i) = 0.0
-            end do
-        end if
 
         write(temp,'(i6.6)') step/nprint
         filename = trim(filepath)//'solid.fsi'//trim(temp)

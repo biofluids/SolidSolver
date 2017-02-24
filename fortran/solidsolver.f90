@@ -128,6 +128,7 @@ subroutine statics(filepath)
         end if
     end do
     step = nprint
+    fsi_solid = Fext
     call write_results(filepath, w)
     write(*,*) repeat("=", 95)
 
@@ -181,8 +182,8 @@ subroutine dynamics(filepath)
     an = 0.
     an1 = 0.
     constraint = 0.
-    gamma = 0.5
-    beta = 0.25
+    gamma = 0.5 + damp ! In Newmark-beta method, gamma - 0.5 represents the artificial damping
+    beta = gamma/2 ! the absolute stable region is beta >= gamma/2
     step = 0
 
     call write_results(filepath, un)
@@ -245,6 +246,7 @@ subroutine dynamics(filepath)
         vn = vn1
         un = un1
         an = an1
+        fsi_solid = Fext
         if (MOD(step, nprint) == 0) then
             call write_results(filepath, un)
         end if
