@@ -77,7 +77,7 @@ contains
 
         open(10, file = 'coords.txt')
         read(10, *) nsd, nn
-        allocate(coords(nsd, nn)) 
+        allocate(coords(nsd, nn))
         do i=1, nn
             read(10,*) coords(:, i)
         end do
@@ -132,22 +132,37 @@ contains
 
         integer :: no_rows, i, j, k, full_no_nonzeros, row, col
         integer, allocatable :: full_col_ind(:), full_row_ptr(:), full_row_ind(:)
+        integer, dimension(nen*nel) :: connect1
 
-        open(unit=42, form='unformatted', access='stream', file='CRS.bin')
-        read(42) full_no_nonzeros
+        interface
+            subroutine getCRSInfo1(nsd, nn, nel, nen, arr, num) bind(C, name="getCRSInfo1")
+                use iso_c_binding
+                implicit none
+                integer(c_int), value :: nsd, nn, nel, nen
+                integer(c_int), dimension(nel*nen) :: arr
+                integer(c_int) :: num
+            end subroutine
+            subroutine getCRSInfo2(nsd, nn, nel, nen, arr, rowPtrs, colInds) bind(C, name="getCRSInfo2")
+                use iso_c_binding
+                implicit none
+                integer(c_int), value :: nsd, nn, nel, nen
+                integer(c_int), dimension(nel*nen) :: arr
+                integer(c_int), dimension(nsd*nn+1) :: rowPtrs, colInds
+            end subroutine
+        end interface
 
+        no_rows = nn*nsd+1
+        do j = 1, nel
+            do i = 1, nen
+                connect1((j-1)*nen+i) = connect(i,j)
+            end do
+        end do
+
+        call getCRSInfo1(nsd, nn, nel, nen, connect1, full_no_nonzeros)
         allocate(full_col_ind(full_no_nonzeros))
-        read(42) full_col_ind
-        read(42) no_rows
         allocate(full_row_ptr(no_rows))
-        read(42) full_row_ptr
-        close(42)
         allocate(full_row_ind(full_no_nonzeros))
-
-        if (no_rows /= nn*nsd + 1) then
-            write(*, *) 'Wrong length of row_ptr in CRS input data!'
-            stop
-        end if
+        call getCRSInfo2(nsd, nn, nel, nen, connect1, full_row_ptr, full_col_ind)
 
         k = 0
         do i = 2, no_rows
@@ -161,7 +176,7 @@ contains
 
         if (k /= full_no_nonzeros) then
             write(*, *) 'Wrong length of full_row_ind!'
-            stop 
+            stop
         end if
 
         ! Truncate the matrix, only keep the upper triangle

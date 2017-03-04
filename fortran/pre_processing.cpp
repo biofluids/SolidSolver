@@ -22,7 +22,7 @@ public:
     const char* what() const throw() {return message.c_str();}
 };
 // A class to store the boundary conditions
-class Set 
+class Set
 {
 public:
     std::string name;
@@ -33,7 +33,7 @@ public:
 };
 
 // A class to store the loads
-class Surface 
+class Surface
 {
 public:
     std::string name;
@@ -44,17 +44,17 @@ public:
 };
 
 // A class to store the nonzero pattern
-class Entry 
+class Entry
 {
 public:
     Entry(int rw, int cl) : row(rw), col(cl) {};
     int row;
     int col;
-    bool operator<(const Entry& r) const 
+    bool operator<(const Entry& r) const
     {
         return ((row < r.row)|| (row == r.row && col < r.col));
     }
-    bool operator==(const Entry& r) const 
+    bool operator==(const Entry& r) const
     {
         return (row == r.row && col == r.col);
     }
@@ -101,13 +101,13 @@ int main (int argc, char* argv[]) {
     getSurfaceInfo(filename);
     setBcAndLoads();
     writeFiles();
-    writeCRS_v1();
+    //writeCRS_v1();
     //writeCRS_v2();
     return 0;
 }
 
 // Helper function to remove the leading and trailing whitespace from a string
-void trim(std::string& s) 
+void trim(std::string& s)
 {
     size_t p = s.find_first_not_of(" \t\r");
     s.erase(0, p);
@@ -118,34 +118,34 @@ void trim(std::string& s)
 
 std::string getProcessInfo(int argc, char* argv[])
 {
-    if (argc != 2 && argc != 3) 
+    if (argc != 2 && argc != 3)
     {
         throw MyException("Invalid number of command line arguments!");
     }
-    if (argc == 3) 
+    if (argc == 3)
     {
         load_type = argv[2];
-        if (load_type != "traction" && load_type != "pressure") 
+        if (load_type != "traction" && load_type != "pressure")
         {
             throw MyException("Invalid type of load!");
         }
     }
     std::string filename(argv[1]);
-    if (filename.compare(filename.size() - 4, 4, ".inp")) 
+    if (filename.compare(filename.size() - 4, 4, ".inp"))
     {
         throw MyException("Invalid file type, .inp is expected!");
     }
     std::ifstream instr(filename.c_str());
-    if (!instr.good()) 
+    if (!instr.good())
     {
         throw MyException("Cannot open input file!");
     }
     // Find out the element type
     std::string buffer;
-    while (getline(instr, buffer)) 
+    while (getline(instr, buffer))
     {
         trim(buffer);
-        if (!buffer.compare(0, 15, "*Element, type=")) 
+        if (!buffer.compare(0, 15, "*Element, type="))
         {
             nsd = buffer[16] - '0';
             nen = buffer[18] - '0';
@@ -161,29 +161,29 @@ void getCoordsAndConnect(const std::string& filename)
     std::ifstream instr(filename.c_str());
     std::string buffer;
     // Head line of coordinates
-    while (getline(instr, buffer)) 
+    while (getline(instr, buffer))
     {
         trim(buffer);
-        if (!buffer.compare(0, 5, "*Node")) 
+        if (!buffer.compare(0, 5, "*Node"))
         {
             break;
         }
     }
-    while (getline(instr, buffer)) 
+    while (getline(instr, buffer))
     {
         trim(buffer);
-        if (!buffer.compare(0, 8, "*Element")) 
+        if (!buffer.compare(0, 8, "*Element"))
         {
             // Tail line of coordinates
             break;
-        } 
-        else 
+        }
+        else
         {
             // Read in the coordinates
             std::istringstream ss(buffer);
             std::string token;
             std::vector<double> one_node(nsd, 0.);
-            for (int i = 0; i < 1 + nsd; ++i) 
+            for (int i = 0; i < 1 + nsd; ++i)
             {
                 getline(ss, token, ',');
                 if (i == 0) {
@@ -199,15 +199,15 @@ void getCoordsAndConnect(const std::string& filename)
     for (int i = 0; i < nn; ++i) assert(nsd == coords[i].size());
 
     // Head line of connectivity
-    while (getline(instr, buffer)) 
+    while (getline(instr, buffer))
     {
         trim(buffer);
-        if (!buffer.compare(0, 1, "*")) 
+        if (!buffer.compare(0, 1, "*"))
         {
             // Tail line of connectivity
             break;
-        } 
-        else 
+        }
+        else
         {
             // Read in the connectivity
             std::istringstream ss(buffer);
@@ -233,16 +233,16 @@ void getSetInfo(const std::string& filename)
 {
     std::string buffer;
     std::ifstream instr(filename.c_str());
-    while (getline(instr, buffer)) 
+    while (getline(instr, buffer))
     {
         trim(buffer);
         // Head line of sets
         if (!buffer.compare(0, 13, "*End Instance")) break;
     }
-    while (!instr.eof()) 
+    while (!instr.eof())
     {
         // Sets
-        if (!buffer.compare(0, 16, "*Nset, nset=Set-")) 
+        if (!buffer.compare(0, 16, "*Nset, nset=Set-"))
         {
             // Read in the sets
             Set new_set;
@@ -250,9 +250,9 @@ void getSetInfo(const std::string& filename)
             std::ostringstream convert;
             convert << sets.size()+1;
             temp = convert.str();
-            new_set.name = "Set-" + temp; 
+            new_set.name = "Set-" + temp;
             // Read in the nodes in a set
-            if (!buffer.compare(buffer.size()-8, 8, "generate")) 
+            if (!buffer.compare(buffer.size()-8, 8, "generate"))
             {
                 // structured mesh
                 getline(instr, buffer);
@@ -260,7 +260,7 @@ void getSetInfo(const std::string& filename)
                 std::istringstream ss(buffer);
                 std::string token;
                 int node_info[3];
-                for (int i = 0; i < 3; ++i) 
+                for (int i = 0; i < 3; ++i)
                 {
                     getline(ss, token, ',');
                     node_info[i] = atoi(token.c_str());
@@ -269,27 +269,27 @@ void getSetInfo(const std::string& filename)
                     new_set.nodes.push_back(i);
                 getline(instr, buffer);
                 trim(buffer);
-            } 
-            else 
+            }
+            else
             {
                 // unstructured mesh
-                while (getline(instr, buffer)) 
+                while (getline(instr, buffer))
                 {
                     trim(buffer);
-                    if (!buffer.compare(0, 1, "*") && new_set.nodes.size() != 0) 
+                    if (!buffer.compare(0, 1, "*") && new_set.nodes.size() != 0)
                     {
                         break;
-                    } 
+                    }
                     std::istringstream ss(buffer);
                     std::string token;
-                    while (getline(ss, token, ',')) 
+                    while (getline(ss, token, ','))
                     {
                         new_set.nodes.push_back(atoi(token.c_str()));
                     }
                 }
             }
             // Read in the elements in a set
-            if (!buffer.compare(buffer.size()-8, 8, "generate")) 
+            if (!buffer.compare(buffer.size()-8, 8, "generate"))
             {
                 // structured mesh
                 getline(instr, buffer);
@@ -297,40 +297,40 @@ void getSetInfo(const std::string& filename)
                 std::istringstream ss(buffer);
                 std::string token;
                 int element_info[3];
-                for (int i = 0; i < 3; ++i) 
+                for (int i = 0; i < 3; ++i)
                 {
                     getline(ss, token, ',');
                     element_info[i] = atoi(token.c_str());
                 }
                 for (int i = element_info[0]; i <= element_info[1]; i += element_info[2])
                     new_set.elements.push_back(i);
-            } 
-            else 
+            }
+            else
             {
                 // unstructured mesh
-                while (getline(instr, buffer)) 
+                while (getline(instr, buffer))
                 {
                     trim(buffer);
-                    if (!buffer.compare(0, 1, "*") && new_set.elements.size() != 0) 
+                    if (!buffer.compare(0, 1, "*") && new_set.elements.size() != 0)
                     {
                         break;
                     }
                     std::istringstream ss(buffer);
                     std::string token;
-                    while (getline(ss, token, ',')) 
+                    while (getline(ss, token, ','))
                     {
                         new_set.elements.push_back(atoi(token.c_str()));
                     }
                 }
             }
             sets.push_back(new_set);
-        } 
-        else if (!buffer.compare(0, 20, "*Elset, elset=_Surf-")) 
+        }
+        else if (!buffer.compare(0, 20, "*Elset, elset=_Surf-"))
         {
             // Tail line of sets
             break;
-        } 
-        else 
+        }
+        else
         {
             getline(instr, buffer);
             trim(buffer);
@@ -343,31 +343,31 @@ void getSurfaceInfo(const std::string& filename)
 {
     std::string buffer;
     std::ifstream instr(filename.c_str());
-    while (getline(instr, buffer)) 
+    while (getline(instr, buffer))
     {
         trim(buffer);
-        if (!buffer.compare(0, 13, "*End Instance")) 
+        if (!buffer.compare(0, 13, "*End Instance"))
         {
             break;
         }
     }
-    while (!instr.eof()) 
+    while (!instr.eof())
     {
-        if (!buffer.compare(0, 20, "*Elset, elset=_Surf-")) 
+        if (!buffer.compare(0, 20, "*Elset, elset=_Surf-"))
         {
             Surface new_surface;
             new_surface.name = "Surf-" + buffer.substr(20, 1); // assuming the surface number is single digit
             int count = 0;
-            for (int i = 0; i < buffer.size(); ++i) 
+            for (int i = 0; i < buffer.size(); ++i)
             {
-                if (buffer[i] == 'i') 
+                if (buffer[i] == 'i')
                 {
                     count = i;
                     break;
                 }
             }
             new_surface.face = buffer[count-3] - '0';
-            if (!buffer.compare(buffer.size()-8, 8, "generate")) 
+            if (!buffer.compare(buffer.size()-8, 8, "generate"))
             {
                 // Structured mesh
                 getline(instr, buffer);
@@ -375,41 +375,41 @@ void getSurfaceInfo(const std::string& filename)
                 std::istringstream ss(buffer);
                 std::string token;
                 int element_info[3];
-                for (int i = 0; i < 3; ++i) 
+                for (int i = 0; i < 3; ++i)
                 {
                     getline(ss, token, ',');
                     element_info[i] = atoi(token.c_str());
                 }
-                for (int i = element_info[0]; i <= element_info[1]; i += element_info[2]) 
+                for (int i = element_info[0]; i <= element_info[1]; i += element_info[2])
                 {
                     new_surface.elements.push_back(i);
                 }
-            } 
-            else 
+            }
+            else
             {
                 // unstructured mesh
-                while (getline(instr, buffer)) 
+                while (getline(instr, buffer))
                 {
                     trim(buffer);
-                    if (!buffer.compare(0, 1, "*") && new_surface.elements.size() != 0) 
+                    if (!buffer.compare(0, 1, "*") && new_surface.elements.size() != 0)
                     {
                         break;
                     }
                     std::istringstream ss(buffer);
                     std::string token;
-                    while (getline(ss, token, ',')) 
+                    while (getline(ss, token, ','))
                     {
                         new_surface.elements.push_back(atoi(token.c_str()));
                     }
                 }
             }
-            surfaces.push_back(new_surface); 
-        } 
-        else if (!buffer.compare(0, 13, "*End Assembly")) 
+            surfaces.push_back(new_surface);
+        }
+        else if (!buffer.compare(0, 13, "*End Assembly"))
         {
             break;
-        } 
-        else 
+        }
+        else
         {
             getline(instr, buffer);
             trim(buffer);
@@ -425,11 +425,11 @@ void setBcAndLoads()
     std::cout << "1, 2, 3, 4 represent ux, uy, uz and p" << std::endl;
     std::cout << "For example: Set-1 1 0.0" << std::endl;
     std::cout << std::endl;
-    
+
     std::string buffer;
-    while (std::cin >> buffer) 
+    while (std::cin >> buffer)
     {
-        if (buffer == "stop") 
+        if (buffer == "stop")
         {
             break;
         }
@@ -437,9 +437,9 @@ void setBcAndLoads()
         std::cin >> user_dof >> user_value;
         int dof = atoi(user_dof.c_str());
         double value = atof(user_value.c_str());
-        for (int i = 0; i < sets.size(); ++i) 
+        for (int i = 0; i < sets.size(); ++i)
         {
-            if (sets[i].name == buffer) 
+            if (sets[i].name == buffer)
             {
                 sets[i].dofs.push_back(dof);
                 sets[i].values.push_back(value);
@@ -448,23 +448,23 @@ void setBcAndLoads()
         }
     }
     std::cout << std::endl;
-    
+
     std::cout << "Specify loads, you may enter 'traction', 'pressure' or 'stop'" << std::endl;
-    if (load_type == "traction") 
+    if (load_type == "traction")
     {
         std::cout << "Input name of the surface, the three components of traction, separated by space." << std::endl;
         std::cout << "For example, Surf-1, 1., 0., 0." << std::endl;
         std::string name;
         std::vector<double> traction;
-        while (std::cin >> buffer) 
+        while (std::cin >> buffer)
         {
-            if (buffer == "stop") 
+            if (buffer == "stop")
             {
                 break;
             }
             bool found = false;
             name = buffer;
-            for (int i = 0; i < surfaces.size(); ++i) 
+            for (int i = 0; i < surfaces.size(); ++i)
             {
                 if (surfaces[i].name == name)
                 {
@@ -480,29 +480,29 @@ void setBcAndLoads()
                     surfaces[i].traction = traction;
                 }
             }
-            if (!found) 
+            if (!found)
             {
                 std::cout << "Set not found!" << std::endl;
             }
         }
-    } 
-    else if (load_type == "pressure") 
+    }
+    else if (load_type == "pressure")
     {
         std::cout << "Input name of the surface, the value of pressure, separated by space." << std::endl;
         std::cout << "For example, Surf-1, 1000." << std::endl;
         double pressure;
         std::string name;
-        while (std::cin >> buffer) 
+        while (std::cin >> buffer)
         {
-            if (buffer == "stop") 
+            if (buffer == "stop")
             {
                 break;
             }
             name = buffer;
             bool found = false;
-            for (int i = 0; i < surfaces.size(); ++i) 
+            for (int i = 0; i < surfaces.size(); ++i)
             {
-                if (surfaces[i].name == name) 
+                if (surfaces[i].name == name)
                 {
                     if (!found)
                     {
@@ -513,35 +513,35 @@ void setBcAndLoads()
                     surfaces[i].pressure = pressure;
                 }
             }
-            if (!found) 
+            if (!found)
             {
                 std::cout << "Surface not found!" << std::endl;
             }
         }
     }
-    
+
     std::cout << std::endl << "Summary of boundary conditions and loads:" << std::endl;
-    for (int i = 0; i < sets.size(); ++i) 
+    for (int i = 0; i < sets.size(); ++i)
     {
         assert(sets[i].dofs.size() == sets[i].values.size());
         std::cout << sets[i].name << " " << sets[i].nodes.size() << " " << sets[i].elements.size() << " ";
-        for (int j = 0; j < sets[i].dofs.size(); ++j) 
+        for (int j = 0; j < sets[i].dofs.size(); ++j)
         {
             std::cout << "u" << sets[i].dofs[j] << " = " << sets[i].values[j] << " ";
         }
         std::cout << std::endl;
     }
-    for (int i = 0; i < surfaces.size(); ++i) 
+    for (int i = 0; i < surfaces.size(); ++i)
     {
         std::cout << surfaces[i].name << "-" << surfaces[i].face << " " << surfaces[i].elements.size() << " ";
-        if (load_type == "traction") 
+        if (load_type == "traction")
         {
-            for (int j = 0; j < surfaces[i].traction.size(); ++j) 
+            for (int j = 0; j < surfaces[i].traction.size(); ++j)
             {
                 std::cout << surfaces[i].traction[j] << " ";
-            } 
-        } 
-        else if (load_type == "pressure") 
+            }
+        }
+        else if (load_type == "pressure")
         {
             std::cout << surfaces[i].pressure;
         }
@@ -555,42 +555,42 @@ void writeFiles()
     std::ofstream outstr("coords.txt");
     std::cout << std::setprecision(8) << std::fixed;
     outstr << std::setw(13) << nsd << '\t' << std::setw(13) << nn << std::endl;
-    for (int i = 0; i < coords.size(); ++i) 
+    for (int i = 0; i < coords.size(); ++i)
     {
-        for (int j = 0; j < nsd; ++j) 
+        for (int j = 0; j < nsd; ++j)
         {
             outstr << std::setw(13) << coords[i][j] << '\t' ;
         }
         outstr << std::endl;
     }
     outstr.close();
-    
+
     // Connect
     outstr.open("connect.txt");
     outstr << std::setw(10) << connect.size() << '\t' << std::setw(10) << nen << std::endl;
-    for (int i = 0; i < connect.size(); ++i) 
+    for (int i = 0; i < connect.size(); ++i)
     {
-        for (int j = 0; j < nen; ++j) 
+        for (int j = 0; j < nen; ++j)
         {
             outstr << std::setw(10) << connect[i][j] << '\t';
         }
         outstr << std::endl;
     }
     outstr.close();
-    
+
     // bc
     outstr.open("bc.txt");
     int count = 0;
-    for (int i = 0; i < sets.size(); ++i) 
+    for (int i = 0; i < sets.size(); ++i)
     {
         count += sets[i].nodes.size()*sets[i].dofs.size();
     }
     outstr << std::setw(10) << count << std::endl;
-    for (int i = 0; i < sets.size(); ++i) 
+    for (int i = 0; i < sets.size(); ++i)
     {
-        for (int j = 0; j < sets[i].dofs.size(); ++j) 
+        for (int j = 0; j < sets[i].dofs.size(); ++j)
         {
-            for (int k = 0; k < sets[i].nodes.size(); ++k) 
+            for (int k = 0; k < sets[i].nodes.size(); ++k)
             {
                 outstr << std::setw(10) << sets[i].nodes[k] << '\t' << std::setw(10) << sets[i].dofs[j] \
                      << '\t' << std::setw(13) << std::setprecision(8) << std::fixed << sets[i].values[j] << std::endl;
@@ -598,34 +598,34 @@ void writeFiles()
         }
     }
     outstr.close();
-    
+
     // load
     outstr.open("load.txt");
     count = 0;
-    for (int i = 0; i < surfaces.size(); ++i) 
+    for (int i = 0; i < surfaces.size(); ++i)
     {
         count += surfaces[i].elements.size();
     }
-    if (load_type == "traction") 
+    if (load_type == "traction")
     {
         outstr << std::setw(10) << count << '\t' << std::setw(10) << nsd + 2 << std::endl;
         for (int i = 0; i < surfaces.size(); ++i) {
-            for (int j = 0; j < surfaces[i].elements.size(); ++j) 
+            for (int j = 0; j < surfaces[i].elements.size(); ++j)
             {
                 outstr << std::setw(10) << surfaces[i].elements[j] << '\t' << std::setw(10) << surfaces[i].face << '\t';
                 for (int k = 0; k < nsd; ++k) {
                     outstr << std::setw(13) << std::setprecision(10) << std::scientific << surfaces[i].traction[k] << '\t';
                 }
-                outstr << std::endl;     
+                outstr << std::endl;
             }
         }
-    } 
-    else if (load_type == "pressure") 
+    }
+    else if (load_type == "pressure")
     {
         outstr << std::setw(10) << count << '\t' << std::setw(10) << 3 << std::endl;
-        for (int i = 0; i < surfaces.size(); ++i) 
+        for (int i = 0; i < surfaces.size(); ++i)
         {
-            for (int j = 0; j < surfaces[i].elements.size(); ++j) 
+            for (int j = 0; j < surfaces[i].elements.size(); ++j)
             {
                 outstr << std::setw(10) << surfaces[i].elements[j] << '\t' << std::setw(10) << surfaces[i].face << '\t' \
                     << std::setw(13) << std::setprecision(10) << std::scientific << surfaces[i].pressure << std::endl;
@@ -641,13 +641,13 @@ void writeCRS_v1()
     int no_nonzeros = 0;
     std::vector<std::set<int> > neighborNodes; // Storing node numbers beginning with 1
     std::vector<std::set<int> > neighborElements; // Storing element numbers beginning with 0
-    for (int n = 0; n < nn; ++n) 
+    for (int n = 0; n < nn; ++n)
     {
         std::set<int> my_neighborNodes;
         std::set<int> my_neighborElements;
-        for (int ele = 0; ele < nel; ++ele) 
+        for (int ele = 0; ele < nel; ++ele)
         {
-            for (int i = 0; i < nen; ++i) 
+            for (int i = 0; i < nen; ++i)
             {
                 if (connect[ele][i] == n + 1)
                 {
@@ -662,21 +662,21 @@ void writeCRS_v1()
         no_nonzeros += my_neighborNodes.size()*nsd;
     }
     no_nonzeros = no_nonzeros*nsd; // For each node, every dof is identical.
-    
+
     int count = 0; // the number of nonzeros
     std::vector<int> col_ind; // size = no_nonzeros
     std::vector<int> row_ptr; // size = nsd*nn + 1
     // First nn*nsd rows
-    for (int n = 0; n < nn; ++n) 
+    for (int n = 0; n < nn; ++n)
     {
         // Deal with nsd rows corresponding to one node
-        for (int i = 0; i < nsd; ++i) 
+        for (int i = 0; i < nsd; ++i)
         {
             row_ptr.push_back(count);
             // Stress terms
-            for (auto j : neighborNodes[n]) 
+            for (auto j : neighborNodes[n])
             {
-                for (int k = 0; k < nsd; ++k) 
+                for (int k = 0; k < nsd; ++k)
                 {
                     col_ind.push_back(nsd*(j-1) + k);
                     count++;
@@ -694,7 +694,7 @@ void writeCRS_v1()
     assert(row_ptr.size() == nsd*nn + 1);
     assert(col_ind.size() == no_nonzeros);
     assert(row_ptr[row_ptr.size()-1] == no_nonzeros + 1);
-    
+
     std::ofstream ofs("CRS.bin");
     ofs.write(reinterpret_cast<char*>(&no_nonzeros), sizeof(int));
     ofs.write(reinterpret_cast<char*>(&col_ind[0]), no_nonzeros * sizeof(int));
@@ -709,16 +709,16 @@ void writeCRS_v2()
     std::set<Entry> data;
     int count = 0;
     int row, col;
-    for (int ele = 0; ele < nel; ++ele) 
+    for (int ele = 0; ele < nel; ++ele)
     {
-        for (int a = 0; a < nen; ++a) 
+        for (int a = 0; a < nen; ++a)
         {
-            for (int i = 0; i < nsd; ++i) 
+            for (int i = 0; i < nsd; ++i)
             {
                 row = nsd*(connect[ele][a] - 1) + i;
-                for (int b = 0; b < nen; ++b) 
+                for (int b = 0; b < nen; ++b)
                 {
-                    for (int j = 0; j < nsd; ++j) 
+                    for (int j = 0; j < nsd; ++j)
                     {
                         col = nsd*(connect[ele][b] - 1) + j;
                         data.insert(Entry(row, col));
@@ -727,11 +727,11 @@ void writeCRS_v2()
             }
         }
     }
-    
+
     std::vector<int> col_ind;
     std::vector<int> row_ptr;
     std::vector<int> row_ind;
-    
+
     count = 1;
     col_ind.push_back(data.begin()->col+1);
     row_ind.push_back(data.begin()->row+1);
@@ -739,11 +739,11 @@ void writeCRS_v2()
     auto itr_pre = data.begin();
     auto itr = data.begin();
     itr++;
-    for (; itr != data.end(); ++itr) 
+    for (; itr != data.end(); ++itr)
     {
         col_ind.push_back(itr->col + 1); // Fortran convention
         row_ind.push_back(itr->row + 1); // Fortran convention
-        if (itr->row != itr_pre->row) 
+        if (itr->row != itr_pre->row)
         {
             row_ptr.push_back(count + 1); // Fortran convention
         }
@@ -754,12 +754,12 @@ void writeCRS_v2()
     assert(col_ind.size() == data.size());
     assert(row_ind.size() == data.size());
     int no_nonzeros = data.size();
-    
+
     int size_row_ptr = row_ptr.size();
     std::ofstream ofs("CRS.bin");
     ofs.write(reinterpret_cast<char*>(&no_nonzeros), sizeof(int));
     ofs.write(reinterpret_cast<char*>(&col_ind[0]), no_nonzeros * sizeof(int));
     ofs.write(reinterpret_cast<char*>(&size_row_ptr), sizeof(int));
     ofs.write(reinterpret_cast<char*>(&row_ptr[0]), size_row_ptr * sizeof(int));
-    ofs.close();   
+    ofs.close();
 }
