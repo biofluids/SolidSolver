@@ -12,7 +12,7 @@ program solidsolver
     integer :: ct, ct_rate, ct_max, ct1
     real(8) :: time_elapsed
     call timestamp()
-    filepath = '/Users/Jie/Documents/SolidResults/'
+    filepath = '/home/jie/Documents/SolidResults/'
     call system_clock(ct,ct_rate,ct_max)
     call read_input(mode, maxit, firststep, adjust, nsteps, nprint, tol, dt, damp, &
         materialtype, materialprops, gravity, isbinary, penalty)
@@ -76,7 +76,7 @@ subroutine statics(filepath)
     loadfactor = 0.
     increment = firststep
     step = 0
-    call write_results(filepath,w)
+    call write_results(filepath,w,w,w)
 
     ! If the external load is traction, then the external force doesn't change
     if (load_type /= 1) then
@@ -129,7 +129,7 @@ subroutine statics(filepath)
     end do
     step = nprint
     fsi_solid = Fext
-    call write_results(filepath, w)
+    call write_results(filepath, w,w,w)
     write(*,*) repeat("=", 95)
 
     deallocate(Fext)
@@ -186,14 +186,15 @@ subroutine dynamics(filepath)
     beta = gamma/2 ! the absolute stable region is beta >= gamma/2
     step = 0
 
-    call write_results(filepath, un)
+    call write_results(filepath, un, vn, an)
     call mass_matrix(M)
 
     ! If the external load is traction, then the external force doesn't change
     if (load_type /= 1) then
         call force_traction(Fext)
     else
-        call force_pressure(un, Fext)
+        !call force_pressure(un, Fext)
+        Fext = 0.0
     end if
 
     F = Fext
@@ -213,6 +214,7 @@ subroutine dynamics(filepath)
             vn1 = vn + (1 - gamma)*dt*an + gamma*dt*an1 ! velocity at next step
             call force_internal(un1, Fint)
             if (load_type == 1) then
+                call update_pressure(step, load_type, load_size, load_num, load_val)
                 call force_pressure(un1, Fext)
             end if
             F = Fext - Fint
@@ -248,7 +250,7 @@ subroutine dynamics(filepath)
         an = an1
         fsi_solid = Fext
         if (MOD(step, nprint) == 0) then
-            call write_results(filepath, un)
+            call write_results(filepath, un, vn, an)
         end if
     end do
     write(*,*) repeat("=", 95)

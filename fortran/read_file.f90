@@ -120,9 +120,25 @@ contains
 
         allocate(fsi_solid(nsd*nn))
         fsi_solid = 0.0
-
-        close(10)
     end subroutine read_mesh
+
+    subroutine update_pressure(itr, load_type, load_size, load_num, load_val)
+        integer, intent(in) :: load_size, load_type
+        integer, intent(in) :: itr
+        integer, dimension(2, load_size), intent(inout) :: load_num
+        real(8), dimension(load_type, load_size), intent(inout) :: load_val
+        character(6) :: temp
+        character(80) :: filename
+        integer :: i, j
+        write(temp,'(i6.6)') itr
+        filename = 'load'//trim(temp)//'.txt'
+        open(11, file = filename)
+        read(11, *) i, j
+        do i = 1, load_size
+            read(11, *) load_num(:,i), load_val(:,i)
+        end do
+        close(11)
+    end subroutine
 
     subroutine read_CRS(no_nonzeros, col_ind, row_ind, nonzeros, row_ptr)
         ! Assuming the input CRS matrix is a full matrix

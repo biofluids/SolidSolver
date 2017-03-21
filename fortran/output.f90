@@ -1,17 +1,18 @@
 module output
     implicit none
 contains
-    subroutine write_results(filepath,dofs)
+    subroutine write_results(filepath,dofs,v,a)
         use read_file, only: mode, step, nn, nsd, nel, isbinary
         character(80) :: filepath
-        real(8), dimension(nn*nsd), intent(in) :: dofs
+        real(8), dimension(nn*nsd), intent(in) :: dofs,v,a
         if (step == 0) then
             call write_case(filepath)
         end if
         call write_geometry(filepath,dofs)
         call write_displacement(filepath,dofs)
+        call write_velocity(filepath,v)
+        call write_acceleration(filepath,a)
         call write_stress(filepath,dofs)
-        call write_fsi(filepath)
     end subroutine write_results
 
     subroutine write_case(filepath)
@@ -19,16 +20,17 @@ contains
         character(80) :: filepath, filename
         real(8), dimension(nsteps/nprint+1) :: time
         integer :: i
-        
+
         filename=trim(filepath)//'solid.case'
         open(unit=10,file=trim(filename))
-        write(10,'("FORMAT",/)') 
-        write(10,'("type:",12x,"ensight gold",/)') 
+        write(10,'("FORMAT",/)')
+        write(10,'("type:",12x,"ensight gold",/)')
         write(10,'("GEOMETRY",/)')
         write(10,'("model:",12x,"solid.geo******",12x,"change_coords_only",/)')
-        write(10,'("VARIABLE",/)') 
+        write(10,'("VARIABLE",/)')
         write(10,'("vector per node:",12x,"displacement",12x,"solid.dis******")')
-        write(10,'("vector per node:",12x,"fsi",12x,"solid.fsi******")')
+        write(10,'("vector per node:",12x,"velocity",12x,"solid.vel******")')
+        write(10,'("vector per node:",12x,"acceleration",12x,"solid.acc******")')
         write(10,'("tensor symm per node:",12x,"stress",12x,"solid.sig******",/)')
         write(10,'("TIME",/)')
         write(10,'("time set:",12x,i10)') 1
@@ -38,7 +40,7 @@ contains
         write(10,'("time values:")')
         do i=1,(nsteps/nprint+1)
             time(i) = (i-1)*nprint*dt
-            write(10,'(f12.3)')  time(i)
+            write(10,'(f12.6)')  time(i)
         end do
         close(10)
     end subroutine write_case
@@ -52,10 +54,10 @@ contains
         integer, dimension(nel) :: eleid
         real(8), dimension(3,nn) :: coords1
         character(6) :: temp
-        
+
         write(temp,'(i6.6)') step/nprint
         filename = trim(filepath)//'solid.geo'//trim(temp)
-        
+
         do i=1,nsd
             do j=1,nn
                 coords1(i,j) = coords(i,j) + dofs((j-1)*nsd+i)
@@ -66,7 +68,7 @@ contains
                 coords1(3,i) = 0.
             end do
         end if
-        
+
         if (isbinary == 1) then
             open(unit=11,file=trim(filename),form='unformatted')
             buffer = 'Fortran Binary'
@@ -167,7 +169,7 @@ contains
         integer :: i,j,row
         character(6) :: temp
         real(8), dimension(3,nn) :: displacement
-        
+
         do i=1,nsd
             do j=1,nn
                 row=(j-1)*nsd+i
@@ -179,10 +181,10 @@ contains
                 displacement(3,i) = 0.
             end do
         end if
-        
+
         write(temp,'(i6.6)') step/nprint
         filename = trim(filepath)//'solid.dis'//trim(temp)
-        
+
         if (isbinary == 1) then
             open(unit=11,file=trim(filename),form='unformatted')
             buffer = 'This is a vector per node file for displacement'
@@ -212,26 +214,32 @@ contains
         end if
     end subroutine write_displacement
 
-    subroutine write_fsi(filepath)
-        use read_file, only: step, nsd, nn, isbinary, nprint, fsi_solid
+    subroutine write_velocity(filepath,dofs)
+        use read_file, only: step, nsd, nsd, nn, coords, nel, nen, connect, nprint, isbinary
+        real(8), dimension(nn*nsd), intent(in) :: dofs
         character(80) :: filepath, filename, buffer
+        integer :: i,j,row
         character(6) :: temp
-        real(8), dimension(3, nn) :: fsi
-        integer :: i, j
+        real(8), dimension(3,nn) :: velocity
 
-        fsi = 0.0
-        do i = 1, nsd
-            do j = 1, nn
-                fsi(i, j) = fsi_solid((j-1)*nsd+i)
+        do i=1,nsd
+            do j=1,nn
+                row=(j-1)*nsd+i
+                velocity(i,j)=dofs(row)
             end do
         end do
+        if (nsd==2) then
+            do i=1,nn
+                velocity(3,i) = 0.
+            end do
+        end if
 
         write(temp,'(i6.6)') step/nprint
-        filename = trim(filepath)//'solid.fsi'//trim(temp)
+        filename = trim(filepath)//'solid.vel'//trim(temp)
 
         if (isbinary == 1) then
             open(unit=11,file=trim(filename),form='unformatted')
-            buffer = 'This is a vector per node file for fsi'
+            buffer = 'This is a vector per node file for velocity'
             write(11) buffer
             buffer = 'part'
             write(11) buffer
@@ -240,23 +248,75 @@ contains
             buffer = 'coordinates'
             write(11) buffer
             do i = 1, 3
-                write(11) sngl(fsi(i,:))
+                write(11) sngl(velocity(i,:))
             end do
             close(11)
         else
             open(unit=10,file=trim(filename),form='FORMATTED')
-            write(10,'(A)') 'This is a vector per node file for fsi'
+            write(10,'(A)') 'This is a vector per node file for velocity'
             write(10,'(A)') 'part'
             write(10,'(i10)') 1
             write(10,'(A)') 'coordinates'
             do i=1,3
                 do j=1,nn
-                    write(10,'(e12.5)') fsi(i,j)
+                    write(10,'(e12.5)') velocity(i,j)
                 end do
             end do
             close(10)
         end if
-    end subroutine write_fsi
+    end subroutine write_velocity
+
+    subroutine write_acceleration(filepath,dofs)
+        use read_file, only: step, nsd, nsd, nn, coords, nel, nen, connect, nprint, isbinary
+        real(8), dimension(nn*nsd), intent(in) :: dofs
+        character(80) :: filepath, filename, buffer
+        integer :: i,j,row
+        character(6) :: temp
+        real(8), dimension(3,nn) :: acceleration
+
+        do i=1,nsd
+            do j=1,nn
+                row=(j-1)*nsd+i
+                acceleration(i,j)=dofs(row)
+            end do
+        end do
+        if (nsd==2) then
+            do i=1,nn
+                acceleration(3,i) = 0.
+            end do
+        end if
+
+        write(temp,'(i6.6)') step/nprint
+        filename = trim(filepath)//'solid.acc'//trim(temp)
+
+        if (isbinary == 1) then
+            open(unit=11,file=trim(filename),form='unformatted')
+            buffer = 'This is a vector per node file for acceleration'
+            write(11) buffer
+            buffer = 'part'
+            write(11) buffer
+            i = 1
+            write(11) i
+            buffer = 'coordinates'
+            write(11) buffer
+            do i = 1, 3
+                write(11) sngl(acceleration(i,:))
+            end do
+            close(11)
+        else
+            open(unit=10,file=trim(filename),form='FORMATTED')
+            write(10,'(A)') 'This is a vector per node file for acceleration'
+            write(10,'(A)') 'part'
+            write(10,'(i10)') 1
+            write(10,'(A)') 'coordinates'
+            do i=1,3
+                do j=1,nn
+                    write(10,'(e12.5)') acceleration(i,j)
+                end do
+            end do
+            close(10)
+        end if
+    end subroutine write_acceleration
 
     subroutine write_stress(filepath,dofs)
         use read_file, only: step, nsd, nn, coords, nel, nen, connect, materialtype, materialprops, share, nprint, isbinary
@@ -270,7 +330,7 @@ contains
         real(8), dimension(nsd,nen) :: eledof
         real(8), dimension(nen,nsd) :: dNdx, dNdy
         real(8), dimension(nsd,nsd) :: stress
-        real(8), dimension(nen,nsd) :: dNdxi 
+        real(8), dimension(nen,nsd) :: dNdxi
         real(8), dimension(nsd,nsd) :: dxdxi, dxidx, F, B, eye
         real(8), allocatable, dimension(:,:) :: xilist
         integer :: ele,a,i,npt,j,intpt
@@ -279,7 +339,7 @@ contains
         real(8), dimension(nsd) :: work ! for lapack inverse
         integer, dimension(nsd) :: ipiv ! for lapack inverse
         integer :: info, n1 ! for lapack inverse
-        
+
         real(8), dimension(6) :: eleStress, intStress
         real(8), dimension(6,nn) :: nodeStress ! the sigma of a particular node added up by elements
 
