@@ -18,14 +18,14 @@ contains
         character(80) :: filepath, filename
         real(8), dimension(nsteps/nprint+1) :: time
         integer :: i
-        
+
         filename=trim(filepath)//'solid.case'
         open(unit=10,file=trim(filename))
-        write(10,'("FORMAT",/)') 
-        write(10,'("type:",12x,"ensight gold",/)') 
+        write(10,'("FORMAT",/)')
+        write(10,'("type:",12x,"ensight gold",/)')
         write(10,'("GEOMETRY",/)')
         write(10,'("model:",12x,"solid.geo******",12x,"change_coords_only",/)')
-        write(10,'("VARIABLE",/)') 
+        write(10,'("VARIABLE",/)')
         write(10,'("vector per node:",12x,"displacement",12x,"solid.dis******")')
         write(10,'("scalar per node:",12x,"growth",12x,"solid.grow******")')
         write(10,'("scalar per node:",12x,"density",12x,"solid.den******")')
@@ -52,10 +52,10 @@ contains
         integer, dimension(nel) :: eleid
         real(8), dimension(3,nn) :: coords1
         character(6) :: temp
-        
+
         write(temp,'(i6.6)') step/nprint
         filename = trim(filepath)//'solid.geo'//trim(temp)
-        
+
         do i=1,nsd
             do j=1,nn
                 coords1(i,j) = coords(i,j) + dofs((j-1)*nsd+i)
@@ -66,7 +66,7 @@ contains
                 coords1(3,i) = 0.
             end do
         end if
-        
+
         if (isbinary == 1) then
             open(unit=11,file=trim(filename),form='unformatted')
             buffer = 'Fortran Binary'
@@ -167,7 +167,7 @@ contains
         integer :: i,j,row
         character(6) :: temp
         real(8), dimension(3,nn) :: displacement
-        
+
         do i=1,nsd
             do j=1,nn
                 row=(j-1)*nsd+i
@@ -179,10 +179,10 @@ contains
                 displacement(3,i) = 0.
             end do
         end if
-        
+
         write(temp,'(i6.6)') step/nprint
         filename = trim(filepath)//'solid.dis'//trim(temp)
-        
+
         if (isbinary == 1) then
             open(unit=11,file=trim(filename),form='unformatted')
             buffer = 'This is a vector per node file for displacement'
@@ -225,7 +225,7 @@ contains
         real(8), dimension(nsd,nen) :: eledof
         real(8), dimension(nen,nsd) :: dNdx, dNdy
         real(8), dimension(nsd,nsd) :: stress
-        real(8), dimension(nen,nsd) :: dNdxi 
+        real(8), dimension(nen,nsd) :: dNdxi
         real(8), dimension(nsd,nsd) :: dxdxi, dxidx, F, B, eye
         real(8), allocatable, dimension(:,:) :: xilist
         integer :: ele,a,i,npt,j,intpt
@@ -234,38 +234,36 @@ contains
         real(8), dimension(nsd) :: work ! for lapack inverse
         integer, dimension(nsd) :: ipiv ! for lapack inverse
         integer :: info, n1 ! for lapack inverse
-        
-        real(8), dimension(6) :: temp_sigma, sigma
-        real(8), dimension(6,nn) :: sum_sigma ! the sigma of a particular node added by elements
-        real(8), dimension(nn) :: sum_growth, sum_Ja, density! the growth factor of a particular node added by elements
-        real(8) :: temp_growth, avg_growth, temp_Ja, avg_Ja
+        real(8), dimension(6) :: eleStress, intStress
+        real(8) :: eleGrowth, eleJa
+        real(8), dimension(6,nn) :: nodeStress ! the sigma of a particular node added up by elements
+        real(8), dimension(nn) :: nodeGrowth, nodeJa, density
 
         write(temp,'(i6.6)') step/nprint
         filename = trim(filepath)//'solid.sig'//trim(temp)
         filename2 = trim(filepath)//'solid.grow'//trim(temp)
         filename3 = trim(filepath)//'solid.den'//trim(temp)
-        
+        nodeStress = 0.0
+        nodeGrowth = 0.0
+        nodeJa = 0.0
+        density = 0.0
         rho = materialprops(1)
         n1 = nsd
         ! square matrix
-        do i=1,nsd
-            do j=1,nsd
-                if(i==j) then
-                    eye(i,j) = 1.
-                else
-                    eye(i,j) = 0.
-                end if
-            end do
+        eye = 0.
+        do i = 1, nsd
+            eye(i, i) = 1.
         end do
-        ! initialize
-        sum_sigma = 0.
-        sum_growth = 0.
-        sum_Ja = 0.
         ! allocate
         npt = int_number(nsd,nen,0)
         allocate(xilist(nsd,npt))
+        xilist = int_points(nsd,nen,npt)
+
         ! loop over elements
         do ele=1,nel
+            eleStress = 0.0
+            eleGrowth = 0.0
+            eleJa = 0.0
             ! extract coords of nodes, and dofs for the element
             do a=1,nen
                 elecoord(:,a) = coords(:,connect(a,ele))
@@ -273,14 +271,6 @@ contains
                     eledof(i,a) = dofs(nsd*(connect(a,ele)-1)+i)
                 end do
             end do
-            ! fully integration
-            ! set up integration points and weights
-            npt = int_number(nsd,nen,0)
-            xilist = int_points(nsd,nen,npt)
-            ! initialize
-            temp_sigma = 0.
-            temp_growth = 0.
-            temp_Ja = 0.
             ! loop over integration points
             do intpt=1,npt
                 xi = xilist(:,intpt)
@@ -310,30 +300,30 @@ contains
                 stress = stress/Ja
                 ! vectorize
                 if (nsd==2) then
-                    sigma = [stress(1,1),stress(2,2),dble(0.),stress(1,2),dble(0.),dble(0.)]
+                    intStress = [stress(1,1),stress(2,2),dble(0.),stress(1,2),dble(0.),dble(0.)]
                 else
-                    sigma = [stress(1,1),stress(2,2),stress(3,3),stress(1,2),stress(1,3),stress(2,3)]
+                    intStress = [stress(1,1),stress(2,2),stress(3,3),stress(1,2),stress(1,3),stress(2,3)]
                 end if
                 ! average the stress
-                temp_sigma = temp_sigma + sigma
-                temp_growth = temp_growth + growthFactor(npt*(ele-1)+intpt)
-                temp_Ja = temp_Ja + Ja
+                eleStress = eleStress + intStress
+                eleGrowth = eleGrowth + growthFactor(npt*(ele-1)+intpt)
+                eleJa = eleJa + Ja
             end do
-            sigma = temp_sigma/npt ! average sigma in this element
-            avg_growth = temp_growth/npt
-            avg_Ja = temp_Ja/npt
+            eleStress = eleStress/npt ! average sigma in this element
+            eleGrowth = eleGrowth/npt
+            eleJa = eleJa/npt
             do a=1,nen
-                sum_sigma(:,connect(a,ele)) = sum_sigma(:,connect(a,ele)) + sigma
-                sum_growth(connect(a,ele)) = sum_growth(connect(a,ele)) + avg_growth
-                sum_Ja(connect(a,ele)) = sum_Ja(connect(a,ele)) + avg_Ja
+                nodeStress(:,connect(a,ele)) = nodeStress(:,connect(a,ele)) + eleStress(:)
+                nodeGrowth(connect(a,ele)) = nodeGrowth(connect(a,ele)) + eleGrowth
+                nodeJa(connect(a,ele)) = nodeJa(connect(a,ele)) + eleJa
             end do
         end do
         ! sigma per node
         do i=1,nn
-            sum_sigma(:,i) = sum_sigma(:,i)/dble(share(i))
-            sum_growth(i) = sum_growth(i)/dble(share(i))
-            sum_Ja(i) = sum_Ja(i)/dble(share(i))
-            density(i) = rho*sum_growth(i)**3.0/sum_Ja(i)
+            nodeStress(:,i) = nodeStress(:,i)/dble(share(i))
+            nodeGrowth(i) = nodeGrowth(i)/dble(share(i))
+            nodeJa(i) = nodeJa(i)/dble(share(i))
+            density(i) = rho*nodeGrowth(i)**3.0/nodeJa(i)
         end do
         ! write to file
         if (isbinary == 1) then
@@ -347,7 +337,7 @@ contains
             buffer = 'coordinates'
             write(11) buffer
             do i = 1, 6
-                write(11) sngl(sum_sigma(i,:))
+                write(11) sngl(nodeStress(i,:))
             end do
             close(11)
 
@@ -360,7 +350,7 @@ contains
             write(13) i
             buffer = 'coordinates'
             write(13) buffer
-            write(13) sngl(sum_growth(:))
+            write(13) sngl(nodeGrowth(:))
             close(13)
 
             open(unit=13,file=trim(filename3),form='unformatted')
@@ -383,7 +373,7 @@ contains
             write(10,'(A)') 'coordinates'
             do i=1,6
                 do j=1,nn
-                    write(10,'(e12.5)') sum_sigma(i,j)
+                    write(10,'(e12.5)') nodeStress(i,j)
                 end do
             end do
             close(10)
@@ -394,7 +384,7 @@ contains
             write(14,'(i10)') 1
             write(14,'(A)') 'coordinates'
             do i=1,nn
-                write(14,'(e12.5)') sum_growth(i)
+                write(14,'(e12.5)') nodeGrowth(i)
             end do
             close(14)
 

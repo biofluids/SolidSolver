@@ -4,7 +4,7 @@ contains
     function cross(a, b)
         real(8), dimension(3) :: cross
         real(8), dimension(3), intent(in) :: a, b
-        
+
         cross(1) = a(2)*b(3) - a(3)*b(2)
         cross(2) = a(3)*b(1) - a(1)*b(3)
         cross(3) = a(1)*b(2) - a(2)*b(1)
@@ -23,7 +23,7 @@ contains
         real(8), dimension(nsd, nsd) :: stress
         real(8), dimension(nen*nsd, nen*nsd) :: kint
         real(8), dimension(nsd) :: xi, intcoord ! intcoord is the coordinates of the integration points, necessary for anisotropic models
-        real(8), dimension(nen, nsd) :: dNdxi 
+        real(8), dimension(nen, nsd) :: dNdxi
         real(8), dimension(nsd, nsd) :: dxdxi, dxidx, F, Finv, B, eye
         real(8), allocatable, dimension(:,:) :: xilist
         real(8), allocatable, dimension(:) :: weights
@@ -32,11 +32,11 @@ contains
         real(8), dimension(nsd) :: work ! for lapack inverse
         integer, dimension(nsd) :: ipiv ! for lapack inverse
         integer :: info, n1 ! for lapack inverse
-        
+
         external DGETRF
         external DGETRI
         n1 = nsd
-        
+
 
         ! square matrix
         do i=1,nsd
@@ -48,17 +48,17 @@ contains
                 end if
             end do
         end do
-        
-        ! initialize 
+
+        ! initialize
         nonzeros = 0.0
-                
+
         ! allocate
         npt = int_number(nsd,nen,0)
         allocate(xilist(nsd,npt))
         allocate(weights(npt))
         xilist = int_points(nsd,nen,npt)
         weights = int_weights(nsd,nen,npt)
-        
+
         ! loop over elements
         do ele=1,nel
             ! extract coords of nodes, and dofs for the element
@@ -107,7 +107,6 @@ contains
                 dNdy = matmul(dNdx, Finv)
                 ! compute the Kirchhoff stress and the material stiffness C
                 call theta_update(pre_growthFactor(npt*(ele-1)+intpt), growthFactor(npt*(ele-1)+intpt), F, stress, C)
-                !call getStiffness(growthFactor(npt*(ele-1)+intpt), F, stress, C)
                 ! compute the element internal force
                 do a = 1, nen
                     do i = 1, nsd
@@ -154,7 +153,7 @@ contains
         ! output
         real(8), dimension(nn*nsd, nn*nsd) :: Kglo
         ! Local variables
-        real(8), allocatable, dimension(:,:) :: kext ! Element stiffness 
+        real(8), allocatable, dimension(:,:) :: kext ! Element stiffness
         ! nodelist
         ! face_coord: Coord. of the nodes in a face
         ! face_xi: Local coord. of the integration points in a face
@@ -169,19 +168,19 @@ contains
         integer :: i, j, ele, faceid, nfacenodes, a, npt, intpt, b, k, row, col, l
         real(8), dimension(nsd,nsd,nsd) :: epsilon
         real(8), dimension(nsd) :: normal
-        
+
         ! initialize
         Kglo = 0.
         nfacenodes = face_nodes_no(nsd,nen)
         npt = int_number(nsd-1, nfacenodes, 0)
         epsilon = 0.
         epsilon(1,2,3) = 1.
-        epsilon(3,1,2) = 1. 
+        epsilon(3,1,2) = 1.
         epsilon(2,3,1) = 1.
-        epsilon(2,1,3) = -1. 
+        epsilon(2,1,3) = -1.
         epsilon(3,2,1) = -1.
         epsilon(1,3,2) = -1.
-        
+
         allocate(nodelist(nfacenodes))
         allocate(face_coord(nsd,nfacenodes))
         allocate(face_dof(nsd,nfacenodes))
@@ -190,7 +189,7 @@ contains
         allocate(dNdxi(nfacenodes,nsd-1))
         allocate(N(nfacenodes))
         allocate(kext(nfacenodes*nsd,nfacenodes*nsd))
-        
+
         do l = 1, load_size
             ele = load_num(1, l)
             faceid = load_num(2, l)
@@ -199,7 +198,7 @@ contains
                 face_coord(:,a) = coords(:,connect(nodelist(a),ele))
                 do i = 1, nsd
                     face_dof(i,a) = dofs(nsd*(connect(nodelist(a),ele)-1)+i)
-                end do 
+                end do
             end do
             external_pressure = load_val(1, l)
             ! element external tangent stiffness
@@ -242,9 +241,9 @@ contains
                     end do
                 end do
             end do
-            
+
         end do
-        
+
         deallocate(nodelist)
         deallocate(face_coord)
         deallocate(face_dof)

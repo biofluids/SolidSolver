@@ -6,7 +6,7 @@ contains
         use read_file
         use shapefunction
         use integration
-        
+
         real(8), dimension(nn*nsd), intent(inout) :: mass
         real(8), dimension(nen*nsd,nen*nsd) :: mele
         real(8), dimension(nsd,nen) :: elecoord
@@ -16,22 +16,22 @@ contains
         real(8), allocatable, dimension(:) :: weights
         real(8), dimension(nen) :: N
         integer :: ele,a,b,i,j,npt,k,intpt,row,col
-        real(8) :: det, rho, theta
+        real(8) :: det, rho
         real(8), dimension(nsd) :: xi
-        real(8), dimension(nen,nsd) :: dNdxi 
-        
+        real(8), dimension(nen,nsd) :: dNdxi
+
         rho = materialprops(1)
-        
+
         ! allocate
         npt = int_number(nsd,nen,0)
         allocate(xilist(nsd,npt))
         allocate(weights(npt))
         xilist = int_points(nsd,nen,npt)
         weights = int_weights(nsd,nen,npt)
-            
+
         ! initialize
         mass = 0.
-        
+
         ! loop over elements
         do ele=1,nel
             ! extract coords of nodes, and dofs for the element
@@ -62,8 +62,7 @@ contains
                             ! No cross coupling terms
                             row = nsd*(a-1) + i
                             col = nsd*(b-1) + i
-                            theta = growthFactor(npt*(ele-1)+intpt)
-                            mele(row,col) = mele(row,col) + N(a)*N(b)*rho*det*weights(intpt)*theta**3
+                            mele(row,col) = mele(row,col) + N(a)*N(b)*rho*det*weights(intpt)
                         end do
                     end do
                 end do
@@ -78,9 +77,9 @@ contains
                 end do
             end do
         end do
-        
+
         deallocate(xilist)
         deallocate(weights)
-        
+
     end subroutine mass_matrix
 end module

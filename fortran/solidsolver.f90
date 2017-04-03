@@ -10,7 +10,7 @@ program solidsolver
 
     character(80) :: filepath
     integer :: ct, ct_rate, ct_max, ct1
-    real(8) :: time_elapsed  
+    real(8) :: time_elapsed
     call timestamp()
     filepath = '/Users/Jie/Documents/SolidResults/'
     call system_clock(ct,ct_rate,ct_max)
@@ -19,7 +19,7 @@ program solidsolver
     call read_mesh(nsd, nn, nel, nen, coords, connect, bc_size, bc_num, bc_val, &
         load_size, load_type, load_num, load_val, share, pre_growthFactor,growthFactor)
     call read_CRS(no_nonzeros, col_ind, row_ind, nonzeros, row_ptr)
-    if (mode == 0) then 
+    if (mode == 0) then
         call statics(filepath)
     else if (mode == 1) then
         call dynamics(filepath)
@@ -32,7 +32,7 @@ program solidsolver
     else if (time_elapsed < 3600) then
         time_elapsed = time_elapsed/60
         write(*,'("Time elapsed:", f12.2, 3x, "minutes")') time_elapsed
-    else 
+    else
         time_elapsed = time_elapsed/3600
         write(*,'("Time elapsed:", f12.2, 3x, "hours")') time_elapsed
     end if
@@ -183,8 +183,8 @@ subroutine dynamics(filepath)
     an = 0.
     an1 = 0.
     constraint = 0.
-    gamma = 0.5 + damp
-    beta = gamma/2
+    gamma = 0.5 + damp ! In Newmark-beta method, gamma - 0.5 represents the artificial damping
+    beta = gamma/2 ! the absolute stable region is beta >= gamma/2
     step = 0
 
     call write_results(filepath, un)
@@ -196,7 +196,7 @@ subroutine dynamics(filepath)
     else
         call force_pressure(un, Fext)
     end if
-    
+
     F = Fext
     !do i = 1, nn*nsd
     !    an(i) = F(i)/M(i) ! Mass is lumped
@@ -302,7 +302,7 @@ subroutine timestamp ( )
 ! *****************************************************************************
 !
 !  TIMESTAMP prints the current YMDHMS date as a time stamp.
-! 
+!
 !  Author:
 !
 !    John Burkardt

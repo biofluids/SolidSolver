@@ -25,10 +25,10 @@ contains
             end if
         else if (nsd == 3) then
             if (nen == 4) then
-                sf(1) = xi(1);
-                sf(2) = xi(3);
+                sf(1) = 1.-xi(1)-xi(2)-xi(3);
+                sf(2) = xi(1);
                 sf(3) = xi(2);
-                sf(4) = 1.-xi(1)-xi(2)-xi(3);
+                sf(4) = xi(3);
             else if (nen == 8) then
                 sf(1) = (1.-xi(1))*(1.-xi(2))*(1.-xi(3))/8.;
                 sf(2) = (1.+xi(1))*(1.-xi(2))*(1.-xi(3))/8.;
@@ -47,6 +47,8 @@ contains
         real(8), dimension(nsd), intent(in) :: xi
         real(8), dimension(nen,nsd) :: sfder
         
+        sfder = 0.0
+
         if (nsd == 1) then
             if (nen == 2) then
                 sfder = reshape([0.5, -0.5],shape(sfder))
@@ -66,12 +68,12 @@ contains
             end if
         else if (nsd == 3) then
             if (nen == 4) then
-                sfder(1,1) = 1.;
-                sfder(2,3) = 1.;
+                sfder(1,1) = -1.;
+                sfder(1,2) = -1.;
+                sfder(1,3) = -1.;
+                sfder(2,1) = 1.;
                 sfder(3,2) = 1.;
-                sfder(4,1) = -1.;
-                sfder(4,2) = -1.;
-                sfder(4,3) = -1.;
+                sfder(4,3) = 1.;
             else if (nen == 8) then
                 sfder(1,1) = -(1.-xi(2))*(1.-xi(3))/8.;
                 sfder(1,2) = -(1.-xi(1))*(1.-xi(3))/8.;

@@ -15,7 +15,7 @@ contains
         real(8), dimension(nsd,nsd) :: stress
         real(8), dimension(nen*nsd) :: fele
         real(8), dimension(nsd) :: xi, intcoord ! intcoord is the coordinates of the integration points, necessary for anisotropic models
-        real(8), dimension(nen,nsd) :: dNdxi 
+        real(8), dimension(nen,nsd) :: dNdxi
         real(8), dimension(nsd,nsd) :: dxdxi, dxidx, F, Finv, B, eye
         real(8), allocatable, dimension(:,:) :: xilist
         real(8), allocatable, dimension(:) :: weights
@@ -24,11 +24,10 @@ contains
         real(8), dimension(nsd) :: work ! for lapack inverse
         integer, dimension(nsd) :: ipiv ! for lapack inverse
         integer :: info, n1 ! for lapack inverse
-        
+
         external DGETRF
         external DGETRI
         n1 = nsd
-        
         ! square matrix
         do i=1,nsd
             do j=1,nsd
@@ -39,17 +38,14 @@ contains
                 end if
             end do
         end do
-        
         ! initialize Fint
         Fint = 0.
-        
         ! allocate
         npt = int_number(nsd,nen,0)
         allocate(xilist(nsd,npt))
         allocate(weights(npt))
         xilist = int_points(nsd,nen,npt)
         weights = int_weights(nsd,nen,npt)
-        
         ! loop over elements
         do ele=1,nel
             ! extract coords of nodes, and dofs for the element
@@ -117,7 +113,6 @@ contains
                 end do
             end do
         end do
-        
         deallocate(xilist)
         deallocate(weights)
     end subroutine force_internal

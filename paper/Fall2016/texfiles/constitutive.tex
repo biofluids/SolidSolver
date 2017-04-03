@@ -4,7 +4,7 @@ The elastic deformation can be described with the standard continuum mechanics. 
 \subsection{Elastic deformation}
 We use the compressible Neo-Hookean model in this work. The free energy is:
 \begin{equation}
-\Psi = \frac{1}{2}\mathrm{ln}^2 J_\rme + \frac{1}{2}\mu \left[ \bC_\rme : \bI - 3 - 2\mathrm{ln} J_\rme \right]
+\Psi = \frac{\lambda}{2}\mathrm{ln}^2 J_\rme + \frac{1}{2}\mu \left[ \bC_\rme : \bI - 3 - 2\mathrm{ln} J_\rme \right]
 \end{equation}
 where $\lambda$ and $\mu$ are material constants. The elastic second Piola-Kirchhoff stress $\bS_\rme$ and the elastic constitutive moduli $\bbC_\rme$ are derived in a standard way as following:
 \begin{equation} \label{eq:Se}
@@ -55,7 +55,7 @@ Function $k_\rmg$ is used to prevent unbounded growth \cite{Lubarda2}:
 \begin{equation} \label{eq:stretchRatio3}
 k_\rmg = \frac{1}{\tau}\left( \frac{\theta_\mathrm{max} - \theta_\rmg}{\theta_\mathrm{max} - 1} \right)^\gamma
 \quad \mathrm{with} \quad 
-\frac{\partial k_\rmg}{\partial \theta_\rmg} = -\frac{\gamma}{\theta_\mathrm{max} - \theta\rmg}k_\rmg
+\frac{\partial k_\rmg}{\partial \theta_\rmg} = -\frac{\gamma}{\theta_\mathrm{max} - \theta_\rmg}k_\rmg
 \end{equation}
 where $\tau$ and $\gamma$ are material constants.
 
@@ -176,10 +176,12 @@ Growth model can be easily implemented within the existing nonlinear finite elem
 	\State compute the elastic tensor $\bF_\rme = \bF/\theta_\rmg$
 	\State compute the elastic right Cauchy-Green tensor $\bC_\rme = \bF_\rme^T\cdot\bF_\rme$
 	\State compute the elastic second Piola-Kirchhoff stress $\bS_\rme$ using Equation \ref{eq:Se}
-	\State compute the growth function $k_\rmg$ using Equation \ref{eq:stretchRatio3}
-	\State compute the residual $R$ using Equation \ref{eq:residual}
-	\State compute the tangent moduli $K$ using Equation \ref{eq:K}
-	\State update stretch ratio $\theta_\rmg \leftarrow \theta_\rmg - R/K$
+	\If{$\phi_g = \mathrm{tr}(\bM_\rme) - M_\rme^\mathrm{crit} \geq 0$} 
+		\State compute the growth function $k_\rmg$ using Equation \ref{eq:stretchRatio3}
+		\State compute the residual $R$ using Equation \ref{eq:residual}
+		\State compute the tangent moduli $K$ using Equation \ref{eq:K}
+		\State update stretch ratio $\theta_\rmg \leftarrow \theta_\rmg - R/K$
+	\EndIf
 	\EndWhile
 	\State compute the second Piola-Kirchhoff stress $\bS$ using Equation \ref{eq:S}
 	\State compute the Kirchhoff stress $\boldsymbol\tau$ using Equation \ref{eq:tau}

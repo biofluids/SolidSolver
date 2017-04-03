@@ -1,0 +1,41 @@
+\section{Fluid-solid interaction}
+Immersed Finite Element Method (IFEM) is a non-boundary-fitted mesh method that represents the background viscous fluid and the immersed deformable solid with different meshes that are independent from each other. The fluid domain $\Omega^\mathrm{f}$ is defined on a fixed Eulerian grid and the solid domain $\Omega^\mathrm{s}$ is constructed independently with a Lagrangian mesh. The fluid exists everywhere in the computational domain and the imaginary fluid in the solid domain is called the ``artificial'' fluid $\bar\Omega$. The interaction between the fluid and the solid is represented by a fluid-solid interaction force $\bold{f}^\mathrm{FSI}$.
+
+The governing equations for the entire computational domain $\Omega$ which includes the real $\Omega^\mathrm{f}$ and the artificial fluid domains $\bar\Omega$, are the Navier-Stokes continuity and momentum equations for incompressible flows:
+\begin{subequations} \label{NS}
+\begin{align}
+\nabla \cdot \bv^\mathrm{f} &= 0 \\
+\bar\rho (\bv_{, \mathrm{t}}^\mathrm{f} + \bv^\mathrm{f} \cdot \nabla\bv^\mathrm{f}) &= -\nabla p^\mathrm{f} + \mu\nabla^2 \bv^\mathrm{f} + \bold{f}^\mathrm{FSI,f} + \bar\rho\bold{g} \quad \mathrm{in} \quad \Omega 
+\end{align}
+\end{subequations}
+where  $\bar\rho$ is defined as $\bar\rho = \rho^\mathrm{f} + (\rho^\mathrm{s} - \rho^\mathrm{f})I(\bx)$, while $\rho^\mathrm{f}$ and $\rho^\mathrm{s}$ are the densities of the fluid and the solid, respectively. And the indicator function $I$ is used to identify the artificial fluid from the real fluid. It is set to $1$ in the artificial fluid domain and $0$ in the real fluid domain; and varies from $0$ to $1$ at and near the fluid-structure interface. It needs to be updated as the solid moves or deforms. $\bold{g}$ is the external body force. The $\bold{f}^\mathrm{FSI}$ is defined as the fluid-structure interaction force that represents the viscous effects due to the existence of the solid in the fluid domain. And the superscripts $f$ and $s$ represent fluid and solid variables, respectively. 
+
+The governing equations for the solid, on the other hand, is completely identical to what it would be without fluid, which is introduced in Section \ref{Kinematics}.
+
+Notice the $\bold{f}^\mathrm{FSI}$ is first evaluated in the solid domain $\Omega^\mathrm{s}$ through:
+\begin{equation} \label{FSI}
+\bold{f}^\mathrm{FSI,s} = \nabla \cdot \boldsymbol{\sigma}^\mathrm{s} - \nabla \cdot \boldsymbol{\sigma}^\mathrm{f} \quad \mathrm{in} \quad \Omega^\mathrm{s}
+\end{equation}
+where $\boldsymbol\sigma^\mathrm{s}$ is the solid stress evaluated based on the solid constitutive law as a function of the solid deformation; $\boldsymbol\sigma^\mathrm{f}$ is the fluid stress interpolated onto the solid domain from the previous time solution, and then distributed onto the fluid domain as $\Omega^\mathrm{f}$ with the Reproducing Kernel Particle Method (RKPM):
+\begin{equation} \label{RKPM}
+\bold{f}^\mathrm{FSI,f} = \int_\Omega^\mathrm{s} \bold{f}^\mathrm{FSI,s}\phi(\bx - \bx^\mathrm{s})d\Omega^\mathrm{s}
+\end{equation}
+where $\phi$ is the interpolation function of the distance of a fluid grid point $\bx$ and a solid point $\bx^s$. Similar procedures also apply to the distribution of the fluid velocity and pressure to the Dirichlet and Neumann boundary conditions of the solid:
+\begin{subequations} \label{interpolation}
+\begin{align}
+q_i &= \left[ v_i^\mathrm{f} \phi(\bx - \bx^\mathrm{s}) \right]\Delta t \quad \mathrm{on} \quad \Gamma^\mathrm{sq} \\
+h_i &= \left[ \sigma_{ij}^\mathrm{f} \phi(\bx - \bx^\mathrm{s}) \right]n_j \quad \mathrm{on} \quad \Gamma^\mathrm{sh}
+\end{align}
+\end{subequations}
+Here $q_i$ and $h_i$ are the Dirichlet and Neumann boundary conditions on the solid boundary $\Gamma^\mathrm{sq}$ and $\Gamma^\mathrm{sh}$, respectively. $\Delta t$ is the time step size and $\bold{n}$ is the outward normal of the fluid-structure interface. The numerical algorithm can be described with Algorithm \ref{IFEMalgo}. For more detailed derivation and applications, please refer to \cite{Lucy, Lucy2, Lucy3, Lucy4}.
+\begin{algorithm}
+	\caption{Algorithm for IFEM}  \label{IFEMalgo}
+	\begin{algorithmic}[1]
+	\State Solve solid equations on the Lagrangian mesh to obtain solid motion and deformation using Algorithm \ref{algo}, using the boundary conditions derived from fluid solutions from the previous time step \label{first}
+	\State Compute the fluid-structure interaction force $\bold{f}^\mathrm{FSI}$ using Equation \ref{FSI}
+	\State Distribute the fluid-structure interaction force $\bold{f}^\mathrm{FSI}$ onto the fluid domain using Equation \ref{RKPM}
+	\State Update the indicator field $I$ based on the relative position of the solid in the fluid domain
+	\State Solve fluid equations on the Eulerian mesh to obtain velocity and pressure fields using Equation \ref{NS}
+	\State Interpolate fluid velocity and stress onto the solid boundary as its boundary condition using Equations \ref{interpolation} and go back to step \ref{first}
+	\end{algorithmic}
+\end{algorithm}

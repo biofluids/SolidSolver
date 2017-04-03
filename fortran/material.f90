@@ -1,59 +1,6 @@
 module material
     implicit none
 contains
-    subroutine getStiffness(theta, F, stress, mstiff)
-        use read_file, only: nsd, materialprops, delta
-        real(8), intent(inout) :: theta
-        real(8), dimension(nsd, nsd), intent(in) :: F
-        real(8), dimension(nsd, nsd), intent(inout) :: stress
-        real(8), dimension(nsd, nsd, nsd, nsd), intent(inout) :: mstiff
-
-        real(8), dimension(nsd, nsd) :: Fe, Ce, Feinv, Ceinv, Se, Me
-        real(8), dimension(nsd, nsd, nsd, nsd) :: Le, Lg
-        real(8) :: mu, lambda, Je, phi
-        integer :: i, j, k, l, info, ii, jj, kk, ll
-
-        mu = materialprops(3)
-        lambda = materialprops(4)
-        theta = 1.0
-
-        call update(F, theta, Fe, Feinv, Je, Ce, Ceinv, Se, Me, phi)
-
-        do i = 1, nsd
-            do j = 1, nsd
-                do k = 1, nsd
-                    do l = 1, nsd
-                        Le(i, j, k, l) = (mu - lambda*log(Je))*(Ceinv(i, k)*Ceinv(j, l) + Ceinv(i, l)*Ceinv(j, k)) &
-                            + lambda*(Ceinv(i, j)*Ceinv(k, l))
-                    end do
-                end do
-            end do
-        end do
-        Lg = Le/theta**4
-
-        stress = (lambda*log(Je) - mu)*delta + mu*matmul(Fe, transpose(Fe))
-        mstiff = 0.0
-        do i = 1, nsd
-            do j = 1, nsd
-                do k = 1, nsd
-                    do l = 1, nsd
-                        do ii = 1, nsd
-                            do jj = 1, nsd
-                                do kk = 1, nsd
-                                    do ll = 1, nsd
-                                        mstiff(i, j, k, l) = mstiff(i, j, k, l) + &
-                                            F(i, ii)*F(j, jj)*Lg(ii,jj,kk,ll)*F(k,kk)*F(l,ll)
-                                    end do
-                                end do
-                            end do
-                        end do
-                    end do
-                end do
-            end do
-        end do
-
-    end subroutine getStiffness
-
     subroutine getStress(theta, F, stress)
         use read_file, only: nsd, materialprops, delta
         real(8), intent(in) :: theta
@@ -64,7 +11,6 @@ contains
 
         mu = materialprops(3)
         lambda = materialprops(4)
-        
         Fe = F/theta
         if (nsd == 2) then
             Je = (Fe(1,1)*Fe(2,2) - Fe(1,2)*Fe(2,1))
@@ -107,7 +53,7 @@ contains
     end subroutine update
 
     subroutine theta_update(theta_pre, theta, F, stress, mstiff)
-        use read_file, only: nsd, dt, tol, materialprops, delta, step 
+        use read_file, only: nsd, dt, tol, materialprops, delta, step
         real(8), intent(inout) :: theta, theta_pre
         real(8), dimension(nsd, nsd), intent(in) :: F
         real(8), dimension(nsd, nsd), intent(inout) :: stress
@@ -119,19 +65,19 @@ contains
         real(8) :: mu, lambda, Je, theta_max, tau_g, gamma, phi, temp
         real(8) :: der1, der2, residual, theta_increment
         integer :: i, j, k, l, ii, jj, kk, ll, cnt
-        
+
         theta_max = 1.5
         tau_g = 1.0
         gamma = 2.0
         mu = materialprops(3)
         lambda = materialprops(4)
-        
+
         theta_increment = 1.0
         theta = theta_pre
 
         cnt = 0
         ! local Newton iteration
-        do 
+        do
             call update(F, theta, Fe, Feinv, Je, Ce, Ceinv, Se, Me, phi)
             if (phi < 0.0) then
                 theta = theta_pre
@@ -216,7 +162,7 @@ contains
                             do jj = 1, nsd
                                 do kk = 1, nsd
                                     do ll = 1, nsd
-                                        mstiff(i, j, k, l) = mstiff(i, j, k, l) + & 
+                                        mstiff(i, j, k, l) = mstiff(i, j, k, l) + &
                                             F(i, ii)*F(j, jj)*Lg(ii,jj,kk,ll)*F(k,kk)*F(l,ll)
                                     end do
                                 end do
@@ -240,7 +186,7 @@ contains
         integer :: i, j, k
         real(8) :: kappa, mu1, mu2, I1, I2, c1, c2, c3, Ja, I4, I6, lambda4, lambda6, kk1, kk2, R, beta
         real(8), dimension(nsd) :: a0, g0, a, g
-        
+
         ! square matrix
         do i=1,nsd
             do j=1,nsd
@@ -251,7 +197,7 @@ contains
                 end if
             end do
         end do
-        
+
         ! Change B to Bbar and compute Bbar squared
         if (nsd == 2) then
             Ja = (F(1,1)*F(2,2) - F(1,2)*F(2,1))
@@ -263,7 +209,7 @@ contains
         B = matmul(F,transpose(F))
         Bbar = B/Ja**(2/3.)
         BB = matmul(Bbar,Bbar)
-        
+
         ! I1 I2 denote I1bar I2bar actually
         if (nsd == 2) then
             I1 = 1.0/Ja**(2/3.)
@@ -277,15 +223,15 @@ contains
         do i = 1, nsd
             do j = 1, nsd
                 I2 = I2 - Bbar(i,j)**2
-            end do 
+            end do
         end do
         if (nsd == 2) then
             I2 = I2 - 1.0/Ja**(4/3.)
         end if
         I2 = I2/2.
-        
+
         stress = 0.
-        
+
         if (materialtype == 1) then ! Mooney-Rivlin
             kappa = materialprops(2)
             mu1 = materialprops(3)
@@ -322,7 +268,7 @@ contains
                 kk2 = 0.7112
                 mu1 = 300
             end if
-            
+
             R = sqrt((intcoord(1))**2 + (intcoord(2))**2)
             if (nsd == 3) then
                 a0 = [cos(beta)*intcoord(2)/R, -cos(beta)*intcoord(1)/R,  sin(beta)]
@@ -346,7 +292,7 @@ contains
             lambda6 = sqrt(I6)
             g = matmul(F,g0)/lambda6
             I6 = I6/Ja**(2/3.)
-            
+
             do i = 1, nsd
                 do j = 1, nsd
                     stress(i,j) = -1/3.*mu1*I1*eye(i,j) + mu1*Bbar(i,j) + Ja*(Ja-1)*kappa*eye(i,j)
@@ -385,9 +331,9 @@ contains
                 end if
             end do
         end do
-        
+
         mstiff = 0.
-        
+
         ! Change B to Bbar and compute Bbar squared
         if (nsd == 2) then
             Ja = (F(1,1)*F(2,2) - F(1,2)*F(2,1))
@@ -399,7 +345,7 @@ contains
         B = matmul(F,transpose(F))
         Bbar = B/Ja**(2/3.)
         BB = matmul(Bbar,Bbar)
-        
+
         ! I1 I2 denote I1bar I2bar actually
         if (nsd == 2) then
             I1 = 1.0/Ja**(2/3.)
@@ -413,13 +359,13 @@ contains
         do i = 1, nsd
             do j = 1, nsd
                 I2 = I2 - Bbar(i,j)**2
-            end do 
+            end do
         end do
         if (nsd == 2) then
             I2 = I2 - 1.0/Ja**(4/3.)
         end if
         I2 = I2/2.
-        
+
         if (materialtype == 1) then ! Mooney-Rivlin
             kappa = materialprops(2)
             mu1 = materialprops(3)
@@ -439,7 +385,7 @@ contains
                         end do
                     end do
                 end do
-            end do 
+            end do
         else if (materialtype == 2) then ! Yeoh
             kappa = materialprops(2)
             c1 = materialprops(3)
@@ -450,12 +396,12 @@ contains
                     do k = 1, nsd
                         do l = 1, nsd
                             mstiff(i,j,k,l) = (8*c2 + 24*c3*(I1 - 3))*Bbar(i,j)*Bbar(k,l) &
-                                            - (4/3.*c1 + (16/3.*I1 - 8)*c2 + 12*(I1-1)*(I1-3)*c3) & 
+                                            - (4/3.*c1 + (16/3.*I1 - 8)*c2 + 12*(I1-1)*(I1-3)*c3) &
                                             *(eye(i,j)*Bbar(k,l) + eye(k,l)*Bbar(i,j)) &
                                             + (4/9.*I1*c1 + (16/9.*I1**2 - 8/3.*I1)*c2 + 4*I1*(I1-1)*(I1-3)*c3)*eye(i,j)*eye(k,l) &
-                                            + (2/3.*I1*c1 + 4/3.*I1*(I1-3)*c2 + (2*I1*(I1-3)**2)*c3) & 
+                                            + (2/3.*I1*c1 + 4/3.*I1*(I1-3)*c2 + (2*I1*(I1-3)**2)*c3) &
                                             *(eye(i,k)*eye(j,l) + eye(i,l)*eye(j,k)) &
-                                            + (Ja*(2*Ja-1)*eye(i,j)*eye(k,l) - Ja*(Ja-1)*(eye(i,k)*eye(j,l)+eye(i,l)*eye(j,k))) & 
+                                            + (Ja*(2*Ja-1)*eye(i,j)*eye(k,l) - Ja*(Ja-1)*(eye(i,k)*eye(j,l)+eye(i,l)*eye(j,k))) &
                                             *kappa
                                             !+ (eye(i,j)*eye(k,l) - (eye(i,k)*eye(j,l)+eye(i,l)*eye(j,k)))*Ja*pressure
                         end do
@@ -479,7 +425,7 @@ contains
                 kk2 = 0.7112
                 mu1 = 300
             end if
-            
+
             R = sqrt((intcoord(1))**2 + (intcoord(2))**2)
             if (nsd == 3) then
                 a0 = [cos(beta)*intcoord(2)/R, -cos(beta)*intcoord(1)/R,  sin(beta)]
@@ -503,14 +449,14 @@ contains
             lambda6 = sqrt(I6)
             g = matmul(F,g0)/lambda6
             I6 = I6/Ja**(2/3.)
-            
+
             ! 1st order derivative of psi w.r.t. I4/I6
             der14 = kk1*(I4-1.)*exp(kk2*(I4-1.)**2)
             der16 = kk1*(I6-1.)*exp(kk2*(I6-1.)**2)
             ! 2nd order derivative of psi w.r.t. I4/I6
             der24 = kk1*(1+2*kk2*(I4-1.)**2)*exp(kk2*(I4-1.)**2)
             der26 = kk1*(1+2*kk2*(I6-1.)**2)*exp(kk2*(I6-1.)**2)
-            
+
             do i=1,nsd
                 do j=1,nsd
                     do k=1,nsd

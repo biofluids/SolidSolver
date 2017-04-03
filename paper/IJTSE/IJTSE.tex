@@ -1,0 +1,71 @@
+\documentclass[10.5pt, a4paper, twocolumn]{article}
+\usepackage[affil-it]{authblk}
+\usepackage{etoolbox}
+\usepackage{lmodern}
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsbsy}
+\usepackage{setspace}
+\usepackage{fullpage}
+\usepackage{cite}
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage{appendix}
+\usepackage{bbm}
+\usepackage{booktabs}
+\usepackage{multirow}
+
+\usepackage{mathtools, cuted}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{titlesec}
+\titleformat*{\section}{\normalsize\bfseries}
+\titleformat*{\subsection}{\normalsize\bfseries}
+\titleformat*{\subsubsection}{\normalsize\bfseries}
+
+\input texFiles/defs
+\makeatletter
+\patchcmd{\@maketitle}{\LARGE \@title}{\fontsize{16}{19.2}\selectfont\@title}{}{}
+\makeatother
+
+\renewcommand\Authfont{\fontsize{12}{14.4}\selectfont}
+\renewcommand\Affilfont{\fontsize{8}{9.6}\itshape}
+\renewenvironment{abstract}
+  {\small\quotation
+  {\bfseries\noindent{\normalsize\abstractname}\par\nobreak\smallskip}}
+  {\endquotation}
+  
+\title{\textbf{A General Approach to Derive Stress and Elasticity Tensors for Hyperelastic Isotropic and Anisotropic Biomaterials}}
+\author[a]{Jie Cheng}
+\author[a]{Lucy T. Zhang\thanks{Corresponding author. E-mail address: zhanglucy@rpi.edu}}
+\affil[a]{Department of Mechanical Aerospace and Nuclear Engineering, Rensselaer Polytechnic Institute, Troy, NY 12180, USA}
+\date{}
+\pagenumbering{gobble}
+
+\begin{document}
+\twocolumn[
+    \begin{@twocolumnfalse}
+         \maketitle
+	 \input texFiles/abstract
+     \end{@twocolumnfalse}
+]
+\bigskip
+\input texFiles/introduction
+\input texFiles/formulations
+\input texFiles/experiments
+\input texFiles/conclusion
+\input texFiles/appendix
+
+\bibliography{references}
+\bibliographystyle{vancouver}
+%\bibliographystyle{apalike}
+\clearpage
+\input tables/tables
+\end{document}
+
+
+
