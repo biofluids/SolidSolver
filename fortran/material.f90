@@ -46,7 +46,7 @@ contains
         Ceinv = matmul(Feinv, transpose(Feinv))
         Se = (materialprops(3)*log(Je) - materialprops(4))*Ceinv + materialprops(4)*delta
         Me = matmul(Ce, Se)
-        phi = -1.2d4 ! phi = tr(Me) - Me_crit
+        phi = 0.0 !-1.2d4 ! phi = tr(Me) - Me_crit
         do i = 1, nsd
             phi = phi + Me(i, i)
         end do
@@ -60,13 +60,13 @@ contains
         real(8), dimension(nsd, nsd, nsd, nsd), intent(inout) :: mstiff
 
         real(8) :: kg, local_tangent
-        real(8), dimension(nsd, nsd) :: Fe, Ce, Feinv, Ceinv, Se, Me, left, right
-        real(8), dimension(nsd, nsd, nsd, nsd) :: Le, Lg
+        real(8), dimension(nsd, nsd) :: Fe, Ce, Feinv, Ceinv, Se, Me
+        real(8), dimension(nsd, nsd, nsd, nsd) :: Le
         real(8) :: mu, lambda, Je, theta_max, tau_g, gamma, phi, temp
         real(8) :: der1, der2, residual, theta_increment
         integer :: i, j, k, l, ii, jj, kk, ll, cnt
 
-        theta_max = 1.5
+        theta_max = 1.3
         tau_g = 1.0
         gamma = 2.0
         mu = materialprops(3)
@@ -77,7 +77,7 @@ contains
 
         cnt = 0
         ! local Newton iteration
-        do
+        do while (.true.)
             call update(F, theta, Fe, Feinv, Je, Ce, Ceinv, Se, Me, phi)
             if (phi < 0.0) then
                 theta = theta_pre
@@ -114,65 +114,18 @@ contains
                 stop
             end if
         end do
-
-        temp = 0.0 ! Ce:Le:Ce
-        do i = 1, nsd
-            do j = 1, nsd
-                do k = 1, nsd
-                    do l = 1, nsd
-                        Le(i, j, k, l) = (mu - lambda*log(Je))*(Ceinv(i, k)*Ceinv(j, l) + Ceinv(i, l)*Ceinv(j, k)) &
-                            + lambda*(Ceinv(i, j)*Ceinv(k, l))
-                        temp = temp + Ce(i, j)*Le(i, j, k, l)*Ce(k, l)
-                    end do
-                end do
-            end do
-        end do
-
-        left = Se
-        right = Se
-        do i = 1, nsd
-            do j = 1, nsd
-                do k = 1, nsd
-                    do l = 1, nsd
-                        left(i, j) = left(i, j) + 0.5*Le(i, j, k, l)*Ce(k, l)
-                        right(i, j) = right(i, j) + 0.5*Le(k, l, i, j)*Ce(k, l)
-                    end do
-                end do
-            end do
-        end do
-
-        do i = 1, nsd
-            do j = 1, nsd
-                do k = 1, nsd
-                    do l = 1, nsd
-                        Lg(i, j, k, l) = Le(i, j, k, l)/theta**4 !&
-                            !- 4*kg*dt/(local_tangent*theta**5)*left(i, j)*right(k, l)
-                    end do
-                end do
-            end do
-        end do
-
-        stress = (lambda*log(Je) - mu)*delta + mu*matmul(Fe, transpose(Fe))
         mstiff = 0.0
         do i = 1, nsd
             do j = 1, nsd
                 do k = 1, nsd
                     do l = 1, nsd
-                        do ii = 1, nsd
-                            do jj = 1, nsd
-                                do kk = 1, nsd
-                                    do ll = 1, nsd
-                                        mstiff(i, j, k, l) = mstiff(i, j, k, l) + &
-                                            F(i, ii)*F(j, jj)*Lg(ii,jj,kk,ll)*F(k,kk)*F(l,ll)
-                                    end do
-                                end do
-                            end do
-                        end do
+                        mstiff(i, j, k, l) = (mu - lambda*log(Je))*(delta(i, k)*delta(j, l) + delta(i, l)*delta(j, k)) &
+                            + lambda*(delta(i, j)*delta(k, l))
                     end do
                 end do
             end do
         end do
-
+        stress = (lambda*log(Je) - mu)*delta + mu*matmul(Fe, transpose(Fe))
    end subroutine theta_update
 
     subroutine Kirchhoffstress(nsd, intcoord, F, materialtype, materialprops, stress)

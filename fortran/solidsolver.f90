@@ -217,7 +217,8 @@ subroutine dynamics(filepath)
             if (load_type == 1) then
                 call force_pressure(un1, Fext)
             end if
-            F = Fext - Fint
+            !F = Fext - Fint
+            F = -Fint
             ! R = matmul(M, an1) - F
             do i = 1, nn*nsd
                 !R(i) = M(i)*an1(i) - F(i)
@@ -226,6 +227,7 @@ subroutine dynamics(filepath)
             !do i = 1, nn*nsd
             !    call addValueSymmetric(nonzeros, i, i, M(i)/(beta*dt**2))
             !end do
+            call prescribe_displacement()
             ! penalty
             do i = 1, bc_size
                 row = nsd*(bc_num(1, i) - 1) + bc_num(2, i)
@@ -267,6 +269,14 @@ subroutine dynamics(filepath)
     deallocate(an1)
     deallocate(M)
 end subroutine dynamics
+
+subroutine prescribe_displacement()
+    use read_file, only: bc_size, bc_num, bc_val, step
+    integer :: i
+    do i = 13, 16
+        bc_val(i) = (step/80 + 1)*0.1
+    end do
+end subroutine
 
 subroutine radial_displacement(rad, z)
     real(8), intent(in) :: z

@@ -2,19 +2,17 @@ module output
     implicit none
 contains
     subroutine write_results(filepath,dofs)
-        use read_file, only: mode, step, nn, nsd, nel, isbinary
+        use read_file, only: mode, nn, nsd, nel, isbinary
         character(80) :: filepath
         real(8), dimension(nn*nsd), intent(in) :: dofs
-        if (step == 0) then
-            call write_case(filepath)
-        end if
+        call write_case(filepath)
         call write_geometry(filepath,dofs)
         call write_displacement(filepath,dofs)
         call write_stress(filepath,dofs)
     end subroutine write_results
 
     subroutine write_case(filepath)
-        use read_file, only: nsteps, nprint, dt
+        use read_file, only: nsteps, nprint, dt, step
         character(80) :: filepath, filename
         real(8), dimension(nsteps/nprint+1) :: time
         integer :: i
@@ -32,11 +30,11 @@ contains
         write(10,'("tensor symm per node:",12x,"stress",12x,"solid.sig******",/)')
         write(10,'("TIME",/)')
         write(10,'("time set:",12x,i10)') 1
-        write(10,'("number of steps:",12x,i10)') nsteps/nprint + 1
+        write(10,'("number of steps:",12x,i10)') step/nprint + 1
         write(10,'("filename start number:",12x,i10)') 0
         write(10,'("filename increment:",12x,i10)') 1
         write(10,'("time values:")')
-        do i=1,(nsteps/nprint+1)
+        do i=1,(step/nprint+1)
             time(i) = (i-1)*nprint*dt
             write(10,'(f12.3)')  time(i)
         end do
