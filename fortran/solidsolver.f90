@@ -217,8 +217,8 @@ subroutine dynamics(filepath)
             if (load_type == 1) then
                 call force_pressure(un1, Fext)
             end if
-            !F = Fext - Fint
-            F = -Fint
+            F = Fext - Fint
+            !F = -Fint
             ! R = matmul(M, an1) - F
             do i = 1, nn*nsd
                 !R(i) = M(i)*an1(i) - F(i)
@@ -227,7 +227,7 @@ subroutine dynamics(filepath)
             !do i = 1, nn*nsd
             !    call addValueSymmetric(nonzeros, i, i, M(i)/(beta*dt**2))
             !end do
-            call prescribe_displacement()
+            !call prescribe_displacement()
             ! penalty
             do i = 1, bc_size
                 row = nsd*(bc_num(1, i) - 1) + bc_num(2, i)

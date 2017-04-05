@@ -22,17 +22,18 @@ contains
         stress = (lambda*log(Je) - mu)*delta + mu*matmul(Fe, transpose(Fe))
     end subroutine getStress
 
-    subroutine update(F, theta_next, Fe, Feinv, Je, Ce, Ceinv, Se, Me, phi)
+    subroutine update(F, theta, Fe, Je, phi)
         use read_file, only: nsd, delta, materialprops
-        real(8), intent(in) :: theta_next
+        real(8), intent(in) :: theta
         real(8), intent(inout) :: Je, phi
         real(8), dimension(nsd, nsd), intent(in) :: F
-        real(8), dimension(nsd, nsd), intent(inout) :: Fe, Feinv, Ce, Ceinv, Se, Me
+        real(8), dimension(nsd, nsd), intent(inout) :: Fe
+        real(8), dimension(nsd, nsd) :: Me
+        real(8) :: lambda, mu
         real(8), dimension(nsd) :: work
         integer(8), dimension(nsd) :: ipiv
         integer :: i, info
-        Fe = F/theta_next
-        Ce = matmul(transpose(Fe), Fe)
+        Fe = F/theta
         if (nsd == 2) then
             Je = (Fe(1,1)*Fe(2,2) - Fe(1,2)*Fe(2,1))
         else if (nsd == 3) then
@@ -40,77 +41,50 @@ contains
                     - Fe(1,2)*Fe(2,1)*Fe(3,3) + Fe(1,2)*Fe(2,3)*Fe(3,1) &
                     + Fe(1,3)*Fe(2,1)*Fe(3,2) - Fe(1,3)*Fe(2,2)*Fe(3,1)
         end if
-        Feinv = Fe
-        call DGETRF(nsd, nsd, Feinv, nsd, ipiv, info)
-        call DGETRI(nsd, Feinv, nsd, ipiv, work, nsd, info)
-        Ceinv = matmul(Feinv, transpose(Feinv))
-        Se = (materialprops(3)*log(Je) - materialprops(4))*Ceinv + materialprops(4)*delta
-        Me = matmul(Ce, Se)
-        phi = 0.0 !-1.2d4 ! phi = tr(Me) - Me_crit
+        mu = materialprops(3)
+        lambda = materialprops(4)
+        Me = (lambda*log(Je) - mu)*delta + mu*matmul(transpose(Fe), Fe)
+        phi = -1.2d4 ! phi = tr(Me) - Me_crit
         do i = 1, nsd
             phi = phi + Me(i, i)
         end do
     end subroutine update
 
-    subroutine theta_update(theta_pre, theta, F, stress, mstiff)
+    subroutine growth_increment(theta_pre, theta, F, stress, mstiff)
         use read_file, only: nsd, dt, tol, materialprops, delta, step
         real(8), intent(inout) :: theta, theta_pre
         real(8), dimension(nsd, nsd), intent(in) :: F
         real(8), dimension(nsd, nsd), intent(inout) :: stress
         real(8), dimension(nsd, nsd, nsd, nsd), intent(inout) :: mstiff
-
-        real(8) :: kg, local_tangent
-        real(8), dimension(nsd, nsd) :: Fe, Ce, Feinv, Ceinv, Se, Me
-        real(8), dimension(nsd, nsd, nsd, nsd) :: Le
-        real(8) :: mu, lambda, Je, theta_max, tau_g, gamma, phi, temp
-        real(8) :: der1, der2, residual, theta_increment
-        integer :: i, j, k, l, ii, jj, kk, ll, cnt
-
-        theta_max = 1.3
+        real(8), dimension(nsd, nsd) :: Fe
+        real(8) :: mu, lambda, Je, theta_max, tau_g, gamma, kg, phi
+        real(8) :: theta_increment, temp, dr1, dr2, residual, local_tangent
+        integer :: i, j, k, l, cnt
+        theta_max = 1.5
         tau_g = 1.0
         gamma = 2.0
         mu = materialprops(3)
         lambda = materialprops(4)
-
-        theta_increment = 1.0
+        residual = 1.0
         theta = theta_pre
-
+        call update(F, theta, Fe, Je, phi)
         cnt = 0
         ! local Newton iteration
-        do while (.true.)
-            call update(F, theta, Fe, Feinv, Je, Ce, Ceinv, Se, Me, phi)
-            if (phi < 0.0) then
-                theta = theta_pre
-                exit
-            end if
-            temp = 0.0
-            do i = 1, nsd
-                do j = 1, nsd
-                    do k = 1, nsd
-                        do l = 1, nsd
-                            Le(i, j, k, l) = (mu - lambda*log(Je))*(Ceinv(i, k)*Ceinv(j, l) + Ceinv(i, l)*Ceinv(j, k)) &
-                                + lambda*(Ceinv(i, j)*Ceinv(k, l))
-                            temp = temp + Ce(i, j)*Le(i, j, k, l)*Ce(k, l)
-                        end do
-                    end do
-                end do
-            end do
-            kg = 1.0/tau_g*((theta_max - theta)/(theta_max - 1.0))**gamma
+        do while (residual > tol .and. dabs(theta_max - theta) > tol .and. phi > tol)
+            temp = 6*(mu - lambda*log(Je)) + 9*lambda
+            kg = 1.0/tau_g*((theta_max - theta_pre)/(theta_max - 1.0))**gamma
             residual = theta - theta_pre - kg*phi*dt
-            der1 = -(2*phi + temp)/theta ! partial derivative of phi w.r.t. theta
-            der2 = -gamma*kg/(theta_max - theta) ! partial derivative of k w.r.t. theta
-            local_tangent = 1 - (kg*der1 + phi*der2)*dt
-            theta_increment = -residual/local_tangent
-            theta = theta + theta_increment
+            dr1 = -(2*phi + temp)/theta ! partial derivative of phi w.r.t. theta
+            dr2 = -gamma*kg/(theta_max - theta) ! partial derivative of k w.r.t. theta
+            local_tangent = 1 - (kg*dr1 + phi*dr2)*dt
+            theta = theta - residual/local_tangent
+            call update(F, theta, Fe, Je, phi)
             cnt = cnt + 1
-            if (residual < tol) then
-                exit
-            else if (theta > theta_max) then
-                theta = theta_max
-                call update(F, theta, Fe, Feinv, Je, Ce, Ceinv, Se, Me, phi)
-                exit
-            else if (cnt == 1000) then
-                write(*,*) "exceeded max theta iterations!"
+            if (theta - theta_max > tol) then
+                write(*,*) 'maximum value exceeded, theta = ', theta
+                stop
+            else if (cnt == 500) then
+                write(*,*) "max number of theta iteration reached!"
                 stop
             end if
         end do
@@ -126,7 +100,7 @@ contains
             end do
         end do
         stress = (lambda*log(Je) - mu)*delta + mu*matmul(Fe, transpose(Fe))
-   end subroutine theta_update
+   end subroutine
 
     subroutine Kirchhoffstress(nsd, intcoord, F, materialtype, materialprops, stress)
         ! Compute the Kirchhoff stress
