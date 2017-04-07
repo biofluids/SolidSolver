@@ -22,17 +22,15 @@ contains
         stress = (lambda*log(Je) - mu)*delta + mu*matmul(Fe, transpose(Fe))
     end subroutine getStress
 
-    subroutine update(F, theta, Fe, Je, Ce, trace_Ce, trace_Me)
+    subroutine update(F, theta, Fe, Je, Be, Ce, trace_Ce, trace_Me)
         use read_file, only: nsd, delta, materialprops
         real(8), intent(in) :: theta
         real(8), intent(inout) :: Je, trace_Ce, trace_Me
         real(8), dimension(nsd, nsd), intent(in) :: F
-        real(8), dimension(nsd, nsd), intent(inout) :: Fe, Ce
+        real(8), dimension(nsd, nsd), intent(inout) :: Fe, Be, Ce
         real(8), dimension(nsd, nsd) :: Me
         real(8) :: lambda, mu
-        real(8), dimension(nsd) :: work
-        integer(8), dimension(nsd) :: ipiv
-        integer :: i, j, info
+        integer :: i, j
         Fe = F/theta
         if (nsd == 2) then
             Je = (Fe(1,1)*Fe(2,2) - Fe(1,2)*Fe(2,1))
@@ -44,6 +42,7 @@ contains
         mu = materialprops(3)
         lambda = materialprops(4)
         Ce = matmul(transpose(Fe),Fe)
+        Be = matmul(Fe, transpose(Fe))
         Me = (lambda*log(Je) - mu)*delta + mu*Ce
         trace_Me = 0.0
         trace_Ce = 0.0
@@ -59,9 +58,9 @@ contains
         real(8), dimension(nsd, nsd), intent(in) :: F
         real(8), dimension(nsd, nsd), intent(inout) :: stress
         real(8), dimension(nsd, nsd, nsd, nsd), intent(inout) :: mstiff
-        real(8), dimension(nsd, nsd) :: Fe, Ce
+        real(8), dimension(nsd, nsd) :: Fe, Ce, Be
         real(8) :: mu, lambda, Je, theta_max, tau_g, gamma, kg, trace_Me, Me_cr, trace_Ce
-        real(8) :: theta_increment, temp, dr1, dr2, residual, local_tangent
+        real(8) :: dr1, dr2, residual, local_tangent
         integer :: i, j, k, l, cnt
         logical :: flag
         theta_max = 1.5
@@ -72,7 +71,7 @@ contains
         lambda = materialprops(4)
         residual = 1.0
         theta = theta_pre
-        call update(F, theta, Fe, Je, Ce, trace_Ce, trace_Me)
+        call update(F, theta, Fe, Je, Be, Ce, trace_Ce, trace_Me)
         cnt = 0
         flag = .false.
         ! local Newton iteration
@@ -84,7 +83,7 @@ contains
             local_tangent = 1 - (kg*dr1 + (trace_Me-Me_cr)*dr2)*dt
             theta = theta - residual/local_tangent
             flag = .true.
-            call update(F, theta, Fe, Je, Ce, trace_Ce, trace_Me)
+            call update(F, theta, Fe, Je, Be, Ce, trace_Ce, trace_Me)
             cnt = cnt + 1
             if (theta - theta_max > tol) then
                 write(*,*) 'maximum value exceeded, theta = ', theta
@@ -103,7 +102,7 @@ contains
                             + lambda*(delta(i, j)*delta(k, l))
                         if (flag) then
                             mstiff(i, j, k, l) = mstiff(i, j, k, l) - kg*dt/(local_tangent*theta)&
-                                *(3*lambda*delta(i,j)+2*mu*Ce(j,i))*(3*lambda*delta(k,l)+2*mu*Ce(l,k))
+                                *(3*lambda*delta(i,j)+2*mu*Be(i,j))*(3*lambda*delta(k,l)+2*mu*Be(k,l))
                         end if
                     end do
                 end do
